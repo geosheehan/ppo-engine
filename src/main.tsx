@@ -6,9 +6,9 @@ import { game } from '@data/currentGame.ts'
 import { GameProvider } from '@context/GameContext.tsx'
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <GameProvider game={game}>
-      <App />
-    </GameProvider>
-  </StrictMode>,
+   <StrictMode>
+      <GameProvider game={game}>
+         <App />
+      </GameProvider>
+   </StrictMode>,
 )

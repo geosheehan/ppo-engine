@@ -4,33 +4,31 @@ import type { Team } from '@domain/types.ts';
 import PenaltyTable from '@components/PenaltyTable.tsx';
 
 function App() {
-  const { game } = useGame();
+   const { game } = useGame();
 
-  const getTeamFullName = (team: Team): string => `${team.placeName.default} ${team.commonName.default}`;
+   const getTeamFullName = (team: Team): string => `${team.placeName.default} ${team.commonName.default}`;
 
-  const home = game.homeTeam;
-  const away = game.awayTeam;
+   const home = game.homeTeam;
+   const away = game.awayTeam;
 
-  return (
-    <>
+   return (
       <section id="center">
-        <div>
-          <h1>{getTeamFullName(away)} @ {getTeamFullName(home)}</h1>
-          <section id="next-steps">
-            <div id="penalties">
-              <h2>Penalty Summary</h2>
-              <div>
-                <PenaltyTable team="away" />
-              </div>
-              <div>
-                <PenaltyTable team="home" />
-              </div>
-            </div>
-          </section>
-        </div>
+         <div>
+            <h1>{getTeamFullName(away)} @ {getTeamFullName(home)}</h1>
+            <section id="next-steps">
+               <div id="penalties">
+                  <h2>Penalty Summary</h2>
+                  <div>
+                     <PenaltyTable team="away" />
+                  </div>
+                  <div>
+                     <PenaltyTable team="home" />
+                  </div>
+               </div>
+            </section>
+         </div>
       </section>
-    </>
-  )
+   )
 }
 
 export default App
