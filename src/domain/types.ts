@@ -41,7 +41,7 @@ export type Player = {
    headshot: string;
 };
 
-export type PenaltySeverity = 'MIN' | 'MAJ' | 'BEN' | 'GAM' | 'MIS';
+export type PenaltySeverity = 'MIN' | 'MAJ' | 'BEN' | 'GAM' | 'MIS' | 'MAT' | 'PS';
 
 export type PenaltyDetails = {
    typeCode: PenaltySeverity;
@@ -59,7 +59,31 @@ export type PenaltyPlay = Play & {
    details: PenaltyDetails;
 }
 
+export type ShotType = 'backhand' | 'bat' | 'deflected' | 'slap'
+   | 'snap' | 'tip-in' | 'wrap-around' | 'wrist';
+
+export type GoalDetails = {
+   shotType: ShotType;
+   scoringPlayerId: number;
+   scoringPlayerTotal: number;
+   assist1PlayerId: number;
+   assist1PlayerTotal: number;
+   eventOwnerTeamId: number;
+   goalieInNetId: number;
+   awayScore: number;
+   homeScore: number;
+   highlightClipSharingUrl?: string;
+}
+
+export type GoalPlay = Play & {
+   typeCode: 505;
+   typeDescKey: 'goal';
+   details: GoalDetails;
+}
+
 export type Game = {
+   season: number;
+   gameType: number; 
    homeTeam: Team;
    awayTeam: Team;
    plays: Play[];
@@ -67,3 +91,4 @@ export type Game = {
 };
 
 export const isPenalty = (play: Play): play is PenaltyPlay => play.typeCode === 509;
+export const isGoal = (play: Play): play is GoalPlay => play.typeCode === 505;
