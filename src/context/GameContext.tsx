@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
 import { createContext, useMemo, use } from 'react';
-import type { GameIndex } from '../domain/game';
-import { indexGame } from '../domain/game';
-import type { Game } from '../domain/types';
+import type { GameIndex } from '@domain/game';
+import { indexGame } from '@domain/game';
+import type { Game } from '@domain/types';
 
 const GameContext = createContext<GameIndex | null>(null);
 

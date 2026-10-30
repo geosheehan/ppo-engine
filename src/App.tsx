@@ -1,7 +1,7 @@
 import './App.css';
-import { useGame } from './context/GameContext.tsx';
-import PenaltyTable from './components/PenaltyTable.tsx';
-import type { Team } from './domain/types.ts';
+import { useGame } from '@context/GameContext.tsx';
+import type { Team } from '@domain/types.ts';
+import PenaltyTable from '@components/PenaltyTable.tsx';
 
 function App() {
   const { game } = useGame();

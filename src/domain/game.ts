@@ -1,5 +1,5 @@
-import type { Game } from './types';
-import { isPenalty } from './types';
+import type { Game } from '@domain/types';
+import { isPenalty } from '@domain/types';
 
 export function indexGame(game: Game) {
     const teamsById = new Map([game.homeTeam, game.awayTeam].map((team) => [team.id, team]));
