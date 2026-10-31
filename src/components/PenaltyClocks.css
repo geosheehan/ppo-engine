@@ -1,0 +1,47 @@
+.penalty-clocks {
+   text-align: left;
+}
+
+.penalty-clocks__team {
+   margin: 0 0 8px;
+   font-size: 18px;
+   font-weight: 500;
+   color: var(--text-h);
+}
+
+.penalty-clocks__list,
+.penalty-clocks__queue {
+   margin: 0;
+   padding: 0;
+   list-style: none;
+}
+
+.penalty-clocks__clock {
+   display: flex;
+   align-items: baseline;
+   gap: 12px;
+   min-height: 2.2em;
+   padding: 6px 12px;
+   border: 1px solid var(--border);
+}
+
+.penalty-clocks__time {
+   min-width: 3.5em;
+   font-size: 22px;
+   color: var(--text-h);
+   font-variant-numeric: tabular-nums;
+}
+
+.penalty-clocks__kind {
+   margin-left: auto;
+   font-size: 13px;
+}
+
+.penalty-clocks__empty {
+   color: var(--border);
+}
+
+.penalty-clocks__queue {
+   margin-top: 8px;
+   font-size: 14px;
+}

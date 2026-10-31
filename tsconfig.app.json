@@ -18,11 +18,13 @@
 
     /* Path aliases (Vite reads these too, via resolve.tsconfigPaths) */
     "paths": {
+      "@assets/*": ["./src/assets/*"],
       "@components/*": ["./src/components/*"],
       "@context/*": ["./src/context/*"],
       "@data/*": ["./src/data/*"],
       "@domain/*": ["./src/domain/*"],
-      "@engine/*": ["./src/engine/*"]
+      "@engine/*": ["./src/engine/*"],
+      "@views/*": ["./src/views/*"],
     },
 
     /* Linting */

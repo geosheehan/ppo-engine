@@ -1,0 +1,30 @@
+.replay {
+   display: flex;
+   flex-direction: column;
+   gap: 32px;
+   padding: 0 32px 32px;
+
+   @media (max-width: 768px) {
+      padding: 0 20px 24px;
+   }
+}
+
+.replay__title {
+   margin-bottom: 0;
+}
+
+.replay__rink {
+   display: block;
+   width: 100%;
+   height: auto;
+}
+
+.replay__clocks {
+   display: grid;
+   grid-template-columns: repeat(2, minmax(0, 1fr));
+   gap: 32px;
+
+   @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+   }
+}

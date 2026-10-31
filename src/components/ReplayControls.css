@@ -1,0 +1,30 @@
+.replay-controls {
+   display: flex;
+   align-items: center;
+   gap: 12px;
+
+   button {
+      font: inherit;
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: transparent;
+      color: var(--text-h);
+      cursor: pointer;
+   }
+
+   button:disabled {
+      opacity: 0.4;
+      cursor: default;
+   }
+}
+
+.replay-controls__slider {
+   flex: 1;
+}
+
+.replay-controls__position {
+   min-width: 9em;
+   text-align: right;
+   font-variant-numeric: tabular-nums;
+}

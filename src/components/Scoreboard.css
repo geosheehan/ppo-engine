@@ -1,0 +1,24 @@
+.scoreboard {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   gap: 8px;
+}
+
+.scoreboard__score {
+   display: flex;
+   align-items: baseline;
+   gap: 16px;
+   font-size: 28px;
+   color: var(--text-h);
+   font-variant-numeric: tabular-nums;
+
+   strong {
+      font-size: 44px;
+      font-weight: 500;
+   }
+}
+
+.scoreboard__dash {
+   color: var(--text);
+}

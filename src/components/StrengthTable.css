@@ -1,0 +1,36 @@
+.strength-table {
+   width: 100%;
+   border-collapse: collapse;
+   font-variant-numeric: tabular-nums;
+
+   caption {
+      margin-bottom: 8px;
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--text-h);
+      text-align: left;
+   }
+
+   th,
+   td {
+      padding: 4px 12px;
+      text-align: left;
+   }
+
+   thead th {
+      border-bottom: 1px solid var(--border);
+      font-weight: 500;
+   }
+
+   tbody + tbody {
+      border-top: 1px solid var(--border);
+   }
+}
+
+.strength-table__total {
+   color: var(--text-h);
+
+   th {
+      font-weight: 500;
+   }
+}
