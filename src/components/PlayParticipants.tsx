@@ -10,7 +10,7 @@ type PlayParticipantsProps = {
    sides: Side[];
 };
 
-type Card = { role: string; player: Player; team: Team };
+type Card = { role: string; player: Player; team: Team; side: Side };
 
 function PlayParticipants({ play, sides }: PlayParticipantsProps) {
    const { game, playerById, teamById } = useGame();
@@ -19,8 +19,11 @@ function PlayParticipants({ play, sides }: PlayParticipantsProps) {
    for (const { role, playerId } of playParticipants(play)) {
       const player = playerById(playerId);
       const team = player && teamById(player.teamId);
-      if (player && team) cardsBySide[team.id === game.homeTeam.id ? 'home' : 'away'].push({ role, player, team });
+      if (!player || !team) continue;
+      const side = team.id === game.homeTeam.id ? 'home' : 'away';
+      cardsBySide[side].push({ role, player, team, side });
    }
+   const bothTeams = cardsBySide.away.length > 0 && cardsBySide.home.length > 0;
 
    // A goal with two assists names three scoring-team players. The scorer moves across to the goalie's half,
    // nearest the center line, so each half holds two cards and the assists keep the scoring side.
@@ -36,21 +39,41 @@ function PlayParticipants({ play, sides }: PlayParticipantsProps) {
       cardsBySide[otherSide].unshift(moved);
    }
 
+   const isMirrored = (card: Card, position: string): boolean =>
+      position !== 'solo' && (bothTeams ? card.side === sides[0] : position === 'left');
+
    const solo = cardsBySide.away.length + cardsBySide.home.length === 1;
-   const lists = solo
+   const lists = (solo
       ? [{ position: 'solo', cards: [...cardsBySide.away, ...cardsBySide.home] }]
-      : sides.map((side, i) => ({ position: i === 0 ? 'left' : 'right', cards: cardsBySide[side] }));
+      : sides.map((side, i) => ({ position: i === 0 ? 'left' : 'right', cards: cardsBySide[side] }))
+   ).map(({ position, cards }) => ({
+      position,
+      cards: cards.map((card) => ({ ...card, mirrored: isMirrored(card, position) })),
+   }));
+
+   type PlacedCard = (typeof lists)[number]['cards'][number];
+   const facing = (left: PlacedCard, right: PlacedCard): boolean => left.mirrored && !right.mirrored;
+   const [leftCards, rightCards] = lists.map(({ cards }) => cards);
+   const closeAtCenter = !solo && leftCards.length > 0 && rightCards.length > 0 && !facing(leftCards[0], rightCards[0]);
+   const apartFromInner = (position: string, cards: PlacedCard[], i: number): boolean =>
+      i > 0 && (position === 'left' ? facing(cards[i], cards[i - 1]) : facing(cards[i - 1], cards[i]));
 
    return (
-      <div className="play-participants">
+      <div className={`play-participants${closeAtCenter ? ' play-participants--close' : ''}`}>
          {lists.map(({ position, cards }) => (
             <ol key={position} className={`play-participants__side play-participants__side--${position}`}>
-               {cards.map(({ role, player, team }) => (
-                  <li key={`${role}-${player.playerId}`} className="play-participants__card">
-                     <PlayerCard player={player} team={team} mirrored={position === 'left'} />
-                     <div className="play-participants__role">{role}</div>
-                  </li>
-               ))}
+               {cards.map(({ role, player, team, mirrored }, i) => {
+                  const modifiers = [mirrored && 'mirrored', apartFromInner(position, cards, i) && 'apart']
+                     .filter(Boolean)
+                     .map((modifier) => ` play-participants__card--${modifier}`)
+                     .join('');
+                  return (
+                     <li key={`${role}-${player.playerId}`} className={`play-participants__card${modifiers}`}>
+                        <PlayerCard player={player} team={team} mirrored={mirrored} />
+                        <div className="play-participants__role">{role}</div>
+                     </li>
+                  );
+               })}
             </ol>
          ))}
       </div>

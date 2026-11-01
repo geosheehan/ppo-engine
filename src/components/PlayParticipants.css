@@ -14,11 +14,21 @@
    list-style: none;
 }
 
+.play-participants--close {
+   column-gap: 8px;
+}
+
 .play-participants__side--left {
    flex-direction: row-reverse;
 
-   .play-participants__card {
-      text-align: right;
+   .play-participants__card--apart {
+      margin-right: 24px;
+   }
+}
+
+.play-participants__side--right {
+   .play-participants__card--apart {
+      margin-left: 24px;
    }
 }
 
@@ -34,6 +44,10 @@
    flex: 0 1 140px;
    min-width: 0;
    text-align: left;
+}
+
+.play-participants__card--mirrored {
+   text-align: right;
 }
 
 .play-participants__role {

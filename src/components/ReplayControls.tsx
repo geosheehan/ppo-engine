@@ -15,7 +15,6 @@ function ReplayControls({ index, plays, onChange }: ReplayControlsProps) {
    const [autoPlay, setAutoPlay] = useState(false);
    const playing = autoPlay && index < last;
 
-   // The event types that occur in this game, for jumping between plays of one type.
    const eventTypes = useMemo(() => [...new Set(plays.map((play) => play.typeDescKey))].toSorted(), [plays]);
    const [eventType, setEventType] = useState(() => (eventTypes.includes('goal') ? 'goal' : eventTypes[0]));
    const previousOfType = plays.findLastIndex((play, i) => i < index && play.typeDescKey === eventType);
