@@ -24,11 +24,16 @@ function PlayParticipants({ play, sides }: PlayParticipantsProps) {
 
    // A goal with two assists names three scoring-team players. The scorer moves across to the goalie's half,
    // nearest the center line, so each half holds two cards and the assists keep the scoring side.
+   // Likewise, when every participant is on one team, one card crosses so the cards stay centered. For a shot
+   // blocked by a teammate the blocker crosses, taking the defender's side; otherwise the first card does.
    for (const side of ['home', 'away'] as const) {
-      if (cardsBySide[side].length <= 2) continue;
-      const [scorer, ...assists] = cardsBySide[side];
-      cardsBySide[side] = assists;
-      cardsBySide[side === 'home' ? 'away' : 'home'].unshift(scorer);
+      const otherSide = side === 'home' ? 'away' : 'home';
+      const cards = cardsBySide[side];
+      const oneTeam = cards.length >= 2 && cardsBySide[otherSide].length === 0;
+      if (cards.length <= 2 && !oneTeam) continue;
+      const blocker = cards.findIndex(({ role }) => role === 'Blocked');
+      const [moved] = cards.splice(oneTeam && blocker !== -1 ? blocker : 0, 1);
+      cardsBySide[otherSide].unshift(moved);
    }
 
    const solo = cardsBySide.away.length + cardsBySide.home.length === 1;
