@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import '@components/ReplayControls.css';
-import { playTypeLabel } from '@domain/plays.ts';
+import { EVENT_TYPES, playTypeLabel } from '@domain/plays.ts';
 import type { Play } from '@domain/types.ts';
 
 type ReplayControlsProps = {
@@ -15,8 +15,7 @@ function ReplayControls({ index, plays, onChange }: ReplayControlsProps) {
    const [autoPlay, setAutoPlay] = useState(false);
    const playing = autoPlay && index < last;
 
-   const eventTypes = useMemo(() => [...new Set(plays.map((play) => play.typeDescKey))].toSorted(), [plays]);
-   const [eventType, setEventType] = useState(() => (eventTypes.includes('goal') ? 'goal' : eventTypes[0]));
+   const [eventType, setEventType] = useState('goal');
    const previousOfType = plays.findLastIndex((play, i) => i < index && play.typeDescKey === eventType);
    const nextOfType = plays.findIndex((play, i) => i > index && play.typeDescKey === eventType);
    const eventLabel = playTypeLabel(eventType).toLowerCase();
@@ -58,7 +57,7 @@ function ReplayControls({ index, plays, onChange }: ReplayControlsProps) {
          </div>
          <div className="replay-controls__row">
             <select aria-label="Event type" value={eventType} onChange={(event) => setEventType(event.target.value)}>
-               {eventTypes.map((type) => (
+               {EVENT_TYPES.map((type) => (
                   <option key={type} value={type}>{playTypeLabel(type)}</option>
                ))}
             </select>
