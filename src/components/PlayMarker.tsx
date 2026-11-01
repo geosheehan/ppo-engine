@@ -1,5 +1,6 @@
 import type { ComponentType } from 'react';
-import { boundToIce, CENTRE_DOT, nearestFaceoffDot } from '@domain/rink.ts';
+import { useGame } from '@context/GameContext.tsx';
+import { boundToIce, CENTER_DOT, nearestFaceoffDot } from '@domain/rink.ts';
 import type { Play } from '@domain/types.ts';
 import type { IconProps } from '@components/event-icons/IconFrame.tsx';
 import BlockedShotIcon from '@components/event-icons/BlockedShotIcon.tsx';
@@ -40,19 +41,19 @@ type LocatedDetails = {
 
 type PlayMarkerProps = {
    play: Play;
-   // Colour for each team id; a play without an owning team falls back to the inherited colour.
    teamColor: (teamId: number) => string;
    className?: string;
 };
 
 // The play's icon at its spot on the rink. Draws nothing for plays without a location
 // (period starts, delayed penalties, some older penalties) or without an icon.
-function PlayMarker({ play, teamColor, className }: PlayMarkerProps) {
+function PlayMarker({ play, className }: PlayMarkerProps) {
+   const { teamColor } = useGame();
    const Icon = ICONS[play.typeDescKey];
    if (!Icon) return null;
 
    if (play.typeDescKey === 'stoppage') {
-      return <Icon className={className} x={CENTRE_DOT.x} y={CENTRE_DOT.y} size={SIZE} color={STOPPAGE_COLOR} />;
+      return <Icon className={className} x={CENTER_DOT.x} y={CENTER_DOT.y} size={SIZE} color={STOPPAGE_COLOR} />;
    }
 
    const { xCoord, yCoord, eventOwnerTeamId } = (play.details ?? {}) as LocatedDetails;

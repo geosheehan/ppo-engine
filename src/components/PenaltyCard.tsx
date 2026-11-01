@@ -7,10 +7,9 @@ import PlayerCard from '@components/PlayerCard.tsx';
 
 type PenaltyCardProps = {
    clocked: ClockedPenalty;
-   color: string;
 };
 
-function PenaltyCard({ clocked, color }: PenaltyCardProps) {
+function PenaltyCard({ clocked }: PenaltyCardProps) {
    const { playerById, teamByHomeOrAway } = useGame();
    const { details } = clocked.play;
    const playerId = details.committedByPlayerId ?? details.servedByPlayerId;
@@ -18,7 +17,7 @@ function PenaltyCard({ clocked, color }: PenaltyCardProps) {
 
    return (
       <div className="penalty-card">
-         <PlayerCard player={playerId ? playerById(playerId) : undefined} team={teamByHomeOrAway(clocked.served.side)} color={color} />
+         <PlayerCard player={playerId ? playerById(playerId) : undefined} team={teamByHomeOrAway(clocked.served.side)} />
          <div className="penalty-card__penalty">
             <span className="penalty-card__time">{secondsToClock(clocked.remaining)}</span>
             <span className="penalty-card__infraction" title={infraction}>{infraction}</span>

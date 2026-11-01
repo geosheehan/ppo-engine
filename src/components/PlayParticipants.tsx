@@ -6,10 +6,9 @@ import PlayerCard from '@components/PlayerCard.tsx';
 
 type PlayParticipantsProps = {
    play: Play;
-   teamColor: (teamId: number) => string;
 };
 
-function PlayParticipants({ play, teamColor }: PlayParticipantsProps) {
+function PlayParticipants({ play }: PlayParticipantsProps) {
    const { playerById, teamById } = useGame();
 
    const cards = [];
@@ -23,7 +22,7 @@ function PlayParticipants({ play, teamColor }: PlayParticipantsProps) {
       <ol className="play-participants">
          {cards.map(({ role, player, team }) => (
             <li key={`${role}-${player.playerId}`} className="play-participants__card">
-               <PlayerCard player={player} team={team} color={teamColor(team.id)} />
+               <PlayerCard player={player} team={team} />
                <div className="play-participants__role">{role}</div>
             </li>
          ))}
