@@ -9,11 +9,15 @@ type ReplayControlsProps = {
    onChange: (index: number) => void;
 };
 
+const REPLAY_MINUTES = [10, 7, 5];
 
 function ReplayControls({ index, plays, onChange }: ReplayControlsProps) {
    const last = plays.length - 1;
    const [autoPlay, setAutoPlay] = useState(false);
    const playing = autoPlay && index < last;
+
+   const [replayMinutes, setReplayMinutes] = useState(3);
+   const delay = (replayMinutes * 60 * 1000) / Math.max(last, 1);
 
    const [eventType, setEventType] = useState('goal');
    const previousOfType = plays.findLastIndex((play, i) => i < index && play.typeDescKey === eventType);
@@ -22,9 +26,9 @@ function ReplayControls({ index, plays, onChange }: ReplayControlsProps) {
 
    useEffect(() => {
       if (!playing) return;
-      const timer = setTimeout(() => onChange(index + 1), 1000);
+      const timer = setTimeout(() => onChange(index + 1), delay);
       return () => clearTimeout(timer);
-   }, [playing, index, onChange]);
+   }, [playing, index, onChange, delay]);
 
    return (
       <div className="replay-controls">
@@ -53,6 +57,11 @@ function ReplayControls({ index, plays, onChange }: ReplayControlsProps) {
             <button type="button" onClick={() => setAutoPlay(!playing)} disabled={index === last}>
                {playing ? 'Pause' : 'Play'}
             </button>
+            <select aria-label="Replay length" value={replayMinutes} onChange={(event) => setReplayMinutes(Number(event.target.value))}>
+               {REPLAY_MINUTES.map((minutes, i) => (
+                  <option key={minutes} value={minutes}>x{i + 1}</option>
+               ))}
+            </select>
             <span className="replay-controls__position">Play {index + 1} of {plays.length}</span>
          </div>
          <div className="replay-controls__row">
