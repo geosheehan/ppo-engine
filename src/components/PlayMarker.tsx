@@ -28,8 +28,8 @@ const ICONS: Record<string, ComponentType<IconProps>> = {
 // Icon width on the rink, in feet.
 const SIZE = 5;
 
-// Stoppages have no location and belong to neither team: centre ice, in black
-// (red would disappear into the centre line).
+// Stoppages have no location and belong to neither team: center ice, in black
+// (red would disappear into the center line).
 const STOPPAGE_COLOR = '#000000';
 
 type LocatedDetails = {

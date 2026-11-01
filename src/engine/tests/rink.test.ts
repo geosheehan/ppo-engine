@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Game } from '@domain/types';
-import { boundToIce, CENTRE_DOT, CORNER_RADIUS, FACEOFF_DOTS, nearestFaceoffDot } from '@domain/rink';
+import { boundToIce, CENTER_DOT, CORNER_RADIUS, FACEOFF_DOTS, nearestFaceoffDot } from '@domain/rink';
 
 const games = import.meta.glob<Game>('@data/games/*.json', { eager: true, import: 'default' });
 
@@ -14,7 +14,7 @@ describe('nearestFaceoffDot', () => {
    it('snaps a point a few feet off to that dot', () => {
       expect(nearestFaceoffDot({ x: 71, y: -21 })).toEqual({ x: 69, y: -22 });
       expect(nearestFaceoffDot({ x: -18, y: 23 })).toEqual({ x: -20, y: 22 });
-      expect(nearestFaceoffDot({ x: 1, y: -1 })).toEqual(CENTRE_DOT);
+      expect(nearestFaceoffDot({ x: 1, y: -1 })).toEqual(CENTER_DOT);
    });
 
    // Recorded faceoffs should all be close to a dot; a big jump would mean the snap picked the wrong one.
@@ -33,7 +33,7 @@ describe('boundToIce', () => {
       Math.hypot(x - Math.max(-72, Math.min(72, x)), y - Math.max(-14.5, Math.min(14.5, y)));
 
    it('leaves points on the ice where they are', () => {
-      for (const point of [CENTRE_DOT, { x: 99, y: 0 }, { x: 0, y: -42 }, { x: 89, y: 30 }]) {
+      for (const point of [CENTER_DOT, { x: 99, y: 0 }, { x: 0, y: -42 }, { x: 89, y: 30 }]) {
          expect(boundToIce(point)).toEqual(point);
       }
    });
@@ -46,10 +46,10 @@ describe('boundToIce', () => {
       expect(boundToIce({ x: -30, y: -45 })).toEqual({ x: -30, y: -42.5 });
    });
 
-   it('pulls a corner point back toward the centre of that corner\'s curve', () => {
+   it('pulls a corner point back toward the center of that corner\'s curve', () => {
       const bounded = boundToIce({ x: 94, y: -38 });
       expect(fromInner(bounded)).toBeCloseTo(CORNER_RADIUS);
-      // Same direction from the corner centre (72, -14.5) as the recorded point.
+      // Same direction from the corner center (72, -14.5) as the recorded point.
       expect((bounded.y + 14.5) / (bounded.x - 72)).toBeCloseTo((-38 + 14.5) / (94 - 72));
    });
 

@@ -7,7 +7,7 @@ type RinkProps = {
    children?: ReactNode;
 };
 
-// NHL rink, 1 unit = 1 ft, origin at centre ice (same axes as the NHL API's x/y).
+// NHL rink, 1 unit = 1 ft, origin at center ice (same axes as the NHL API's x/y).
 // x: -100 (left boards) to 100 (right boards); y: -42.5 to 42.5. Corner radius 28 ft.
 // Team colors: set the CSS custom properties --left-end-color / --right-end-color on the
 // rink or any parent. They fill the corners outside the boards and that end's crease.
@@ -19,7 +19,7 @@ const RIGHT_END = `var(--right-end-color, ${BLUE})`;
 // Rule-book width (2 in) for the thin markings.
 const MARKING = 2 / 12;
 
-// End-zone faceoff circle, centred on its faceoff spot.
+// End-zone faceoff circle, centered on its faceoff spot.
 function FaceoffCircle({ x, y }: { x: number; y: number }) {
    return (
       <g transform={`translate(${x} ${y})`} fill="none" stroke={RED} strokeWidth={MARKING}>
@@ -74,7 +74,7 @@ function Rink({ className, children }: RinkProps) {
          <rect x={-100} y={-42.5} width={200} height={85} rx={28} ry={28} fill="#ffffff" />
 
          <g clipPath={`url(#${iceId})`}>
-            {/* Centre red line (12 in) */}
+            {/* Center red line (12 in) */}
             <rect x={-0.5} y={-42.5} width={1} height={85} fill={RED} />
 
             {/* Blue lines (12 in), 75 ft from each end; 50 ft neutral zone */}
@@ -100,7 +100,7 @@ function Rink({ className, children }: RinkProps) {
                <path d="M-10,42.5 A10,10 0 0 1 10,42.5" />
             </g>
 
-            {/* Centre circle (15 ft radius) and centre spot (12 in) */}
+            {/* Center circle (15 ft radius) and center spot (12 in) */}
             <circle r={15} fill="none" stroke={BLUE} strokeWidth={MARKING} />
             <circle r={0.5} fill={BLUE} />
 

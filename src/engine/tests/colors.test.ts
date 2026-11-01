@@ -10,7 +10,7 @@ const ORANGE = '#FC4C02';
 const GREEN = '#046A38';
 
 describe('areSimilar', () => {
-   it('treats a colour as similar to itself', () => {
+   it('treats a color as similar to itself', () => {
       expect(areSimilar(RED, RED)).toBe(true);
    });
 
@@ -24,11 +24,11 @@ describe('areSimilar', () => {
 });
 
 describe('matchupColors', () => {
-   it('uses both first colours when they differ', () => {
+   it('uses both first colors when they differ', () => {
       expect(matchupColors([RED, BLACK], [NAVY, GREEN])).toEqual({ home: RED, away: NAVY });
    });
 
-   it('uses both second colours when the firsts are similar', () => {
+   it('uses both second colors when the firsts are similar', () => {
       expect(matchupColors([NAVY, GREEN], [ROYAL, GOLD])).toEqual({ home: GREEN, away: GOLD });
    });
 

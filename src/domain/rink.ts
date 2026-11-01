@@ -1,22 +1,22 @@
-// Rink positions in feet from centre ice, on the NHL API's x/y axes.
+// Rink positions in feet from center ice, on the NHL API's x/y axes.
 export type RinkPoint = { x: number; y: number };
 
-export const CENTRE_DOT: RinkPoint = { x: 0, y: 0 };
+export const CENTER_DOT: RinkPoint = { x: 0, y: 0 };
 
 // Neutral-zone spots, 5 ft from the blue lines, 44 ft apart.
 export const NEUTRAL_DOTS: RinkPoint[] = [
    { x: -20, y: -22 }, { x: -20, y: 22 }, { x: 20, y: -22 }, { x: 20, y: 22 },
 ];
 
-// End-zone spots (centres of the faceoff circles), 20 ft from the goal lines, 44 ft apart.
+// End-zone spots (centers of the faceoff circles), 20 ft from the goal lines, 44 ft apart.
 export const END_ZONE_DOTS: RinkPoint[] = [
    { x: -69, y: -22 }, { x: -69, y: 22 }, { x: 69, y: -22 }, { x: 69, y: 22 },
 ];
 
-export const FACEOFF_DOTS: RinkPoint[] = [CENTRE_DOT, ...NEUTRAL_DOTS, ...END_ZONE_DOTS];
+export const FACEOFF_DOTS: RinkPoint[] = [CENTER_DOT, ...NEUTRAL_DOTS, ...END_ZONE_DOTS];
 
 // The ice is 200 x 85 ft with 28 ft rounded corners. Inset a rectangle 28 ft from the boards on every side:
-// its corners are the centres of the rounded corners, so the ice is exactly every point within 28 ft of it.
+// its corners are the centers of the rounded corners, so the ice is exactly every point within 28 ft of it.
 export const CORNER_RADIUS = 28;
 const INNER_X = 100 - CORNER_RADIUS;
 const INNER_Y = 42.5 - CORNER_RADIUS;
