@@ -16,7 +16,7 @@ const teamFullName = (team: Team): string => `${team.placeName.default} ${team.c
 
 function ReplayView() {
    const { game, colors } = useGame();
-   const { play, index, setIndex, count, snapshot, totals, score, homeOnLeft, sides } = useReplay();
+   const { play, index, setIndex, plays, snapshot, totals, score, homeOnLeft, sides } = useReplay();
 
    const [left, right] = sides;
    const endColors = { '--left-end-color': colors[left], '--right-end-color': colors[right] } as CSSProperties;
@@ -35,7 +35,7 @@ function ReplayView() {
                <PenaltyClocks key={side} side={side} onClock={snapshot.onClock} position={i === 0 ? 'left' : 'right'} />
             ))}
          </div>
-         <ReplayControls index={index} count={count} onChange={setIndex} />
+         <ReplayControls index={index} plays={plays} onChange={setIndex} />
          <div className="replay__clocks">
             {sides.map((side) => (
                <StrengthTable key={side} side={side} totals={totals[side]} />

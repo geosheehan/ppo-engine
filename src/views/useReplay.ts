@@ -30,7 +30,7 @@ export function useReplay() {
       play,
       index,
       setIndex,
-      count: plays.length,
+      plays,
       snapshot: snapshotAt(result, penaltyPlays, time),
       totals: opportunityTotals(result, goalPlays, time),
       score: { away: lastGoal?.details.awayScore ?? 0, home: lastGoal?.details.homeScore ?? 0 },

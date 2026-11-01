@@ -4,6 +4,7 @@ import { isGoal, isPenalty } from '@domain/types.ts';
 import type { Play } from '@domain/types.ts';
 import { penaltyDisplayName } from '@domain/penalties.ts';
 import { playerShortName } from '@domain/players.ts';
+import { playTypeLabel } from '@domain/plays.ts';
 import type { GoalEffect } from '@engine/types.ts';
 
 type CurrentPlayProps = {
@@ -13,11 +14,6 @@ type CurrentPlayProps = {
 
 const periodLabel = (play: Play): string =>
    play.periodDescriptor.periodType === 'REG' ? `P${play.periodDescriptor.number}` : play.periodDescriptor.periodType;
-
-const playTypeLabel = (typeDescKey: string): string => {
-   const words = typeDescKey.replaceAll('-', ' ');
-   return words.charAt(0).toUpperCase() + words.slice(1);
-};
 
 const ownerTeamId = (play: Play): number | undefined =>
    (play.details as { eventOwnerTeamId?: number } | undefined)?.eventOwnerTeamId;
