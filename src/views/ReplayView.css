@@ -19,6 +19,10 @@
    height: auto;
 }
 
+.replay__icon {
+   color: #6b6b6b;
+}
+
 .replay__clocks {
    display: grid;
    grid-template-columns: repeat(2, minmax(0, 1fr));
