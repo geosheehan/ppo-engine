@@ -15,6 +15,24 @@ export const END_ZONE_DOTS: RinkPoint[] = [
 
 export const FACEOFF_DOTS: RinkPoint[] = [CENTRE_DOT, ...NEUTRAL_DOTS, ...END_ZONE_DOTS];
 
+// The ice is 200 x 85 ft with 28 ft rounded corners. Inset a rectangle 28 ft from the boards on every side:
+// its corners are the centres of the rounded corners, so the ice is exactly every point within 28 ft of it.
+export const CORNER_RADIUS = 28;
+const INNER_X = 100 - CORNER_RADIUS;
+const INNER_Y = 42.5 - CORNER_RADIUS;
+
+const clamp = (value: number, limit: number): number => Math.max(-limit, Math.min(limit, value));
+
+// Events placed in a hurry can land past the boards. Measure from the closest point of the inner rectangle;
+// anything further than 28 ft is pulled back along that line to 28 ft, onto the boards.
+export function boundToIce(point: RinkPoint): RinkPoint {
+   const inner = { x: clamp(point.x, INNER_X), y: clamp(point.y, INNER_Y) };
+   const distance = Math.hypot(point.x - inner.x, point.y - inner.y);
+   if (distance <= CORNER_RADIUS) return point;
+   const scale = CORNER_RADIUS / distance;
+   return { x: inner.x + (point.x - inner.x) * scale, y: inner.y + (point.y - inner.y) * scale };
+}
+
 // Faceoffs only happen on a dot, but recorded locations can be a few feet off. Snap to the closest one.
 export function nearestFaceoffDot(point: RinkPoint): RinkPoint {
    const distance = (dot: RinkPoint) => Math.hypot(dot.x - point.x, dot.y - point.y);

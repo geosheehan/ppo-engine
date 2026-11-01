@@ -1,5 +1,5 @@
 import type { ComponentType } from 'react';
-import { CENTRE_DOT, nearestFaceoffDot } from '@domain/rink.ts';
+import { boundToIce, CENTRE_DOT, nearestFaceoffDot } from '@domain/rink.ts';
 import type { Play } from '@domain/types.ts';
 import type { IconProps } from '@components/event-icons/IconFrame.tsx';
 import BlockedShotIcon from '@components/event-icons/BlockedShotIcon.tsx';
@@ -58,7 +58,8 @@ function PlayMarker({ play, teamColor, className }: PlayMarkerProps) {
    const { xCoord, yCoord, eventOwnerTeamId } = (play.details ?? {}) as LocatedDetails;
    if (xCoord === undefined || yCoord === undefined) return null;
 
-   const { x, y } = play.typeDescKey === 'faceoff' ? nearestFaceoffDot({ x: xCoord, y: yCoord }) : { x: xCoord, y: yCoord };
+   const recorded = { x: xCoord, y: yCoord };
+   const { x, y } = play.typeDescKey === 'faceoff' ? nearestFaceoffDot(recorded) : boundToIce(recorded);
 
    return (
       <Icon
