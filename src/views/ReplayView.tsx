@@ -13,6 +13,7 @@ import { opportunityTotals } from '@engine/opportunities.ts';
 import type { Side } from '@engine/types.ts';
 import CurrentPlay from '@components/CurrentPlay.tsx';
 import PenaltyClocks from '@components/PenaltyClocks.tsx';
+import PlayParticipants from '@components/PlayParticipants.tsx';
 import PlayMarker from '@components/PlayMarker.tsx';
 import ReplayControls from '@components/ReplayControls.tsx';
 import Rink from '@components/Rink.tsx';
@@ -56,6 +57,7 @@ function ReplayView() {
          <span className="replay__title">{teamFullName(game.awayTeam)} @ {teamFullName(game.homeTeam)}</span>
          <Scoreboard score={score} homeOnLeft={homeOnLeft} />
          <CurrentPlay play={play} />
+         <PlayParticipants play={play} teamColor={teamColor} />
          <Rink className="replay__rink">
             <PlayMarker play={play} teamColor={teamColor} className="replay__icon" />
          </Rink>

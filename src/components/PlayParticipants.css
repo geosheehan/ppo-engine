@@ -1,0 +1,29 @@
+.play-participants {
+   display: flex;
+   justify-content: center;
+   gap: 8px;
+   flex: none;
+   height: 72px;
+   margin: 0;
+   padding: 0;
+   list-style: none;
+}
+
+.play-participants__card {
+   display: flex;
+   flex-direction: column;
+   gap: 2px;
+   flex: 0 1 140px;
+   min-width: 0;
+   text-align: left;
+}
+
+.play-participants__role {
+   height: 18px;
+   padding: 0 2px;
+   font-size: 13px;
+   line-height: 18px;
+   overflow: hidden;
+   white-space: nowrap;
+   text-overflow: ellipsis;
+}
