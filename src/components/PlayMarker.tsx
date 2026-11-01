@@ -41,7 +41,6 @@ type LocatedDetails = {
 
 type PlayMarkerProps = {
    play: Play;
-   teamColor: (teamId: number) => string;
    className?: string;
 };
 

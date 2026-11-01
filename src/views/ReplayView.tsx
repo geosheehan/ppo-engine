@@ -26,7 +26,7 @@ function ReplayView() {
          <span className="replay__title">{teamFullName(game.awayTeam)} @ {teamFullName(game.homeTeam)}</span>
          <Scoreboard score={score} homeOnLeft={homeOnLeft} />
          <CurrentPlay play={play} />
-         <PlayParticipants play={play} />
+         <PlayParticipants play={play} sides={sides} />
          <Rink className="replay__rink">
             <PlayMarker play={play} className="replay__icon" />
          </Rink>

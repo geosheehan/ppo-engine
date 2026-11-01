@@ -1,12 +1,21 @@
 .play-participants {
-   display: flex;
-   justify-content: center;
-   gap: 8px;
+   display: grid;
+   grid-template-columns: repeat(2, minmax(0, 1fr));
+   column-gap: 32px;
    flex: none;
    height: 72px;
+}
+
+.play-participants__side {
+   display: flex;
+   gap: 8px;
    margin: 0;
    padding: 0;
    list-style: none;
+}
+
+.play-participants__side--left {
+   flex-direction: row-reverse;
 }
 
 .play-participants__card {
