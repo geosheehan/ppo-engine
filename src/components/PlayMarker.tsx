@@ -1,4 +1,5 @@
 import type { ComponentType } from 'react';
+import { CENTRE_DOT, nearestFaceoffDot } from '@domain/rink.ts';
 import type { Play } from '@domain/types.ts';
 import type { IconProps } from '@components/event-icons/IconFrame.tsx';
 import BlockedShotIcon from '@components/event-icons/BlockedShotIcon.tsx';
@@ -51,17 +52,19 @@ function PlayMarker({ play, teamColor, className }: PlayMarkerProps) {
    if (!Icon) return null;
 
    if (play.typeDescKey === 'stoppage') {
-      return <Icon className={className} x={0} y={0} size={SIZE} color={STOPPAGE_COLOR} />;
+      return <Icon className={className} x={CENTRE_DOT.x} y={CENTRE_DOT.y} size={SIZE} color={STOPPAGE_COLOR} />;
    }
 
    const { xCoord, yCoord, eventOwnerTeamId } = (play.details ?? {}) as LocatedDetails;
    if (xCoord === undefined || yCoord === undefined) return null;
 
+   const { x, y } = play.typeDescKey === 'faceoff' ? nearestFaceoffDot({ x: xCoord, y: yCoord }) : { x: xCoord, y: yCoord };
+
    return (
       <Icon
          className={className}
-         x={xCoord}
-         y={yCoord}
+         x={x}
+         y={y}
          size={SIZE}
          color={eventOwnerTeamId ? teamColor(eventOwnerTeamId) : undefined}
       />

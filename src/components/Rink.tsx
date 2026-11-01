@@ -1,5 +1,6 @@
 import { useId } from 'react';
 import type { ReactNode } from 'react';
+import { END_ZONE_DOTS, NEUTRAL_DOTS } from '@domain/rink.ts';
 
 type RinkProps = {
    className?: string;
@@ -105,17 +106,11 @@ function Rink({ className, children }: RinkProps) {
 
             {/* Neutral-zone faceoff spots (2 ft), 5 ft from the blue lines, 44 ft apart */}
             <g fill={RED}>
-               <circle cx={-19} cy={-22} r={1} />
-               <circle cx={-19} cy={22} r={1} />
-               <circle cx={19} cy={-22} r={1} />
-               <circle cx={19} cy={22} r={1} />
+               {NEUTRAL_DOTS.map(({ x, y }) => <circle key={`${x},${y}`} cx={x} cy={y} r={1} />)}
             </g>
 
             {/* End-zone faceoff circles: spots 20 ft from the goal line, 44 ft apart */}
-            <FaceoffCircle x={-69} y={-22} />
-            <FaceoffCircle x={-69} y={22} />
-            <FaceoffCircle x={69} y={-22} />
-            <FaceoffCircle x={69} y={22} />
+            {END_ZONE_DOTS.map(({ x, y }) => <FaceoffCircle key={`${x},${y}`} x={x} y={y} />)}
 
             {/* Goal nets */}
             <g transform="translate(-89 0)"><Net /></g>
