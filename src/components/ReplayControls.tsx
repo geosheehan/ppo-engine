@@ -21,6 +21,9 @@ function ReplayControls({ index, count, onChange }: ReplayControlsProps) {
 
    return (
       <div className="replay-controls">
+         <button type="button" onClick={() => onChange(0)} disabled={index === 0 || playing}>
+            Start
+         </button>
          <button type="button" onClick={() => onChange(index - 1)} disabled={index === 0 || playing}>
             Previous
          </button>
@@ -35,6 +38,9 @@ function ReplayControls({ index, count, onChange }: ReplayControlsProps) {
          />
          <button type="button" onClick={() => onChange(index + 1)} disabled={index === last || playing}>
             Next
+         </button>
+         <button type="button" onClick={() => onChange(last)} disabled={index === last || playing}>
+            End
          </button>
          <button type="button" onClick={() => setAutoPlay(!playing)} disabled={index === last}>
             {playing ? 'Pause' : 'Play'}
