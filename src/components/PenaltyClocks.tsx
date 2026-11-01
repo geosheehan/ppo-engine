@@ -36,7 +36,7 @@ function PenaltyClocks({ side, onClock, queued }: PenaltyClocksProps) {
                   {clocked ? (
                      <>
                         <span className="penalty-clocks__time">{secondsToClock(clocked.remaining)}</span>
-                        <span className="penalty-clocks__who">{penaltyLabel(clocked.play)}</span>
+                        <span className="penalty-clocks__who" title={penaltyLabel(clocked.play)}>{penaltyLabel(clocked.play)}</span>
                      </>
                   ) : (
                      <span className="penalty-clocks__empty">–</span>
@@ -44,13 +44,6 @@ function PenaltyClocks({ side, onClock, queued }: PenaltyClocksProps) {
                </li>
             ))}
          </ol>
-         {waiting.length > 0 && (
-            <ul className="penalty-clocks__queue">
-               {waiting.map(({ served, play }) => (
-                  <li key={`${served.penaltyEventId}-${served.doubleMinorHalf ?? 0}`}>Waiting: {penaltyLabel(play)}</li>
-               ))}
-            </ul>
-         )}
       </div>
    );
 };

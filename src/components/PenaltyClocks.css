@@ -32,6 +32,13 @@
    font-variant-numeric: tabular-nums;
 }
 
+.penalty-clocks__who {
+   min-width: 0;
+   overflow: hidden;
+   white-space: nowrap;
+   text-overflow: ellipsis;
+}
+
 .penalty-clocks__kind {
    margin-left: auto;
    font-size: 13px;

@@ -51,13 +51,13 @@ function CurrentPlay({ play, goalEffect }: CurrentPlayProps) {
          <div className="current-play__what">
             {team && <span className="current-play__team">{team.abbrev}</span>}
             {playTypeLabel(play.typeDescKey)}
+            {goalEffect && (
+               <ul className="current-play__effects">
+                  <li>{goalLabel(goalEffect)}</li>
+               </ul>
+            )}
          </div>
-         {detail && <div className="current-play__detail">{detail}</div>}
-         {goalEffect && (
-            <ul className="current-play__effects">
-               <li>{goalLabel(goalEffect)}</li>
-            </ul>
-         )}
+         <div className="current-play__detail">{detail}</div>
       </div>
    );
 };
