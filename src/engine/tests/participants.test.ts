@@ -10,15 +10,15 @@ describe('playParticipants', () => {
    it('lists a goal\'s scorer, assists and goalie in order', () => {
       expect(playParticipants(play('goal', { scoringPlayerId: 1, assist1PlayerId: 2, assist2PlayerId: 3, goalieInNetId: 4 })))
          .toEqual([
-            { role: 'Goal', playerId: 1 },
-            { role: '1st assist', playerId: 2 },
-            { role: '2nd assist', playerId: 3 },
-            { role: 'Goalie', playerId: 4 },
+            { field: 'scoringPlayerId', role: 'Goal', playerId: 1 },
+            { field: 'assist1PlayerId', role: '1st assist', playerId: 2 },
+            { field: 'assist2PlayerId', role: '2nd assist', playerId: 3 },
+            { field: 'goalieInNetId', role: 'Goalie', playerId: 4 },
          ]);
    });
 
    it('skips roles the play doesn\'t have', () => {
-      expect(playParticipants(play('goal', { scoringPlayerId: 1 }))).toEqual([{ role: 'Goal', playerId: 1 }]);
+      expect(playParticipants(play('goal', { scoringPlayerId: 1 }))).toEqual([{ field: 'scoringPlayerId', role: 'Goal', playerId: 1 }]);
    });
 
    it('names nobody for plays without players', () => {

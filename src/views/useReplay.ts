@@ -36,6 +36,6 @@ export function useReplay() {
       score: { away: lastGoal?.details.awayScore ?? 0, home: lastGoal?.details.homeScore ?? 0 },
       homeOnLeft,
       // Left to right, matching the ends of the rink.
-      sides: (homeOnLeft ? ['home', 'away'] : ['away', 'home']) as Side[],
+      sides: (homeOnLeft ? ['home', 'away'] : ['away', 'home']) as [Side, Side],
    };
 };

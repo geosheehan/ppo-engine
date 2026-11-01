@@ -1,6 +1,7 @@
 import type { Play } from '@domain/types';
 
 export type Participant = {
+   field: string;
    role: string;
    playerId: number;
 };
@@ -31,7 +32,7 @@ export function playParticipants(play: Play): Participant[] {
    const participants: Participant[] = [];
    for (const { field, role } of ROLES[play.typeDescKey] ?? []) {
       const playerId = details[field];
-      if (typeof playerId === 'number') participants.push({ role, playerId });
+      if (typeof playerId === 'number') participants.push({ field, role, playerId });
    }
    return participants;
 }
