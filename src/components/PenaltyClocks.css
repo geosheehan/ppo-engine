@@ -3,8 +3,8 @@
 }
 
 .penalty-clocks__team {
-   margin: 0 0 8px;
-   font-size: 18px;
+   margin: 0 0 4px;
+   font-size: 16px;
    font-weight: 500;
    color: var(--text-h);
 }
@@ -20,14 +20,17 @@
    display: flex;
    align-items: baseline;
    gap: 12px;
-   min-height: 2.2em;
-   padding: 6px 12px;
+   padding: 2px 10px;
    border: 1px solid var(--border);
+}
+
+.penalty-clocks__clock + .penalty-clocks__clock {
+   border-top: none;
 }
 
 .penalty-clocks__time {
    min-width: 3.5em;
-   font-size: 22px;
+   font-size: 18px;
    color: var(--text-h);
    font-variant-numeric: tabular-nums;
 }
