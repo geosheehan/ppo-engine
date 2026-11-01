@@ -18,6 +18,11 @@
    flex-direction: row-reverse;
 }
 
+.play-participants__side--solo {
+   grid-column: 1 / -1;
+   justify-content: center;
+}
+
 .play-participants__card {
    display: flex;
    flex-direction: column;

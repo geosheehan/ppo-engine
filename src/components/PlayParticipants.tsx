@@ -31,11 +31,16 @@ function PlayParticipants({ play, sides }: PlayParticipantsProps) {
       cardsBySide[side === 'home' ? 'away' : 'home'].unshift(scorer);
    }
 
+   const solo = cardsBySide.away.length + cardsBySide.home.length === 1;
+   const lists = solo
+      ? [{ position: 'solo', cards: [...cardsBySide.away, ...cardsBySide.home] }]
+      : sides.map((side, i) => ({ position: i === 0 ? 'left' : 'right', cards: cardsBySide[side] }));
+
    return (
       <div className="play-participants">
-         {sides.map((side, i) => (
-            <ol key={side} className={`play-participants__side play-participants__side--${i === 0 ? 'left' : 'right'}`}>
-               {cardsBySide[side].map(({ role, player, team }) => (
+         {lists.map(({ position, cards }) => (
+            <ol key={position} className={`play-participants__side play-participants__side--${position}`}>
+               {cards.map(({ role, player, team }) => (
                   <li key={`${role}-${player.playerId}`} className="play-participants__card">
                      <PlayerCard player={player} team={team} />
                      <div className="play-participants__role">{role}</div>
