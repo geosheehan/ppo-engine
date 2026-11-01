@@ -47,7 +47,7 @@ function PlayParticipants({ play, sides }: PlayParticipantsProps) {
             <ol key={position} className={`play-participants__side play-participants__side--${position}`}>
                {cards.map(({ role, player, team }) => (
                   <li key={`${role}-${player.playerId}`} className="play-participants__card">
-                     <PlayerCard player={player} team={team} />
+                     <PlayerCard player={player} team={team} mirrored={position === 'left'} />
                      <div className="play-participants__role">{role}</div>
                   </li>
                ))}

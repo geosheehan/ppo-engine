@@ -16,6 +16,10 @@
 
 .play-participants__side--left {
    flex-direction: row-reverse;
+
+   .play-participants__card {
+      text-align: right;
+   }
 }
 
 .play-participants__side--solo {

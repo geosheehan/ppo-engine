@@ -6,6 +6,11 @@
    text-align: left;
 }
 
+.player-card--mirrored {
+   flex-direction: row-reverse;
+   text-align: right;
+}
+
 .player-card__headshot {
    flex: none;
    width: 52px;
