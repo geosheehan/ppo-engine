@@ -16,7 +16,7 @@ function ReplayControls({ index, plays, onChange }: ReplayControlsProps) {
    const [autoPlay, setAutoPlay] = useState(false);
    const playing = autoPlay && index < last;
 
-   const [replayMinutes, setReplayMinutes] = useState(3);
+   const [replayMinutes, setReplayMinutes] = useState(REPLAY_MINUTES[0]);
    const delay = (replayMinutes * 60 * 1000) / Math.max(last, 1);
 
    const [eventType, setEventType] = useState('goal');
