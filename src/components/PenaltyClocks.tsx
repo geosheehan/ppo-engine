@@ -1,50 +1,27 @@
 import '@components/PenaltyClocks.css';
-import { useGame } from '@context/GameContext.tsx';
-import { secondsToClock } from '@domain/clock.ts';
-import type { PenaltyPlay } from '@domain/types.ts';
-import { penaltyDisplayName } from '@domain/penalties.ts';
-import { playerShortName } from '@domain/players.ts';
-import type { ClockedPenalty, QueuedPenalty } from '@engine/snapshot.ts';
+import type { ClockedPenalty } from '@engine/snapshot.ts';
 import type { Side } from '@engine/types.ts';
+import PenaltyCard from '@components/PenaltyCard.tsx';
 
 type PenaltyClocksProps = {
    side: Side;
    onClock: ClockedPenalty[];
-   queued: QueuedPenalty[];
+   color: string;
+   position: 'left' | 'right';
 };
 
-function PenaltyClocks({ side, onClock, queued }: PenaltyClocksProps) {
-   const { teamByHomeOrAway, playerById } = useGame();
-   const team = teamByHomeOrAway(side);
-
-   const penaltyLabel = (play: PenaltyPlay): string => {
-      const playerId = play.details.committedByPlayerId ?? play.details.servedByPlayerId;
-      const player = playerId ? playerById(playerId) : undefined;
-      return `${playerShortName(player)} | ${penaltyDisplayName(play.details.descKey)}`;
-   };
-
+function PenaltyClocks({ side, onClock, color, position }: PenaltyClocksProps) {
    const clocks = ([0, 1] as const).map((penaltyClock) =>
       onClock.find(({ served }) => served.side === side && served.penaltyClock === penaltyClock));
-   const waiting = queued.filter(({ served }) => served.side === side);
 
    return (
-      <div className="penalty-clocks">
-         <h3 className="penalty-clocks__team">{team.abbrev}</h3>
-         <ol className="penalty-clocks__list">
-            {clocks.map((clocked, penaltyClock) => (
-               <li key={penaltyClock} className="penalty-clocks__clock">
-                  {clocked ? (
-                     <>
-                        <span className="penalty-clocks__time">{secondsToClock(clocked.remaining)}</span>
-                        <span className="penalty-clocks__who" title={penaltyLabel(clocked.play)}>{penaltyLabel(clocked.play)}</span>
-                     </>
-                  ) : (
-                     <span className="penalty-clocks__empty">–</span>
-                  )}
-               </li>
-            ))}
-         </ol>
-      </div>
+      <ol className={`penalty-clocks penalty-clocks--${position}`}>
+         {clocks.map((clocked, penaltyClock) => (
+            <li key={penaltyClock} className="penalty-clocks__slot">
+               {clocked ? <PenaltyCard clocked={clocked} color={color} /> : <div className="penalty-clocks__empty" />}
+            </li>
+         ))}
+      </ol>
    );
 };
 

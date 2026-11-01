@@ -1,0 +1,31 @@
+.penalty-card {
+   display: flex;
+   flex-direction: column;
+   gap: 2px;
+   min-width: 0;
+   text-align: left;
+}
+
+.penalty-card__penalty {
+   display: flex;
+   align-items: baseline;
+   gap: 8px;
+   padding: 0 2px;
+   font-size: 13px;
+   height: 18px;
+   line-height: 18px;
+}
+
+.penalty-card__time {
+   font-size: 16px;
+   font-weight: 600;
+   color: var(--text-h);
+   font-variant-numeric: tabular-nums;
+}
+
+.penalty-card__infraction {
+   min-width: 0;
+   overflow: hidden;
+   white-space: nowrap;
+   text-overflow: ellipsis;
+}

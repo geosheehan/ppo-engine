@@ -60,8 +60,14 @@ function ReplayView() {
             <PlayMarker play={play} teamColor={teamColor} className="replay__icon" />
          </Rink>
          <div className="replay__clocks">
-            {sides.map((side) => (
-               <PenaltyClocks key={side} side={side} onClock={snapshot.onClock} queued={snapshot.queued} />
+            {sides.map((side, i) => (
+               <PenaltyClocks
+                  key={side}
+                  side={side}
+                  onClock={snapshot.onClock}
+                  color={colors[side]}
+                  position={i === 0 ? 'left' : 'right'}
+               />
             ))}
          </div>
          <ReplayControls index={index} count={plays.length} onChange={setIndex} />

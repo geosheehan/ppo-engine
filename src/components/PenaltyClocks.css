@@ -1,57 +1,23 @@
 .penalty-clocks {
-   text-align: left;
-}
-
-.penalty-clocks__team {
-   margin: 0 0 4px;
-   font-size: 16px;
-   font-weight: 500;
-   color: var(--text-h);
-}
-
-.penalty-clocks__list,
-.penalty-clocks__queue {
+   display: flex;
+   gap: 8px;
    margin: 0;
    padding: 0;
    list-style: none;
 }
 
-.penalty-clocks__clock {
-   display: flex;
-   align-items: baseline;
-   gap: 12px;
-   padding: 2px 10px;
-   border: 1px solid var(--border);
+.penalty-clocks--left {
+   flex-direction: row-reverse;
 }
 
-.penalty-clocks__clock + .penalty-clocks__clock {
-   border-top: none;
-}
-
-.penalty-clocks__time {
-   min-width: 3.5em;
-   font-size: 18px;
-   color: var(--text-h);
-   font-variant-numeric: tabular-nums;
-}
-
-.penalty-clocks__who {
+.penalty-clocks__slot {
+   flex: 0 1 140px;
    min-width: 0;
-   overflow: hidden;
-   white-space: nowrap;
-   text-overflow: ellipsis;
-}
-
-.penalty-clocks__kind {
-   margin-left: auto;
-   font-size: 13px;
 }
 
 .penalty-clocks__empty {
-   color: var(--border);
-}
-
-.penalty-clocks__queue {
-   margin-top: 8px;
-   font-size: 14px;
+   height: 72px;
+   box-sizing: border-box;
+   border: 1px dashed var(--border);
+   border-radius: 6px;
 }

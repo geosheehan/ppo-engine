@@ -1,0 +1,41 @@
+.player-card {
+   display: flex;
+   align-items: center;
+   gap: 8px;
+   min-width: 0;
+   text-align: left;
+}
+
+.player-card__headshot {
+   flex: none;
+   width: 52px;
+   height: 52px;
+   border-radius: 6px;
+}
+
+.player-card__info {
+   min-width: 0;
+   font-size: 13px;
+   line-height: 16px;
+
+   > div {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+   }
+}
+
+.player-card__meta {
+   font-size: 11px;
+   letter-spacing: 0.4px;
+   font-variant-numeric: tabular-nums;
+}
+
+.player-card__first {
+   color: var(--text-h);
+}
+
+.player-card__last {
+   font-weight: 600;
+   color: var(--text-h);
+}
