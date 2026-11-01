@@ -22,16 +22,7 @@ const playTypeLabel = (typeDescKey: string): string => {
 const ownerTeamId = (play: Play): number | undefined =>
    (play.details as { eventOwnerTeamId?: number } | undefined)?.eventOwnerTeamId;
 
-function goalLabel(effect: GoalEffect): string {
-   if (effect.penaltyShot) return 'Penalty-shot goal';
-   const scorer = effect.strength[effect.side];
-   const against = effect.strength[effect.side === 'away' ? 'home' : 'away'];
-   if (scorer > against) return 'Power-play goal';
-   if (scorer < against) return 'Short-handed goal';
-   return 'Goal';
-}
-
-function CurrentPlay({ play, goalEffect }: CurrentPlayProps) {
+function CurrentPlay({ play }: CurrentPlayProps) {
    const { teamById, playerById } = useGame();
    const teamId = ownerTeamId(play);
    const team = teamId ? teamById(teamId) : undefined;
@@ -51,11 +42,6 @@ function CurrentPlay({ play, goalEffect }: CurrentPlayProps) {
          <div className="current-play__what">
             {team && <span className="current-play__team">{team.abbrev}</span>}
             {playTypeLabel(play.typeDescKey)}
-            {goalEffect && (
-               <ul className="current-play__effects">
-                  <li>{goalLabel(goalEffect)}</li>
-               </ul>
-            )}
          </div>
          <div className="current-play__detail">{detail}</div>
       </div>

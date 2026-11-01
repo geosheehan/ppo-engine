@@ -43,7 +43,6 @@ function ReplayView() {
 
    const lastGoal = plays.slice(0, index + 1).findLast(isGoal);
    const score = { away: lastGoal?.details.awayScore ?? 0, home: lastGoal?.details.homeScore ?? 0 };
-   const goalEffect = result.goals.find((goal) => goal.goalEventId === play.eventId);
 
    const homeOnLeft = defendingSides.get(play.periodDescriptor.number) === 'left';
    const leftColor = homeOnLeft ? colors.home : colors.away;
@@ -56,7 +55,7 @@ function ReplayView() {
       <section className="replay" style={endColors}>
          <span className="replay__title">{teamFullName(game.awayTeam)} @ {teamFullName(game.homeTeam)}</span>
          <Scoreboard score={score} homeOnLeft={homeOnLeft} />
-         <CurrentPlay play={play} goalEffect={goalEffect} />
+         <CurrentPlay play={play} />
          <Rink className="replay__rink">
             <PlayMarker play={play} teamColor={teamColor} className="replay__icon" />
          </Rink>
