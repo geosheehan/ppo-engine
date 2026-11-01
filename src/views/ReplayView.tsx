@@ -13,26 +13,11 @@ import { opportunityTotals } from '@engine/opportunities.ts';
 import type { Side } from '@engine/types.ts';
 import CurrentPlay from '@components/CurrentPlay.tsx';
 import PenaltyClocks from '@components/PenaltyClocks.tsx';
+import PlayMarker from '@components/PlayMarker.tsx';
 import ReplayControls from '@components/ReplayControls.tsx';
 import Rink from '@components/Rink.tsx';
 import Scoreboard from '@components/Scoreboard.tsx';
 import StrengthTable from '@components/StrengthTable.tsx';
-import BlockedShotIcon from '@components/event-icons/BlockedShotIcon.tsx';
-import DelayedPenaltyIcon from '@components/event-icons/DelayedPenaltyIcon.tsx';
-import FaceoffIcon from '@components/event-icons/FaceoffIcon.tsx';
-import GiveawayIcon from '@components/event-icons/GiveawayIcon.tsx';
-import HitIcon from '@components/event-icons/HitIcon.tsx';
-import MissedShotIcon from '@components/event-icons/MissedShotIcon.tsx';
-import PenaltyIcon from '@components/event-icons/PenaltyIcon.tsx';
-import ShotOnGoalIcon from '@components/event-icons/ShotOnGoalIcon.tsx';
-import StoppageIcon from '@components/event-icons/StoppageIcon.tsx';
-import TakeawayIcon from '@components/event-icons/TakeawayIcon.tsx';
-
-// One of each event icon, spaced 16 ft apart across the ice.
-const ICON_SAMPLES = [
-   ShotOnGoalIcon, MissedShotIcon, BlockedShotIcon, HitIcon, GiveawayIcon,
-   TakeawayIcon, FaceoffIcon, PenaltyIcon, DelayedPenaltyIcon, StoppageIcon,
-];
 
 const teamFullName = (team: Team): string => `${team.placeName.default} ${team.commonName.default}`.toUpperCase();
 
@@ -65,6 +50,7 @@ function ReplayView() {
    const rightColor = homeOnLeft ? colors.away : colors.home;
    const endColors = { '--left-end-color': leftColor, '--right-end-color': rightColor } as CSSProperties;
    const sides: Side[] = homeOnLeft ? ['home', 'away'] : ['away', 'home'];
+   const teamColor = (teamId: number): string => (teamId === game.homeTeam.id ? colors.home : colors.away);
 
    return (
       <section className="replay" style={endColors}>
@@ -72,9 +58,7 @@ function ReplayView() {
          <Scoreboard score={score} homeOnLeft={homeOnLeft} />
          <CurrentPlay play={play} goalEffect={goalEffect} />
          <Rink className="replay__rink">
-            {ICON_SAMPLES.map((Icon, i) => (
-               <Icon key={i} className="replay__icon" x={-72 + i * 16} y={0} size={4} color={i < ICON_SAMPLES.length / 2 ? leftColor : rightColor} />
-            ))}
+            <PlayMarker play={play} teamColor={teamColor} className="replay__icon" />
          </Rink>
          <div className="replay__clocks">
             {sides.map((side) => (
