@@ -4,6 +4,7 @@ import { boundToIce, CENTER_DOT, nearestFaceoffDot } from '@domain/rink.ts';
 import type { Play } from '@domain/types.ts';
 import type { IconProps } from '@components/event-icons/IconFrame.tsx';
 import BlockedShotIcon from '@components/event-icons/BlockedShotIcon.tsx';
+import DelayedPenaltyIcon from '@components/event-icons/DelayedPenaltyIcon.tsx';
 import FaceoffIcon from '@components/event-icons/FaceoffIcon.tsx';
 import GiveawayIcon from '@components/event-icons/GiveawayIcon.tsx';
 import HitIcon from '@components/event-icons/HitIcon.tsx';
@@ -24,6 +25,7 @@ const ICONS: Record<string, ComponentType<IconProps>> = {
    'takeaway': TakeawayIcon,
    'faceoff': FaceoffIcon,
    'penalty': PenaltyIcon,
+   'delayed-penalty': DelayedPenaltyIcon,
 };
 
 // Icon width on the rink, in feet.
@@ -45,7 +47,7 @@ type PlayMarkerProps = {
 };
 
 // The play's icon at its spot on the rink. Draws nothing for plays without a location
-// (period starts, delayed penalties, some older penalties) or without an icon.
+// (period starts, some older penalties) or without an icon.
 function PlayMarker({ play, className }: PlayMarkerProps) {
    const { teamColor } = useGame();
    const Icon = ICONS[play.typeDescKey];
@@ -56,20 +58,19 @@ function PlayMarker({ play, className }: PlayMarkerProps) {
    }
 
    const { xCoord, yCoord, eventOwnerTeamId } = (play.details ?? {}) as LocatedDetails;
+   const color = eventOwnerTeamId ? teamColor(eventOwnerTeamId) : undefined;
+
+   // Delayed penalties are never given a location, so they go to center ice like stoppages, in the team's color.
+   if (play.typeDescKey === 'delayed-penalty') {
+      return <Icon className={className} x={CENTER_DOT.x} y={CENTER_DOT.y} size={SIZE} color={color} />;
+   }
+
    if (xCoord === undefined || yCoord === undefined) return null;
 
    const recorded = { x: xCoord, y: yCoord };
    const { x, y } = play.typeDescKey === 'faceoff' ? nearestFaceoffDot(recorded) : boundToIce(recorded);
 
-   return (
-      <Icon
-         className={className}
-         x={x}
-         y={y}
-         size={SIZE}
-         color={eventOwnerTeamId ? teamColor(eventOwnerTeamId) : undefined}
-      />
-   );
+   return <Icon className={className} x={x} y={y} size={SIZE} color={color} />;
 };
 
 export default PlayMarker;
