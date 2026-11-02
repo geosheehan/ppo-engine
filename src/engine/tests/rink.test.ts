@@ -1,10 +1,22 @@
 import { describe, expect, it } from 'vitest';
 import type { Game } from '@domain/types';
-import { boundToIce, CENTER_DOT, CORNER_RADIUS, FACEOFF_DOTS, nearestFaceoffDot } from '@domain/rink';
+import { attackedNet, boundToIce, CENTER_DOT, CORNER_RADIUS, FACEOFF_DOTS, NETS, nearestFaceoffDot } from '@domain/rink';
 
 const games = import.meta.glob<Game>('@data/games/*.json', { eager: true, import: 'default' });
 
 type Located = { xCoord: number; yCoord: number };
+
+describe('attackedNet', () => {
+   it('sends the home team at the far net from the one it defends', () => {
+      expect(attackedNet(true, true)).toEqual(NETS.right);
+      expect(attackedNet(true, false)).toEqual(NETS.left);
+   });
+
+   it('sends the away team at the net the home team defends', () => {
+      expect(attackedNet(false, true)).toEqual(NETS.left);
+      expect(attackedNet(false, false)).toEqual(NETS.right);
+   });
+});
 
 describe('nearestFaceoffDot', () => {
    it('leaves a point on a dot where it is', () => {

@@ -19,6 +19,21 @@
    }
 }
 
+.scoreboard__pop {
+   color: var(--goal-gold);
+   animation: scoreboard-pop 0.9s ease-out;
+
+   @media (prefers-reduced-motion: reduce) {
+      animation: none;
+   }
+}
+
+@keyframes scoreboard-pop {
+   25% {
+      scale: 1.4;
+   }
+}
+
 .scoreboard__dash {
    color: var(--text);
 }

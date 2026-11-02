@@ -3,6 +3,7 @@
    --text-h: #08060d;
    --bg: #fff;
    --border: #e5e4e7;
+   --goal-gold: #d9a400;
 
    --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
    --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
@@ -28,6 +29,7 @@
       --text-h: #f3f4f6;
       --bg: #16171d;
       --border: #2e303a;
+      --goal-gold: #f5c518;
    }
 }
 

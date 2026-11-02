@@ -15,6 +15,13 @@ export const END_ZONE_DOTS: RinkPoint[] = [
 
 export const FACEOFF_DOTS: RinkPoint[] = [CENTER_DOT, ...NEUTRAL_DOTS, ...END_ZONE_DOTS];
 
+// The middle of each net's mouth, on the goal lines 11 ft from the end boards.
+export const NETS = { left: { x: -89, y: 0 }, right: { x: 89, y: 0 } } satisfies Record<string, RinkPoint>;
+
+// Each team shoots at the net the other team defends.
+export const attackedNet = (homeShooting: boolean, homeOnLeft: boolean): RinkPoint =>
+   homeShooting === homeOnLeft ? NETS.right : NETS.left;
+
 // The ice is 200 x 85 ft with 28 ft rounded corners. Inset a rectangle 28 ft from the boards on every side:
 // its corners are the centers of the rounded corners, so the ice is exactly every point within 28 ft of it.
 export const CORNER_RADIUS = 28;

@@ -69,6 +69,8 @@ export type GoalDetails = {
    assist1PlayerId: number;
    assist1PlayerTotal: number;
    eventOwnerTeamId: number;
+   xCoord?: number;
+   yCoord?: number;
    goalieInNetId: number;
    awayScore: number;
    homeScore: number;
