@@ -1,18 +1,20 @@
 import '@components/Scoreboard.css';
 import { useGame } from '@context/GameContext.tsx';
-import { periodLabel } from '@domain/plays.ts';
+import { secondsToClock } from '@domain/clock.ts';
+import { periodLabel, periodTimeLeft } from '@domain/plays.ts';
 import type { Play } from '@domain/types.ts';
 import type { Side } from '@engine/types.ts';
 import TeamChip from '@components/TeamChip.tsx';
 
 type ScoreboardProps = {
    play: Play;
+   time: number;
    score: { away: number; home: number };
    homeOnLeft: boolean;
    scoringSide?: Side;
 };
 
-function Scoreboard({ play, score, homeOnLeft, scoringSide }: ScoreboardProps) {
+function Scoreboard({ play, time, score, homeOnLeft, scoringSide }: ScoreboardProps) {
    const { game } = useGame();
    const away = { side: 'away', teamId: game.awayTeam.id, score: score.away };
    const home = { side: 'home', teamId: game.homeTeam.id, score: score.home };
@@ -28,7 +30,7 @@ function Scoreboard({ play, score, homeOnLeft, scoringSide }: ScoreboardProps) {
          <div className="scoreboard__score">
             <TeamChip teamId={left.teamId} />
             {number(left)}
-            <span className="scoreboard__clock">{periodLabel(play)} {play.timeInPeriod}</span>
+            <span className="scoreboard__clock">{periodLabel(play)} {secondsToClock(periodTimeLeft(play, time))}</span>
             {number(right)}
             <TeamChip teamId={right.teamId} />
          </div>

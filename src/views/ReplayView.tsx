@@ -15,7 +15,7 @@ import StrengthTable from '@components/StrengthTable.tsx';
 
 function ReplayView() {
    const { game, colors } = useGame();
-   const { play, index, setIndex, plays, calledPenalty, goalEffect, snapshot, totals, score, homeOnLeft, sides } = useReplay();
+   const { play, index, time, setIndex, plays, calledPenalty, goalEffect, snapshot, totals, score, homeOnLeft, sides } = useReplay();
 
    const [left, right] = sides;
    const endColors = { '--left-end-color': colors[left], '--right-end-color': colors[right] } as CSSProperties;
@@ -29,7 +29,7 @@ function ReplayView() {
       <section className="replay" style={endColors}>
          <title>{`${game.awayTeam.abbrev} @ ${game.homeTeam.abbrev}`}</title>
          <header className="replay__header">
-            <Scoreboard play={play} score={score} homeOnLeft={homeOnLeft} scoringSide={scoringSide} />
+            <Scoreboard play={play} time={time} score={score} homeOnLeft={homeOnLeft} scoringSide={scoringSide} />
             <CurrentPlay play={play} goalEffect={goalEffect} />
          </header>
          <PlayParticipants play={play} sides={sides} />
@@ -45,7 +45,7 @@ function ReplayView() {
                <PenaltyClocks key={side} side={side} onClock={snapshot.onClock} position={i === 0 ? 'left' : 'right'} />
             ))}
          </div>
-         <ReplayControls index={index} plays={plays} onChange={setIndex} />
+         <ReplayControls index={index} time={time} plays={plays} onChange={setIndex} />
          <div className="replay__clocks">
             {sides.map((side, i) => (
                <StrengthTable

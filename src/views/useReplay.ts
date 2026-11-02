@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useGame } from '@context/GameContext.tsx';
 import { delayedPenaltyCall } from '@domain/plays.ts';
+import type { ReplayPosition } from '@domain/playback.ts';
 import { isGoal, isPenalty } from '@domain/types.ts';
 import { homeDefendingSides } from '@engine/defendingSide.ts';
 import { byGameOrder, playTime, runPenaltyEngine } from '@engine/penaltyEngine.ts';
@@ -19,10 +20,15 @@ export function useReplay() {
    const goalPlays = useMemo(() => new Map(plays.filter(isGoal).map((play) => [play.eventId, play])), [plays]);
    const defendingSides = useMemo(() => homeDefendingSides(game), [game]);
 
-   // The only replay state: which play we're on. Everything below is derived from it.
-   const [index, setIndex] = useState(0);
+   // The only replay state: which play we're on, and the game time. Between plays a live replay runs the clock on
+   // from the play's time toward the next one. Everything below is derived from it.
+   const [position, setPosition] = useState<ReplayPosition>(() => ({ index: 0, time: playTime(plays[0]) }));
+   const { index, time } = position;
    const play = plays[index];
-   const time = playTime(play);
+   const setIndex = useCallback(
+      (index: number, time = playTime(plays[index])) => setPosition({ index, time }),
+      [plays],
+   );
 
    const lastGoal = plays.slice(0, index + 1).findLast(isGoal);
    const homeOnLeft = defendingSides.get(play.periodDescriptor.number) === 'left';
@@ -30,6 +36,7 @@ export function useReplay() {
    return {
       play,
       index,
+      time,
       setIndex,
       plays,
       calledPenalty: play.typeDescKey === 'delayed-penalty' ? delayedPenaltyCall(plays, index) : undefined,

@@ -7,6 +7,7 @@ import PlayIcon from '@components/replay-icons/PlayIcon.tsx';
 import PauseIcon from '@components/replay-icons/PauseIcon.tsx';
 import NextIcon from '@components/replay-icons/NextIcon.tsx';
 import EndIcon from '@components/replay-icons/EndIcon.tsx';
+import { useLivePlayback } from '@components/useLivePlayback.ts';
 import { SHOT_ANIMATION_MS } from '@components/useShotProgress.ts';
 import { EVENT_TYPES, playTypeLabel } from '@domain/plays.ts';
 import { isGoal } from '@domain/types.ts';
@@ -14,23 +15,28 @@ import type { Play } from '@domain/types.ts';
 
 type ReplayControlsProps = {
    index: number;
+   time: number;
    plays: Play[];
-   onChange: (index: number) => void;
+   onChange: (index: number, time?: number) => void;
 };
 
+const LIVE_SPEEDS = [1, 3, 6];
 const REPLAY_MINUTES = [10, 7, 5];
 
 const GOAL_HOLD = 3;
 const hold = (play: Play): number => (isGoal(play) ? GOAL_HOLD : 1);
 
-function ReplayControls({ index, plays, onChange }: ReplayControlsProps) {
+function ReplayControls({ index, time, plays, onChange }: ReplayControlsProps) {
    const last = plays.length - 1;
    const [autoPlay, setAutoPlay] = useState(false);
    const playing = autoPlay && index < last;
 
-   const [replayMinutes, setReplayMinutes] = useState(REPLAY_MINUTES[0]);
+   const [playback, setPlayback] = useState(`live-${LIVE_SPEEDS[0]}`);
+   const [mode, amount] = playback.split('-');
+   const live = mode === 'live';
+
    const totalHolds = plays.slice(0, last).reduce((sum, play) => sum + hold(play), 0);
-   const scaledDelay = ((replayMinutes * 60 * 1000) / Math.max(totalHolds, 1)) * hold(plays[index]);
+   const scaledDelay = ((Number(amount) * 60 * 1000) / Math.max(totalHolds, 1)) * hold(plays[index]);
    const delay = isGoal(plays[index]) ? Math.max(scaledDelay, SHOT_ANIMATION_MS) : scaledDelay;
 
    const goalIndexes = plays.flatMap((play, i) => (isGoal(play) ? [i] : []));
@@ -41,10 +47,12 @@ function ReplayControls({ index, plays, onChange }: ReplayControlsProps) {
    const eventLabel = playTypeLabel(eventType).toLowerCase();
 
    useEffect(() => {
-      if (!playing) return;
+      if (!playing || live) return;
       const timer = setTimeout(() => onChange(index + 1), delay);
       return () => clearTimeout(timer);
-   }, [playing, index, onChange, delay]);
+   }, [playing, live, index, onChange, delay]);
+
+   useLivePlayback(playing && live, Number(amount), plays, { index, time }, onChange);
 
    return (
       <div className="replay-controls">
@@ -70,10 +78,17 @@ function ReplayControls({ index, plays, onChange }: ReplayControlsProps) {
          <div className="replay-controls__bar">
             <div className="replay-controls__group">
                <span className="replay-controls__position">Play {index + 1} / {plays.length}</span>
-               <select aria-label="Replay length" value={replayMinutes} onChange={(event) => setReplayMinutes(Number(event.target.value))}>
-                  {REPLAY_MINUTES.map((minutes, i) => (
-                     <option key={minutes} value={minutes}>x{i + 1}</option>
-                  ))}
+               <select aria-label="Replay speed" value={playback} onChange={(event) => setPlayback(event.target.value)}>
+                  <optgroup label="Live clock">
+                     {LIVE_SPEEDS.map((speed) => (
+                        <option key={speed} value={`live-${speed}`}>x{speed}</option>
+                     ))}
+                  </optgroup>
+                  <optgroup label="Replay length">
+                     {REPLAY_MINUTES.map((minutes) => (
+                        <option key={minutes} value={`length-${minutes}`}>{minutes} min</option>
+                     ))}
+                  </optgroup>
                </select>
             </div>
             <div className="replay-controls__group">

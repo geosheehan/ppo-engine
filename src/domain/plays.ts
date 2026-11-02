@@ -1,3 +1,4 @@
+import { clockToSeconds, PERIOD_SECONDS } from '@domain/clock';
 import { isPenalty } from '@domain/types';
 import type { PenaltyPlay, Play } from '@domain/types';
 
@@ -19,6 +20,12 @@ export const EVENT_TYPES: string[] = [
 
 export const periodLabel = (play: Play): string =>
    play.periodDescriptor.periodType === 'REG' ? `P${play.periodDescriptor.number}` : play.periodDescriptor.periodType;
+
+export const periodTimeLeft = (play: Play, time: number): number => {
+   const periodStart = (play.periodDescriptor.number - 1) * PERIOD_SECONDS;
+   const periodLength = clockToSeconds(play.timeInPeriod) + clockToSeconds(play.timeRemaining);
+   return periodLength - (time - periodStart);
+};
 
 export const playTypeLabel =(typeDescKey: string): string => {
    const words = typeDescKey.replaceAll('-', ' ');
