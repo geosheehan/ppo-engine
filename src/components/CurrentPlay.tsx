@@ -6,6 +6,7 @@ import type { Play } from '@domain/types.ts';
 import { penaltyDisplayName } from '@domain/penalties.ts';
 import { playerShortName } from '@domain/players.ts';
 import { playTypeLabel } from '@domain/plays.ts';
+import { LINE_CHANGE } from '@domain/steps.ts';
 import { goalSituation } from '@engine/opportunities.ts';
 import type { GoalSituation } from '@engine/opportunities.ts';
 import type { GoalEffect } from '@engine/types.ts';
@@ -13,6 +14,7 @@ import type { GoalEffect } from '@engine/types.ts';
 type CurrentPlayProps = {
    play: Play;
    goalEffect?: GoalEffect;
+   changedTeamIds?: number[];
 };
 
 const SITUATION_LABELS: Record<GoalSituation, string> = {
@@ -23,8 +25,21 @@ const SITUATION_LABELS: Record<GoalSituation, string> = {
 const ownerTeamId = (play: Play): number | undefined =>
    (play.details as { eventOwnerTeamId?: number } | undefined)?.eventOwnerTeamId;
 
-function CurrentPlay({ play, goalEffect }: CurrentPlayProps) {
+function CurrentPlay({ play, goalEffect, changedTeamIds }: CurrentPlayProps) {
    const { playerById } = useGame();
+
+   if (changedTeamIds) {
+      return (
+         <div className="current-play">
+            <div className="current-play__what">
+               {changedTeamIds.map((teamId) => <TeamChip key={teamId} teamId={teamId} />)}
+               {playTypeLabel(LINE_CHANGE)}
+            </div>
+            <div className="current-play__detail" />
+         </div>
+      );
+   }
+
    const teamId = ownerTeamId(play);
    const situation = goalEffect ? goalSituation(goalEffect) : null;
 

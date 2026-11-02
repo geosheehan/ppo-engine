@@ -3,6 +3,7 @@ import { useGame } from '@context/GameContext.tsx';
 import { onIceAt } from '@domain/onIce.ts';
 import { delayedPenaltyCall } from '@domain/plays.ts';
 import type { ReplayPosition } from '@domain/playback.ts';
+import { replaySteps, stepIndexAt } from '@domain/steps.ts';
 import { isGoal, isPenalty } from '@domain/types.ts';
 import { homeDefendingSides } from '@engine/defendingSide.ts';
 import { byGameOrder, playTime, runPenaltyEngine } from '@engine/penaltyEngine.ts';
@@ -20,6 +21,7 @@ export function useReplay() {
    const penaltyPlays = useMemo(() => new Map(plays.filter(isPenalty).map((play) => [play.eventId, play])), [plays]);
    const goalPlays = useMemo(() => new Map(plays.filter(isGoal).map((play) => [play.eventId, play])), [plays]);
    const defendingSides = useMemo(() => homeDefendingSides(game), [game]);
+   const steps = useMemo(() => replaySteps(plays, shifts), [plays, shifts]);
 
    // The only replay state: which play we're on, and the game time. Between plays a live replay runs the clock on
    // from the play's time toward the next one. Everything below is derived from it.
@@ -31,6 +33,7 @@ export function useReplay() {
       [plays],
    );
 
+   const stepIndex = stepIndexAt(steps, position);
    const lastGoal = plays.slice(0, index + 1).findLast(isGoal);
    const homeOnLeft = defendingSides.get(play.periodDescriptor.number) === 'left';
 
@@ -40,6 +43,9 @@ export function useReplay() {
       time,
       setIndex,
       plays,
+      steps,
+      stepIndex,
+      changedTeamIds: steps[stepIndex].changedTeamIds,
       calledPenalty: play.typeDescKey === 'delayed-penalty' ? delayedPenaltyCall(plays, index) : undefined,
       goalEffect:result.goals.find((goal) => goal.goalEventId === play.eventId),
       snapshot: snapshotAt(result, penaltyPlays, time),

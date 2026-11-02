@@ -7,7 +7,7 @@ import type { Side } from '@engine/types.ts';
 import PlayerCard from '@components/PlayerCard.tsx';
 
 type PlayParticipantsProps = {
-   play: Play;
+   play?: Play;
    sides: [Side, Side];
 };
 
@@ -17,7 +17,7 @@ function PlayParticipants({ play, sides }: PlayParticipantsProps) {
    const { game, playerById, teamById } = useGame();
 
    const cards: Card[] = [];
-   for (const { field, role, playerId } of playParticipants(play)) {
+   for (const { field, role, playerId } of play ? playParticipants(play) : []) {
       const player = playerById(playerId);
       const team = player && teamById(player.teamId);
       if (player && team) cards.push({ field, role, player, team, side: team.id === game.homeTeam.id ? 'home' : 'away' });

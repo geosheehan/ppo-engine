@@ -16,14 +16,32 @@ import StrengthTable from '@components/StrengthTable.tsx';
 
 function ReplayView() {
    const { game, colors } = useGame();
-   const { play, index, time, setIndex, plays, calledPenalty, goalEffect, snapshot, onIce, totals, score, homeOnLeft, sides } = useReplay();
+   const {
+      play,
+      index,
+      time,
+      setIndex,
+      plays,
+      steps,
+      stepIndex,
+      changedTeamIds,
+      calledPenalty,
+      goalEffect,
+      snapshot,
+      onIce,
+      totals,
+      score,
+      homeOnLeft,
+      sides,
+   } = useReplay();
+   const lineChange = changedTeamIds !== undefined;
 
    const [left, right] = sides;
    const endColors = { '--left-end-color': colors[left], '--right-end-color': colors[right] } as CSSProperties;
    // A power-play goal ends the penalty in the same second, so the snapshot already shows the strength after the
    // goal. Show the strength it was scored at until the next play.
    const liveStrength = goalEffect?.strength ?? snapshot.strength;
-   const scoringSide =isGoal(play) ? (play.details.eventOwnerTeamId === game.homeTeam.id ? 'home' : 'away') : undefined;
+   const scoringSide = isGoal(play) && !lineChange ? (play.details.eventOwnerTeamId === game.homeTeam.id ? 'home' : 'away') : undefined;
    const shotLocated = isGoal(play) && play.details.xCoord !== undefined && play.details.yCoord !== undefined;
 
    return (
@@ -31,19 +49,19 @@ function ReplayView() {
          <title>{`${game.awayTeam.abbrev} @ ${game.homeTeam.abbrev}`}</title>
          <header className="replay__header">
             <Scoreboard play={play} time={time} score={score} homeOnLeft={homeOnLeft} scoringSide={scoringSide} />
-            <CurrentPlay play={play} goalEffect={goalEffect} />
+            <CurrentPlay play={play} goalEffect={goalEffect} changedTeamIds={changedTeamIds} />
          </header>
          <div className="replay__stage">
             <div className="replay__ice">
                <OnIcePanel side={left} onIce={onIce} position="left" />
                <div className="replay__center">
-                  <PlayParticipants play={play} sides={sides} />
+                  <PlayParticipants play={lineChange ? undefined : play} sides={sides} />
                   <Rink className="replay__rink">
-                     {shotLocated ? (
+                     {!lineChange && (shotLocated ? (
                         <ShotLine key={play.eventId} play={play} homeOnLeft={homeOnLeft} className="replay__icon" />
                      ) : (
                         <PlayMarker play={play} locatedBy={calledPenalty}className="replay__icon" />
-                     )}
+                     ))}
                   </Rink>
                   <div className="replay__clocks">
                      {sides.map((side, i) => (
@@ -54,7 +72,7 @@ function ReplayView() {
                <OnIcePanel side={right} onIce={onIce} position="right" />
             </div>
          </div>
-         <ReplayControls index={index} time={time} plays={plays} onChange={setIndex} />
+         <ReplayControls index={index} time={time} plays={plays} steps={steps} stepIndex={stepIndex} onChange={setIndex} />
          <div className="replay__clocks">
             {sides.map((side, i) => (
                <StrengthTable
