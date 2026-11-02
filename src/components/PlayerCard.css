@@ -16,6 +16,8 @@
    width: 52px;
    height: 52px;
    border-radius: 6px;
+   outline: 1px solid var(--text-h);
+   outline-offset: -1px;
 }
 
 .player-card__info {
