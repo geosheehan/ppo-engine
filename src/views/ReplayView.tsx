@@ -22,7 +22,10 @@ function ReplayView() {
 
    const [left, right] = sides;
    const endColors = { '--left-end-color': colors[left], '--right-end-color': colors[right] } as CSSProperties;
-   const scoringSide = isGoal(play) ? (play.details.eventOwnerTeamId === game.homeTeam.id ? 'home' : 'away') : undefined;
+   // A power-play goal ends the penalty in the same second, so the snapshot already shows the strength after the
+   // goal. Show the strength it was scored at until the next play.
+   const liveStrength = goalEffect?.strength ?? snapshot.strength;
+   const scoringSide =isGoal(play) ? (play.details.eventOwnerTeamId === game.homeTeam.id ? 'home' : 'away') : undefined;
 
    return (
       <section className="replay" style={endColors}>
@@ -42,7 +45,7 @@ function ReplayView() {
          <ReplayControls index={index} plays={plays} onChange={setIndex} />
          <div className="replay__clocks">
             {sides.map((side) => (
-               <StrengthTable key={side} side={side} totals={totals[side]} strength={snapshot.strength} />
+               <StrengthTable key={side} side={side} totals={totals[side]} strength={liveStrength} />
             ))}
          </div>
       </section>
