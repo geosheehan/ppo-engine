@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useGame } from '@context/GameContext.tsx';
+import { delayedPenaltyCall } from '@domain/plays.ts';
 import { isGoal, isPenalty } from '@domain/types.ts';
 import { homeDefendingSides } from '@engine/defendingSide.ts';
 import { byGameOrder, playTime, runPenaltyEngine } from '@engine/penaltyEngine.ts';
@@ -31,7 +32,8 @@ export function useReplay() {
       index,
       setIndex,
       plays,
-      goalEffect: result.goals.find((goal) => goal.goalEventId === play.eventId),
+      calledPenalty: play.typeDescKey === 'delayed-penalty' ? delayedPenaltyCall(plays, index) : undefined,
+      goalEffect:result.goals.find((goal) => goal.goalEventId === play.eventId),
       snapshot: snapshotAt(result, penaltyPlays, time),
       totals: opportunityTotals(result, goalPlays, time),
       score: { away: lastGoal?.details.awayScore ?? 0, home: lastGoal?.details.homeScore ?? 0 },

@@ -18,7 +18,7 @@ const teamFullName = (team: Team): string => `${team.placeName.default} ${team.c
 
 function ReplayView() {
    const { game, colors } = useGame();
-   const { play, index, setIndex, plays, goalEffect, snapshot, totals, score, homeOnLeft, sides } = useReplay();
+   const { play, index, setIndex, plays, calledPenalty, goalEffect, snapshot, totals, score, homeOnLeft, sides } = useReplay();
 
    const [left, right] = sides;
    const endColors = { '--left-end-color': colors[left], '--right-end-color': colors[right] } as CSSProperties;
@@ -35,7 +35,7 @@ function ReplayView() {
          <PlayParticipants play={play} sides={sides} />
          <Rink className="replay__rink">
             <ShotLine play={play} homeOnLeft={homeOnLeft} />
-            <PlayMarker play={play} className="replay__icon" />
+            <PlayMarker play={play} locatedBy={calledPenalty}className="replay__icon" />
          </Rink>
          <div className="replay__clocks">
             {sides.map((side, i) => (

@@ -31,8 +31,6 @@ const ICONS: Record<string, ComponentType<IconProps>> = {
 // Icon width on the rink, in feet.
 const SIZE = 5;
 
-// Stoppages have no location and belong to neither team: center ice, in black
-// (red would disappear into the center line).
 const STOPPAGE_COLOR = '#000000';
 
 type LocatedDetails = {
@@ -43,34 +41,32 @@ type LocatedDetails = {
 
 type PlayMarkerProps = {
    play: Play;
+   locatedBy?: Play;
    className?: string;
 };
 
-// The play's icon at its spot on the rink. Draws nothing for plays without a location
-// (period starts, some older penalties) or without an icon.
-function PlayMarker({ play, className }: PlayMarkerProps) {
+const detailsOf = (play: Play): LocatedDetails => (play.details ?? {}) as LocatedDetails;
+
+// The play's icon at its spot on the rink, or at center ice when it has no location. Draws nothing for plays
+// without an icon.
+function PlayMarker({ play, locatedBy, className }: PlayMarkerProps) {
    const { teamColor } = useGame();
    const Icon = ICONS[play.typeDescKey];
    if (!Icon) return null;
 
-   if (play.typeDescKey === 'stoppage') {
-      return <Icon className={className} x={CENTER_DOT.x} y={CENTER_DOT.y} size={SIZE} color={STOPPAGE_COLOR} />;
+   const { eventOwnerTeamId } = detailsOf(play);
+   const { xCoord, yCoord } = detailsOf(locatedBy ?? play);
+   const color = play.typeDescKey === 'stoppage'
+      ? STOPPAGE_COLOR
+      : eventOwnerTeamId ? teamColor(eventOwnerTeamId) : undefined;
+
+   let point = CENTER_DOT;
+   if (xCoord !== undefined && yCoord !== undefined) {
+      const recorded = { x: xCoord, y: yCoord };
+      point = play.typeDescKey === 'faceoff' ? nearestFaceoffDot(recorded) : boundToIce(recorded);
    }
 
-   const { xCoord, yCoord, eventOwnerTeamId } = (play.details ?? {}) as LocatedDetails;
-   const color = eventOwnerTeamId ? teamColor(eventOwnerTeamId) : undefined;
-
-   // Delayed penalties are never given a location, so they go to center ice like stoppages, in the team's color.
-   if (play.typeDescKey === 'delayed-penalty') {
-      return <Icon className={className} x={CENTER_DOT.x} y={CENTER_DOT.y} size={SIZE} color={color} />;
-   }
-
-   if (xCoord === undefined || yCoord === undefined) return null;
-
-   const recorded = { x: xCoord, y: yCoord };
-   const { x, y } = play.typeDescKey === 'faceoff' ? nearestFaceoffDot(recorded) : boundToIce(recorded);
-
-   return <Icon className={className} x={x} y={y} size={SIZE} color={color} />;
+   return <Icon className={className} x={point.x} y={point.y} size={SIZE} color={color} />;
 };
 
 export default PlayMarker;
