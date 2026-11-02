@@ -3,7 +3,7 @@ import type { Game, GoalPlay } from '@domain/types';
 import { isGoal } from '@domain/types';
 import { gameSeconds } from '@domain/clock';
 import { runPenaltyEngine } from '@engine/penaltyEngine';
-import { opportunityTotals, powerPlayOpportunities } from '@engine/opportunities';
+import { goalSituation, opportunityTotals, powerPlayOpportunities } from '@engine/opportunities';
 import type { GoalEffect, PenaltyEngineResult, ServedPenalty, Side, StrengthInterval } from '@engine/types';
 
 const P2 = (clock: string) => gameSeconds(2, clock);
@@ -47,6 +47,29 @@ const result = (parts: Partial<PenaltyEngineResult>): PenaltyEngineResult => ({
    strengthIntervals: [],
    goals: [],
    ...parts,
+});
+
+describe('goalSituation', () => {
+   it('calls a goal by the team with more skaters a power-play goal', () => {
+      expect(goalSituation(goal({ side: 'away', strength: { away: 5, home: 4 } }))).toBe('power-play');
+      expect(goalSituation(goal({ side: 'home', strength: { away: 3, home: 5 } }))).toBe('power-play');
+   });
+
+   it('calls a goal by the team with fewer skaters shorthanded', () => {
+      expect(goalSituation(goal({ side: 'home', strength: { away: 5, home: 4 } }))).toBe('shorthanded');
+      expect(goalSituation(goal({ side: 'away', strength: { away: 3, home: 4 } }))).toBe('shorthanded');
+   });
+
+   it('gives no situation at even strength, 4v4 and 3v3 included', () => {
+      for (const skaters of [5, 4, 3]) {
+         expect(goalSituation(goal({ strength: { away: skaters, home: skaters } }))).toBeNull();
+      }
+   });
+
+   it('gives no situation to a penalty-shot goal, whatever the strength', () => {
+      expect(goalSituation(goal({ side: 'away', strength: { away: 5, home: 4 }, penaltyShot: true }))).toBeNull();
+      expect(goalSituation(goal({ side: 'home', strength: { away: 5, home: 4 }, penaltyShot: true }))).toBeNull();
+   });
 });
 
 describe('powerPlayOpportunities (NHL counting)', () => {

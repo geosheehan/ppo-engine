@@ -31,6 +31,7 @@ export function useReplay() {
       index,
       setIndex,
       plays,
+      goalEffect: result.goals.find((goal) => goal.goalEventId === play.eventId),
       snapshot: snapshotAt(result, penaltyPlays, time),
       totals: opportunityTotals(result, goalPlays, time),
       score: { away: lastGoal?.details.awayScore ?? 0, home: lastGoal?.details.homeScore ?? 0 },

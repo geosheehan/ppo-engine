@@ -29,8 +29,15 @@ const advantageOf = (strength: Strength, side: Side): number =>
 const strengthLabel = (strength: Strength, side: Side): string =>
    `${strength[side]}v${strength[otherSide(side)]}`;
 
-const isPowerPlayGoal = (goal: GoalEffect): boolean =>
-   !goal.penaltyShot && advantagedSide(goal.strength) === goal.side;
+export type GoalSituation = 'power-play' | 'shorthanded';
+
+export function goalSituation(goal: GoalEffect): GoalSituation | null {
+   const advantaged = advantagedSide(goal.strength);
+   if (goal.penaltyShot || !advantaged) return null;
+   return advantaged === goal.side ? 'power-play' : 'shorthanded';
+}
+
+const isPowerPlayGoal = (goal: GoalEffect): boolean => goalSituation(goal) === 'power-play';
 
 function powerPlayGoalTimes(result: PenaltyEngineResult, goalPlays: Map<number, GoalPlay>) {
    const times = [];

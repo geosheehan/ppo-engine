@@ -5,11 +5,18 @@ import type { Play } from '@domain/types.ts';
 import { penaltyDisplayName } from '@domain/penalties.ts';
 import { playerShortName } from '@domain/players.ts';
 import { playTypeLabel } from '@domain/plays.ts';
+import { goalSituation } from '@engine/opportunities.ts';
+import type { GoalSituation } from '@engine/opportunities.ts';
 import type { GoalEffect } from '@engine/types.ts';
 
 type CurrentPlayProps = {
    play: Play;
    goalEffect?: GoalEffect;
+};
+
+const SITUATION_LABELS: Record<GoalSituation, string> = {
+   'power-play': 'Power Play',
+   'shorthanded': 'Short Handed',
 };
 
 const periodLabel = (play: Play): string =>
@@ -18,10 +25,11 @@ const periodLabel = (play: Play): string =>
 const ownerTeamId = (play: Play): number | undefined =>
    (play.details as { eventOwnerTeamId?: number } | undefined)?.eventOwnerTeamId;
 
-function CurrentPlay({ play }: CurrentPlayProps) {
+function CurrentPlay({ play, goalEffect }: CurrentPlayProps) {
    const { teamById, playerById } = useGame();
    const teamId = ownerTeamId(play);
    const team = teamId ? teamById(teamId) : undefined;
+   const situation = goalEffect ? goalSituation(goalEffect) : null;
 
    let detail: string | undefined;
    if (isPenalty(play)) {
@@ -37,6 +45,7 @@ function CurrentPlay({ play }: CurrentPlayProps) {
          <div className="current-play__when">{periodLabel(play)} {play.timeInPeriod}</div>
          <div className="current-play__what">
             {team && <span className="current-play__team">{team.abbrev}</span>}
+            {situation && `${SITUATION_LABELS[situation]} `}
             {playTypeLabel(play.typeDescKey)}
          </div>
          <div className="current-play__detail">{detail}</div>
