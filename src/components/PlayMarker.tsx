@@ -29,7 +29,7 @@ const ICONS: Record<string, ComponentType<IconProps>> = {
 };
 
 // Icon width on the rink, in feet.
-const SIZE = 5;
+export const MARKER_SIZE = 5;
 
 const STOPPAGE_COLOR = '#000000';
 
@@ -66,7 +66,7 @@ function PlayMarker({ play, locatedBy, className }: PlayMarkerProps) {
       point = play.typeDescKey === 'faceoff' ? nearestFaceoffDot(recorded) : boundToIce(recorded);
    }
 
-   return <Icon className={className} x={point.x} y={point.y} size={SIZE} color={color} />;
+   return <Icon className={className} x={point.x} y={point.y} size={MARKER_SIZE} color={color} />;
 };
 
 export default PlayMarker;

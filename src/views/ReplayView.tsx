@@ -23,6 +23,7 @@ function ReplayView() {
    // goal. Show the strength it was scored at until the next play.
    const liveStrength = goalEffect?.strength ?? snapshot.strength;
    const scoringSide =isGoal(play) ? (play.details.eventOwnerTeamId === game.homeTeam.id ? 'home' : 'away') : undefined;
+   const shotLocated = isGoal(play) && play.details.xCoord !== undefined && play.details.yCoord !== undefined;
 
    return (
       <section className="replay" style={endColors}>
@@ -33,8 +34,11 @@ function ReplayView() {
          </header>
          <PlayParticipants play={play} sides={sides} />
          <Rink className="replay__rink">
-            <ShotLine play={play} homeOnLeft={homeOnLeft} />
-            <PlayMarker play={play} locatedBy={calledPenalty}className="replay__icon" />
+            {shotLocated ? (
+               <ShotLine key={play.eventId} play={play} homeOnLeft={homeOnLeft} className="replay__icon" />
+            ) : (
+               <PlayMarker play={play} locatedBy={calledPenalty}className="replay__icon" />
+            )}
          </Rink>
          <div className="replay__clocks">
             {sides.map((side, i) => (
