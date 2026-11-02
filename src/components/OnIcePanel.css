@@ -29,6 +29,24 @@
    }
 }
 
+.on-ice__arrival {
+   border-radius: 6px;
+   animation: on-ice-arrival 1.6s ease-out;
+}
+
+@keyframes on-ice-arrival {
+   0%,
+   20% {
+      background: color-mix(in srgb, var(--team-color) 60%, transparent);
+      box-shadow: 0 0 0 2px var(--text-h);
+   }
+
+   100% {
+      background: transparent;
+      box-shadow: 0 0 0 2px transparent;
+   }
+}
+
 .on-ice__empty-net {
    display: grid;
    place-items: center;

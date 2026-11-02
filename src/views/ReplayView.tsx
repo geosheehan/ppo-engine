@@ -55,7 +55,7 @@ function ReplayView() {
          <PlayParticipants play={lineChange ? undefined : play} lineChange={changedPlayers} sides={sides} />
          <div className="replay__stage">
             <div className="replay__ice">
-               <OnIcePanel side={left} onIce={onIce} position="left" />
+               <OnIcePanel key={left} side={left} onIce={onIce} position="left" />
                <div className="replay__center">
                   <Rink className="replay__rink">
                      {!lineChange && (shotLocated ? (
@@ -70,7 +70,7 @@ function ReplayView() {
                      ))}
                   </div>
                </div>
-               <OnIcePanel side={right} onIce={onIce} position="right" />
+               <OnIcePanel key={right} side={right} onIce={onIce} position="right" />
             </div>
          </div>
          <ReplayControls index={index} time={time} plays={plays} steps={steps} stepIndex={stepIndex} onChange={setIndex} />

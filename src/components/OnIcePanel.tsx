@@ -1,4 +1,6 @@
 import '@components/OnIcePanel.css';
+import { useState } from 'react';
+import type { CSSProperties } from 'react';
 import { useGame } from '@context/GameContext.tsx';
 import type { TimedShift } from '@domain/onIce.ts';
 import type { Player } from '@domain/types.ts';
@@ -19,7 +21,7 @@ const byPosition = (a: Player, b: Player): number =>
 const isGoalie = (player: Player): boolean => player.positionCode === 'G';
 
 function OnIcePanel({ side, onIce, position }: OnIcePanelProps) {
-   const { playerById, teamByHomeOrAway } = useGame();
+   const { playerById, teamByHomeOrAway, teamColor } = useGame();
    const team = teamByHomeOrAway(side);
 
    const players = onIce
@@ -29,14 +31,26 @@ function OnIcePanel({ side, onIce, position }: OnIcePanelProps) {
    const skaters = players.filter((player) => !isGoalie(player));
    const goalies = players.filter(isGoalie);
 
+   const ids = players.map(({ playerId }) => playerId);
+   const [previousIds, setPreviousIds] = useState(ids);
+   const [arrivals, setArrivals] = useState<number[]>([]);
+   if (ids.join() !== previousIds.join()) {
+      setPreviousIds(ids);
+      setArrivals(ids.filter((id) => !previousIds.includes(id)));
+   }
+
    const card = (player: Player) => (
-      <li key={player.playerId}>
+      <li key={player.playerId} className={arrivals.includes(player.playerId) ? 'on-ice__arrival' : undefined}>
          <PlayerCard player={player} team={team} mirrored={position === 'left'} />
       </li>
    );
 
    return (
-      <div className={`on-ice on-ice--${position}`} aria-label={`${team.abbrev} on the ice`}>
+      <div
+         className={`on-ice on-ice--${position}`}
+         aria-label={`${team.abbrev} on the ice`}
+         style={{ '--team-color': teamColor(team.id) } as CSSProperties}
+      >
          <ol className="on-ice__column">{skaters.map(card)}</ol>
          <ol className="on-ice__column">
             {goalies.map(card)}
