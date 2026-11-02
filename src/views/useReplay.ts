@@ -3,7 +3,7 @@ import { useGame } from '@context/GameContext.tsx';
 import { onIceAt } from '@domain/onIce.ts';
 import { delayedPenaltyCall } from '@domain/plays.ts';
 import type { ReplayPosition } from '@domain/playback.ts';
-import { replaySteps, stepIndexAt, teamsYetToChange } from '@domain/steps.ts';
+import { lineChangeAt, replaySteps, stepIndexAt, teamsYetToChange } from '@domain/steps.ts';
 import { isGoal, isPenalty } from '@domain/types.ts';
 import { homeDefendingSides } from '@engine/defendingSide.ts';
 import { byGameOrder, playTime, runPenaltyEngine } from '@engine/penaltyEngine.ts';
@@ -34,6 +34,7 @@ export function useReplay() {
    );
 
    const stepIndex = stepIndexAt(steps, position);
+   const { changedTeamId } = steps[stepIndex];
    const lastGoal = plays.slice(0, index + 1).findLast(isGoal);
    const homeOnLeft = defendingSides.get(play.periodDescriptor.number) === 'left';
 
@@ -45,7 +46,8 @@ export function useReplay() {
       plays,
       steps,
       stepIndex,
-      changedTeamId: steps[stepIndex].changedTeamId,
+      changedTeamId,
+      lineChange: changedTeamId ? lineChangeAt(shifts, changedTeamId, steps[stepIndex].time) : undefined,
       calledPenalty: play.typeDescKey === 'delayed-penalty' ? delayedPenaltyCall(plays, index) : undefined,
       goalEffect:result.goals.find((goal) => goal.goalEventId === play.eventId),
       snapshot: snapshotAt(result, penaltyPlays, time),

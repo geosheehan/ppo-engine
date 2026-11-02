@@ -25,6 +25,7 @@ function ReplayView() {
       steps,
       stepIndex,
       changedTeamId,
+      lineChange: changedPlayers,
       calledPenalty,
       goalEffect,
       snapshot,
@@ -51,11 +52,11 @@ function ReplayView() {
             <Scoreboard play={play} time={time} score={score} homeOnLeft={homeOnLeft} scoringSide={scoringSide} />
             <CurrentPlay play={play} goalEffect={goalEffect} changedTeamId={changedTeamId} />
          </header>
+         <PlayParticipants play={lineChange ? undefined : play} lineChange={changedPlayers} sides={sides} />
          <div className="replay__stage">
             <div className="replay__ice">
                <OnIcePanel side={left} onIce={onIce} position="left" />
                <div className="replay__center">
-                  <PlayParticipants play={lineChange ? undefined : play} sides={sides} />
                   <Rink className="replay__rink">
                      {!lineChange && (shotLocated ? (
                         <ShotLine key={play.eventId} play={play} homeOnLeft={homeOnLeft} className="replay__icon" />

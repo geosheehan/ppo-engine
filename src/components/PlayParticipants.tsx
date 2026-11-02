@@ -1,28 +1,46 @@
 import '@components/PlayParticipants.css';
 import { useGame } from '@context/GameContext.tsx';
 import { layoutParticipants } from '@domain/participantLayout.ts';
+import type { ParticipantLayout } from '@domain/participantLayout.ts';
 import { playParticipants } from '@domain/participants.ts';
+import type { LineChange } from '@domain/steps.ts';
 import type { Play, Player, Team } from '@domain/types.ts';
 import type { Side } from '@engine/types.ts';
 import PlayerCard from '@components/PlayerCard.tsx';
 
 type PlayParticipantsProps = {
    play?: Play;
+   lineChange?: LineChange;
    sides: [Side, Side];
 };
 
 type Card = { field: string; role: string; player: Player; team: Team; side: Side };
 
-function PlayParticipants({ play, sides }: PlayParticipantsProps) {
+function PlayParticipants({ play, lineChange, sides }: PlayParticipantsProps) {
    const { game, playerById, teamById } = useGame();
 
-   const cards: Card[] = [];
-   for (const { field, role, playerId } of play ? playParticipants(play) : []) {
-      const player = playerById(playerId);
-      const team = player && teamById(player.teamId);
-      if (player && team) cards.push({ field, role, player, team, side: team.id === game.homeTeam.id ? 'home' : 'away' });
+   const cardsFor = (participants: { field: string; role: string; playerId: number }[]): Card[] =>
+      participants.flatMap(({ field, role, playerId }) => {
+         const player = playerById(playerId);
+         const team = player && teamById(player.teamId);
+         return player && team ? [{ field, role, player, team, side: team.id === game.homeTeam.id ? 'home' : 'away' }] : [];
+      });
+
+   let layout: ParticipantLayout<Card>;
+   if (lineChange) {
+      const changeCards = (ids: number[], role: string, mirrored: boolean) =>
+         cardsFor(ids.map((playerId) => ({ field: role, role, playerId }))).map((card) => ({ ...card, mirrored, apart: false }));
+      layout = {
+         lists: [
+            { position: 'left', cards: changeCards(lineChange.off, 'Off', true) },
+            { position: 'right', cards: changeCards(lineChange.on, 'On', false) },
+         ],
+         closeAtCenter: false,
+      };
+   } else {
+      layout = layoutParticipants(cardsFor(play ? playParticipants(play) : []), sides);
    }
-   const { lists, closeAtCenter } = layoutParticipants(cards, sides);
+   const { lists, closeAtCenter } = layout;
 
    return (
       <div className={`play-participants${closeAtCenter ? ' play-participants--close' : ''}`}>

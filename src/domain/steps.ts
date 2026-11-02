@@ -43,7 +43,19 @@ export function stepIndexAt(steps: ReplayStep[], { index, time, changedTeamId }:
    return steps.findLastIndex((step) => step.time < time || (step.time === time && step.index <= index));
 }
 
-export const teamsYetToChange = (steps: ReplayStep[], stepIndex: number): number[] =>
+export type LineChange = {
+   off: number[];
+   on: number[];
+};
+
+export function lineChangeAt(shifts: TimedShift[], teamId: number, time: number): LineChange {
+   const team = shifts.filter((shift) => shift.teamId === teamId);
+   const off = team.filter(({ end }) => end === time).map(({ playerId }) => playerId);
+   const on = team.filter(({ start }) => start === time).map(({ playerId }) => playerId);
+   return { off: off.filter((id) => !on.includes(id)), on: on.filter((id) => !off.includes(id)) };
+}
+
+export const teamsYetToChange =(steps: ReplayStep[], stepIndex: number): number[] =>
    steps
       .filter((step, i) => i > stepIndex && step.time === steps[stepIndex].time && step.changedTeamId)
       .map(({ changedTeamId }) => changedTeamId!);
