@@ -3,16 +3,14 @@ import type { ReplayPosition } from '@domain/playback';
 import type { TimedShift } from '@domain/onIce';
 import type { Play } from '@domain/types';
 
-export type ReplayStep = ReplayPosition & {
-   changedTeamIds?: number[];
-};
+export type ReplayStep = ReplayPosition;
 
 export const LINE_CHANGE = 'line-change';
 
 export const stepType = (step: ReplayStep, plays: Play[]): string =>
-   step.changedTeamIds ? LINE_CHANGE : plays[step.index].typeDescKey;
+   step.changedTeamId ? LINE_CHANGE : plays[step.index].typeDescKey;
 
-export function replaySteps(plays: Play[], shifts: TimedShift[]): ReplayStep[] {
+export function replaySteps(plays: Play[], shifts: TimedShift[], teamOrder: number[]): ReplayStep[] {
    const playSteps: ReplayStep[] = plays.map((play, index) => ({
       index,
       time: gameSeconds(play.periodDescriptor.number, play.timeInPeriod),
@@ -30,11 +28,22 @@ export function replaySteps(plays: Play[], shifts: TimedShift[]): ReplayStep[] {
    const changeSteps: ReplayStep[] = [];
    for (const [time, teamIds] of changedTeams) {
       const index = playSteps.findLastIndex((step) => step.time < time);
-      if (index !== -1) changeSteps.push({ index, time, changedTeamIds: [...teamIds] });
+      if (index === -1) continue;
+      for (const changedTeamId of [...teamIds].toSorted((a, b) => teamOrder.indexOf(a) - teamOrder.indexOf(b))) {
+         changeSteps.push({ index, time, changedTeamId });
+      }
    }
 
-   return [...playSteps, ...changeSteps].toSorted((a, b) => a.time - b.time || a.index - b.index);
+   const order = (step: ReplayStep): number => (step.changedTeamId ? teamOrder.indexOf(step.changedTeamId) : -1);
+   return [...playSteps, ...changeSteps].toSorted((a, b) => a.time - b.time || a.index - b.index || order(a) - order(b));
 }
 
-export const stepIndexAt = (steps: ReplayStep[], { index, time }: ReplayPosition): number =>
-   steps.findLastIndex((step) => step.time < time || (step.time === time && step.index <= index));
+export function stepIndexAt(steps: ReplayStep[], { index, time, changedTeamId }: ReplayPosition): number {
+   if (changedTeamId) return steps.findIndex((step) => step.time === time && step.changedTeamId === changedTeamId);
+   return steps.findLastIndex((step) => step.time < time || (step.time === time && step.index <= index));
+}
+
+export const teamsYetToChange = (steps: ReplayStep[], stepIndex: number): number[] =>
+   steps
+      .filter((step, i) => i > stepIndex && step.time === steps[stepIndex].time && step.changedTeamId)
+      .map(({ changedTeamId }) => changedTeamId!);

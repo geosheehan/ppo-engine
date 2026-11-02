@@ -21,7 +21,7 @@ type ReplayControlsProps = {
    plays: Play[];
    steps: ReplayStep[];
    stepIndex: number;
-   onChange: (index: number, time?: number) => void;
+   onChange: (index: number, time?: number, changedTeamId?: number) => void;
 };
 
 const LIVE_SPEEDS = [1, 3, 6];
@@ -34,13 +34,13 @@ function ReplayControls({ index, time, plays, steps, stepIndex, onChange }: Repl
    const lastStep = steps.length - 1;
    const [autoPlay, setAutoPlay] = useState(false);
    const playing = autoPlay && stepIndex < lastStep;
-   const goTo = (i: number) => onChange(steps[i].index, steps[i].time);
+   const goTo = (i: number) => onChange(steps[i].index, steps[i].time, steps[i].changedTeamId);
 
    const [playback, setPlayback] = useState(`live-${LIVE_SPEEDS[0]}`);
    const [mode, amount] = playback.split('-');
    const live = mode === 'live';
 
-   const isGoalStep = (step: ReplayStep): boolean => !step.changedTeamIds && isGoal(plays[step.index]);
+   const isGoalStep = (step: ReplayStep): boolean => !step.changedTeamId && isGoal(plays[step.index]);
    const hold = (step: ReplayStep): number => (isGoalStep(step) ? GOAL_HOLD : 1);
    const totalHolds = steps.slice(0, lastStep).reduce((sum, step) => sum + hold(step), 0);
    const scaledDelay = ((Number(amount) * 60 * 1000) / Math.max(totalHolds, 1)) * hold(steps[stepIndex]);
@@ -56,7 +56,7 @@ function ReplayControls({ index, time, plays, steps, stepIndex, onChange }: Repl
    useEffect(() => {
       if (!playing || live) return;
       const next = steps[stepIndex + 1];
-      const timer = setTimeout(() => onChange(next.index, next.time), delay);
+      const timer = setTimeout(() => onChange(next.index, next.time, next.changedTeamId), delay);
       return () => clearTimeout(timer);
    }, [playing, live, steps, stepIndex, onChange, delay]);
 

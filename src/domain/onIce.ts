@@ -23,9 +23,10 @@ export const timedShifts = (shifts: Shift[]): TimedShift[] =>
 
 // Changes happen in the same second as the whistle, so a play at the moment it happens shows the players who were
 // on when it happened, and a faceoff shows the players who came on for it.
-export function onIceAt(shifts: TimedShift[], play: Play, time: number): TimedShift[] {
+export function onIceAt(shifts: TimedShift[], play: Play, time: number, teamsYetToChange: number[] = []): TimedShift[] {
    const playAt = gameSeconds(play.periodDescriptor.number, play.timeInPeriod);
    const atWhistle = time === playAt && !RESTARTS.includes(play.typeDescKey);
-   const onIce = shifts.filter(({ start, end }) => (atWhistle ? start < time && time <= end : start <= time && time < end));
+   const onIce = shifts.filter(({ teamId, start, end }) =>
+      atWhistle || teamsYetToChange.includes(teamId) ? start < time && time <= end : start <= time && time < end);
    return onIce.filter((shift, i) => onIce.findIndex(({ playerId }) => playerId === shift.playerId) === i);
 }

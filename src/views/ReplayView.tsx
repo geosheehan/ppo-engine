@@ -24,7 +24,7 @@ function ReplayView() {
       plays,
       steps,
       stepIndex,
-      changedTeamIds,
+      changedTeamId,
       calledPenalty,
       goalEffect,
       snapshot,
@@ -34,7 +34,7 @@ function ReplayView() {
       homeOnLeft,
       sides,
    } = useReplay();
-   const lineChange = changedTeamIds !== undefined;
+   const lineChange = changedTeamId !== undefined;
 
    const [left, right] = sides;
    const endColors = { '--left-end-color': colors[left], '--right-end-color': colors[right] } as CSSProperties;
@@ -49,7 +49,7 @@ function ReplayView() {
          <title>{`${game.awayTeam.abbrev} @ ${game.homeTeam.abbrev}`}</title>
          <header className="replay__header">
             <Scoreboard play={play} time={time} score={score} homeOnLeft={homeOnLeft} scoringSide={scoringSide} />
-            <CurrentPlay play={play} goalEffect={goalEffect} changedTeamIds={changedTeamIds} />
+            <CurrentPlay play={play} goalEffect={goalEffect} changedTeamId={changedTeamId} />
          </header>
          <div className="replay__stage">
             <div className="replay__ice">

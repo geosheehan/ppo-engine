@@ -14,7 +14,7 @@ import type { GoalEffect } from '@engine/types.ts';
 type CurrentPlayProps = {
    play: Play;
    goalEffect?: GoalEffect;
-   changedTeamIds?: number[];
+   changedTeamId?: number;
 };
 
 const SITUATION_LABELS: Record<GoalSituation, string> = {
@@ -25,14 +25,14 @@ const SITUATION_LABELS: Record<GoalSituation, string> = {
 const ownerTeamId = (play: Play): number | undefined =>
    (play.details as { eventOwnerTeamId?: number } | undefined)?.eventOwnerTeamId;
 
-function CurrentPlay({ play, goalEffect, changedTeamIds }: CurrentPlayProps) {
+function CurrentPlay({ play, goalEffect, changedTeamId }: CurrentPlayProps) {
    const { playerById } = useGame();
 
-   if (changedTeamIds) {
+   if (changedTeamId) {
       return (
          <div className="current-play">
             <div className="current-play__what">
-               {changedTeamIds.map((teamId) => <TeamChip key={teamId} teamId={teamId} />)}
+               <TeamChip teamId={changedTeamId} />
                {playTypeLabel(LINE_CHANGE)}
             </div>
             <div className="current-play__detail" />

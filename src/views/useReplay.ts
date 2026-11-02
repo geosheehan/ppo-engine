@@ -3,7 +3,7 @@ import { useGame } from '@context/GameContext.tsx';
 import { onIceAt } from '@domain/onIce.ts';
 import { delayedPenaltyCall } from '@domain/plays.ts';
 import type { ReplayPosition } from '@domain/playback.ts';
-import { replaySteps, stepIndexAt } from '@domain/steps.ts';
+import { replaySteps, stepIndexAt, teamsYetToChange } from '@domain/steps.ts';
 import { isGoal, isPenalty } from '@domain/types.ts';
 import { homeDefendingSides } from '@engine/defendingSide.ts';
 import { byGameOrder, playTime, runPenaltyEngine } from '@engine/penaltyEngine.ts';
@@ -21,7 +21,7 @@ export function useReplay() {
    const penaltyPlays = useMemo(() => new Map(plays.filter(isPenalty).map((play) => [play.eventId, play])), [plays]);
    const goalPlays = useMemo(() => new Map(plays.filter(isGoal).map((play) => [play.eventId, play])), [plays]);
    const defendingSides = useMemo(() => homeDefendingSides(game), [game]);
-   const steps = useMemo(() => replaySteps(plays, shifts), [plays, shifts]);
+   const steps = useMemo(() => replaySteps(plays, shifts, [game.awayTeam.id, game.homeTeam.id]), [plays, shifts, game]);
 
    // The only replay state: which play we're on, and the game time. Between plays a live replay runs the clock on
    // from the play's time toward the next one. Everything below is derived from it.
@@ -29,7 +29,7 @@ export function useReplay() {
    const { index, time } = position;
    const play = plays[index];
    const setIndex = useCallback(
-      (index: number, time = playTime(plays[index])) => setPosition({ index, time }),
+      (index: number, time = playTime(plays[index]), changedTeamId?: number) => setPosition({ index, time, changedTeamId }),
       [plays],
    );
 
@@ -45,11 +45,11 @@ export function useReplay() {
       plays,
       steps,
       stepIndex,
-      changedTeamIds: steps[stepIndex].changedTeamIds,
+      changedTeamId: steps[stepIndex].changedTeamId,
       calledPenalty: play.typeDescKey === 'delayed-penalty' ? delayedPenaltyCall(plays, index) : undefined,
       goalEffect:result.goals.find((goal) => goal.goalEventId === play.eventId),
       snapshot: snapshotAt(result, penaltyPlays, time),
-      onIce: onIceAt(shifts, play, time),
+      onIce: onIceAt(shifts, play, time, teamsYetToChange(steps, stepIndex)),
       totals: opportunityTotals(result, goalPlays, time),
       score: { away: lastGoal?.details.awayScore ?? 0, home: lastGoal?.details.homeScore ?? 0 },
       homeOnLeft,

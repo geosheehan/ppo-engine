@@ -5,6 +5,7 @@ import type { Play } from '@domain/types';
 export type ReplayPosition = {
    index: number;
    time: number;
+   changedTeamId?: number;
 };
 
 const SAME_SECOND_HOLD_MS = 3000;
