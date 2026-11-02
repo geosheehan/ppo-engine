@@ -1,0 +1,7 @@
+.team-chip {
+   padding: 0 0.3em;
+   line-height: 1.15;
+   border: 1px solid var(--text-h);
+   background: var(--chip-color);
+   color: var(--chip-text-color);
+}

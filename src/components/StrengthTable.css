@@ -59,13 +59,6 @@
    }
 }
 
-.strength-table__team {
-   padding: 2px 6px;
-   border: 1px solid var(--text-h);
-   background: var(--team-color);
-   color: var(--team-text-color);
-}
-
 .strength-table .strength-table__live {
    box-shadow: inset 1px 0 var(--text-h), inset -1px 0 var(--text-h);
    background: var(--team-color);

@@ -1,5 +1,6 @@
 import '@components/CurrentPlay.css';
 import { useGame } from '@context/GameContext.tsx';
+import TeamChip from '@components/TeamChip.tsx';
 import { isGoal, isPenalty } from '@domain/types.ts';
 import type { Play } from '@domain/types.ts';
 import { penaltyDisplayName } from '@domain/penalties.ts';
@@ -19,16 +20,12 @@ const SITUATION_LABELS: Record<GoalSituation, string> = {
    'shorthanded': 'Short Handed',
 };
 
-const periodLabel = (play: Play): string =>
-   play.periodDescriptor.periodType === 'REG' ? `P${play.periodDescriptor.number}` : play.periodDescriptor.periodType;
-
 const ownerTeamId = (play: Play): number | undefined =>
    (play.details as { eventOwnerTeamId?: number } | undefined)?.eventOwnerTeamId;
 
 function CurrentPlay({ play, goalEffect }: CurrentPlayProps) {
-   const { teamById, playerById } = useGame();
+   const { playerById } = useGame();
    const teamId = ownerTeamId(play);
-   const team = teamId ? teamById(teamId) : undefined;
    const situation = goalEffect ? goalSituation(goalEffect) : null;
 
    let detail: string | undefined;
@@ -42,9 +39,8 @@ function CurrentPlay({ play, goalEffect }: CurrentPlayProps) {
 
    return (
       <div className="current-play">
-         <div className="current-play__when">{periodLabel(play)} {play.timeInPeriod}</div>
          <div className="current-play__what">
-            {team && <span className="current-play__team">{team.abbrev}</span>}
+            {teamId && <TeamChip teamId={teamId} />}
             {situation && `${SITUATION_LABELS[situation]} `}
             {playTypeLabel(play.typeDescKey)}
          </div>

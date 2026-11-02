@@ -3,6 +3,7 @@ import type { CSSProperties } from 'react';
 import { useGame } from '@context/GameContext.tsx';
 import { secondsToClock } from '@domain/clock.ts';
 import { textColorOn } from '@domain/colors.ts';
+import TeamChip from '@components/TeamChip.tsx';
 import type { OpportunityTotal } from '@engine/opportunities.ts';
 import type { Side, Strength } from '@engine/types.ts';
 
@@ -40,7 +41,7 @@ function StrengthTable({ side, totals, strength, position }: StrengthTableProps)
             style={{ '--team-color': colors[side], '--team-text-color': textColorOn(colors[side]) } as CSSProperties}
          >
             <caption>
-               <span className="strength-table__team">{teamByHomeOrAway(side).abbrev.toUpperCase()}</span> POWER PLAYS
+               <TeamChip teamId={teamByHomeOrAway(side).id} /> POWER PLAYS
             </caption>
             <thead>
                <tr>

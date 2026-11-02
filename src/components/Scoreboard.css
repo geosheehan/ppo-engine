@@ -7,16 +7,25 @@
 
 .scoreboard__score {
    display: flex;
-   align-items: baseline;
+   align-items: center;
    gap: 16px;
-   font-size: 28px;
+   font-size: 24px;
+   line-height: 1.2;
    color: var(--text-h);
    font-variant-numeric: tabular-nums;
 
    strong {
-      font-size: 44px;
+      font-size: 36px;
       font-weight: 500;
+      line-height: 1;
    }
+}
+
+.scoreboard__clock {
+   min-width: 5.5em;
+   font-size: 16px;
+   color: var(--text);
+   text-align: center;
 }
 
 .scoreboard__pop {
@@ -32,8 +41,4 @@
    25% {
       scale: 1.4;
    }
-}
-
-.scoreboard__dash {
-   color: var(--text);
 }

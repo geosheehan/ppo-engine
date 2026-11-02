@@ -7,14 +7,11 @@
    row-gap: 2px;
 }
 
-.current-play__when {
-   font-variant-numeric: tabular-nums;
-}
-
 .current-play__what {
    display: flex;
    align-items: center;
    gap: 12px;
+   min-height: 1.25em;
    font-size: 24px;
    color: var(--text-h);
 }
@@ -22,10 +19,6 @@
 .current-play__detail {
    flex-basis: 100%;
    min-height: 1lh;
-}
-
-.current-play__team {
-   font-weight: 500;
 }
 
 .current-play__effects {

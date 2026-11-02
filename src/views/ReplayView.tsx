@@ -2,7 +2,6 @@ import '@views/ReplayView.css';
 import type { CSSProperties } from 'react';
 import { useGame } from '@context/GameContext.tsx';
 import { isGoal } from '@domain/types.ts';
-import type { Team } from '@domain/types.ts';
 import { useReplay } from '@views/useReplay.ts';
 import CurrentPlay from '@components/CurrentPlay.tsx';
 import PenaltyClocks from '@components/PenaltyClocks.tsx';
@@ -13,8 +12,6 @@ import Rink from '@components/Rink.tsx';
 import Scoreboard from '@components/Scoreboard.tsx';
 import ShotLine from '@components/ShotLine.tsx';
 import StrengthTable from '@components/StrengthTable.tsx';
-
-const teamFullName = (team: Team): string => `${team.placeName.default} ${team.commonName.default}`.toUpperCase();
 
 function ReplayView() {
    const { game, colors } = useGame();
@@ -29,9 +26,11 @@ function ReplayView() {
 
    return (
       <section className="replay" style={endColors}>
-         <span className="replay__title">{teamFullName(game.awayTeam)} @ {teamFullName(game.homeTeam)}</span>
-         <Scoreboard score={score} homeOnLeft={homeOnLeft} scoringSide={scoringSide} />
-         <CurrentPlay play={play} goalEffect={goalEffect} />
+         <title>{`${game.awayTeam.abbrev} @ ${game.homeTeam.abbrev}`}</title>
+         <header className="replay__header">
+            <Scoreboard play={play} score={score} homeOnLeft={homeOnLeft} scoringSide={scoringSide} />
+            <CurrentPlay play={play} goalEffect={goalEffect} />
+         </header>
          <PlayParticipants play={play} sides={sides} />
          <Rink className="replay__rink">
             <ShotLine play={play} homeOnLeft={homeOnLeft} />

@@ -17,7 +17,10 @@ export const EVENT_TYPES: string[] = [
    'takeaway',
 ];
 
-export const playTypeLabel = (typeDescKey: string): string => {
+export const periodLabel = (play: Play): string =>
+   play.periodDescriptor.periodType === 'REG' ? `P${play.periodDescriptor.number}` : play.periodDescriptor.periodType;
+
+export const playTypeLabel =(typeDescKey: string): string => {
    const words = typeDescKey.replaceAll('-', ' ');
    return words.charAt(0).toUpperCase() + words.slice(1);
 };

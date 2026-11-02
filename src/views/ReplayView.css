@@ -12,11 +12,10 @@
    }
 }
 
-.replay__title {
-   margin-bottom: 0;
-   font-size: 13px;
-   line-height: 1.2;
-   letter-spacing: 0.5px;
+.replay__header {
+   display: flex;
+   flex-direction: column;
+   gap: 6px;
 }
 
 .replay__rink {
