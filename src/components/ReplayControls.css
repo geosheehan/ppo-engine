@@ -24,10 +24,36 @@
    }
 }
 
-.replay-controls__row {
+.replay-controls__bar {
+   display: flex;
+   flex-wrap: wrap;
+   justify-content: center;
+   align-items: center;
+   gap: 8px 32px;
+}
+
+.replay-controls__group {
    display: flex;
    align-items: center;
-   gap: 12px;
+   gap: 4px;
+}
+
+.replay-controls button,
+.replay-controls select {
+   height: 32px;
+   padding-block: 0;
+}
+
+.replay-controls button {
+   display: grid;
+   place-items: center;
+   padding-inline: 8px;
+}
+
+.replay-controls .replay-controls__play {
+   padding-inline: 16px;
+   background: var(--text-h);
+   color: var(--bg);
 }
 
 .replay-controls__track {
@@ -92,7 +118,6 @@
 }
 
 .replay-controls__position {
-   min-width: 9em;
-   text-align: right;
+   min-width: 6.5em;
    font-variant-numeric: tabular-nums;
 }
