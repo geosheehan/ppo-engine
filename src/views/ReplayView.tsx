@@ -44,8 +44,14 @@ function ReplayView() {
          </div>
          <ReplayControls index={index} plays={plays} onChange={setIndex} />
          <div className="replay__clocks">
-            {sides.map((side) => (
-               <StrengthTable key={side} side={side} totals={totals[side]} strength={liveStrength} />
+            {sides.map((side, i) => (
+               <StrengthTable
+                  key={side}
+                  side={side}
+                  totals={totals[side]}
+                  strength={liveStrength}
+                  position={i === 0 ? 'left' : 'right'}
+               />
             ))}
          </div>
       </section>

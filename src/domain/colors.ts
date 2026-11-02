@@ -33,3 +33,5 @@ export function matchupColors(home: string[], away: string[]): { home: string; a
    if (away2) return { home: home1, away: away2 };
    return { home: home2 ?? home1, away: away1 };
 }
+
+export const textColorOn = (background: string): string => (toOklab(background)[0] > 0.62 ? '#000000' : '#ffffff');

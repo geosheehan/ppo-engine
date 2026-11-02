@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { areSimilar, matchupColors } from '@domain/colors';
+import { areSimilar, matchupColors, textColorOn } from '@domain/colors';
 
 const RED = '#C8102E';
 const NAVY = '#00205B';
@@ -46,5 +46,19 @@ describe('matchupColors', () => {
 
    it('keeps both firsts when neither team has a second', () => {
       expect(matchupColors([NAVY], [ROYAL])).toEqual({ home: NAVY, away: ROYAL });
+   });
+});
+
+describe('textColorOn', () => {
+   it('puts white text on dark team colors', () => {
+      expect(textColorOn(NAVY)).toBe('#ffffff');
+      expect(textColorOn(RED)).toBe('#ffffff');
+      expect(textColorOn(GREEN)).toBe('#ffffff');
+   });
+
+   it('puts black text on light team colors', () => {
+      expect(textColorOn(GOLD)).toBe('#000000');
+      expect(textColorOn(ORANGE)).toBe('#000000');
+      expect(textColorOn('#96D8D8')).toBe('#000000');
    });
 });
