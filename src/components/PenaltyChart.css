@@ -1,0 +1,73 @@
+.penalty-chart {
+   overflow-x: auto;
+   padding: 0 24px 8px;
+}
+
+.penalty-chart__grid {
+   display: grid;
+   /* The last moment's line closes the grid, so its label sits in a zero-width column. */
+   grid-template-columns: 4rem repeat(var(--intervals), minmax(3.5rem, 1fr)) 0;
+   grid-template-rows: 1.25rem 1.5rem repeat(2, 1.75rem) 0.75rem repeat(2, 1.75rem);
+   min-width: calc(4rem + var(--intervals) * 3.5rem);
+   font-size: 13px;
+}
+
+.penalty-chart__team {
+   grid-column: 1;
+   align-self: center;
+   font-weight: 600;
+   color: var(--text-h);
+}
+
+.penalty-chart__lane {
+   grid-column: 2 / -1;
+   border-top: 1px solid var(--border);
+   border-bottom: 1px solid var(--border);
+}
+
+.penalty-chart__period-break {
+   grid-row: 1 / -1;
+   justify-self: center;
+   border-left: 1px dashed var(--border);
+}
+
+.penalty-chart__period,
+.penalty-chart__time {
+   justify-self: start;
+   translate: -50% 0;
+   white-space: nowrap;
+   font-variant-numeric: tabular-nums;
+}
+
+.penalty-chart__period {
+   grid-row: 1;
+   font-weight: 600;
+   color: var(--text-h);
+}
+
+.penalty-chart__time {
+   grid-row: 2;
+}
+
+.penalty-chart__box {
+   z-index: 1;
+   margin: 3px 1px;
+   padding: 0 6px;
+   border: 1px solid var(--team-color);
+   border-radius: 4px;
+   background: color-mix(in srgb, var(--team-color) 40%, transparent);
+   color: var(--text-h);
+   line-height: calc(1.75rem - 8px);
+   overflow: hidden;
+   white-space: nowrap;
+   text-overflow: ellipsis;
+}
+
+.penalty-chart__box--coincidental {
+   border-style: dashed;
+   background: color-mix(in srgb, var(--team-color) 15%, transparent);
+}
+
+.penalty-chart__box--goal {
+   border-right-width: 3px;
+}
