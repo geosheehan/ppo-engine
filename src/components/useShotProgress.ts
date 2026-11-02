@@ -5,6 +5,10 @@ const LEAD_MS = 400;
 const TRAVEL_MS = 700;
 const HOLD_MS = 1000;
 const LOOP_MS = LEAD_MS + TRAVEL_MS + HOLD_MS;
+const LOOPS_MS = LOOPS * LOOP_MS;
+const REST_MS = 1000;
+
+export const SHOT_ANIMATION_MS = LOOPS_MS + REST_MS;
 
 const easeOut = (t: number): number => 1 - (1 - t) ** 3;
 
@@ -20,7 +24,7 @@ export function useShotProgress(): number {
       const tick = (now: number) => {
          start ??= now;
          const elapsed = now - start;
-         if (elapsed >= LOOPS * LOOP_MS) {
+         if (elapsed >= LOOPS_MS) {
             setProgress(0);
             return;
          }

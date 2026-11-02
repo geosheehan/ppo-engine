@@ -7,6 +7,7 @@ import PlayIcon from '@components/replay-icons/PlayIcon.tsx';
 import PauseIcon from '@components/replay-icons/PauseIcon.tsx';
 import NextIcon from '@components/replay-icons/NextIcon.tsx';
 import EndIcon from '@components/replay-icons/EndIcon.tsx';
+import { SHOT_ANIMATION_MS } from '@components/useShotProgress.ts';
 import { EVENT_TYPES, playTypeLabel } from '@domain/plays.ts';
 import { isGoal } from '@domain/types.ts';
 import type { Play } from '@domain/types.ts';
@@ -29,7 +30,8 @@ function ReplayControls({ index, plays, onChange }: ReplayControlsProps) {
 
    const [replayMinutes, setReplayMinutes] = useState(REPLAY_MINUTES[0]);
    const totalHolds = plays.slice(0, last).reduce((sum, play) => sum + hold(play), 0);
-   const delay = ((replayMinutes * 60 * 1000) / Math.max(totalHolds, 1)) * hold(plays[index]);
+   const scaledDelay = ((replayMinutes * 60 * 1000) / Math.max(totalHolds, 1)) * hold(plays[index]);
+   const delay = isGoal(plays[index]) ? Math.max(scaledDelay, SHOT_ANIMATION_MS) : scaledDelay;
 
    const goalIndexes = plays.flatMap((play, i) => (isGoal(play) ? [i] : []));
 
