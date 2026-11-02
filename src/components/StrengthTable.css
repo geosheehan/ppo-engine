@@ -67,24 +67,25 @@
 }
 
 .strength-table .strength-table__live {
-   border-inline: 1px solid var(--text-h);
+   box-shadow: inset 1px 0 var(--text-h), inset -1px 0 var(--text-h);
    background: var(--team-color);
    color: var(--team-text-color);
 }
 
 .strength-table thead .strength-table__live {
-   border-top: 1px solid var(--text-h);
+   box-shadow: inset 1px 0 var(--text-h), inset -1px 0 var(--text-h), inset 0 1px var(--text-h);
 }
 
 .strength-table tbody tr:last-child .strength-table__live {
-   border-bottom: 1px solid var(--text-h);
+   box-shadow: inset 1px 0 var(--text-h), inset -1px 0 var(--text-h), inset 0 -1px var(--text-h);
 }
 
-.strength-table__live--ticking {
+.strength-table__time {
    white-space: nowrap;
 }
 
-.strength-table__live--ticking::before {
+/* Every strength's time keeps an invisible dot, so lighting one up doesn't change the column widths. */
+.strength-table__time::before {
    content: '';
    display: inline-block;
    width: 6px;
@@ -92,6 +93,9 @@
    margin-right: 6px;
    vertical-align: middle;
    border-radius: 50%;
+}
+
+.strength-table__live.strength-table__time::before {
    background: var(--team-text-color);
    animation: strength-table-tick 1s ease-in-out infinite;
 }
@@ -101,7 +105,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-   .strength-table__live--ticking::before {
+   .strength-table__live.strength-table__time::before {
       animation: none;
    }
 }

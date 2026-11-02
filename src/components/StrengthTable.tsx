@@ -22,10 +22,7 @@ function StrengthTable({ side, totals, strength, position }: StrengthTableProps)
    const byLabel = new Map(totals.map((row) => [row.label, row]));
    // Only the power-play strengths have columns, so even strengths and 6v5 never light one up.
    const liveLabel = `${strength[side]}v${strength[side === 'home' ? 'away' : 'home']}`;
-   const liveClass = (label: string, ticking = false): string | undefined => {
-      if (label !== liveLabel) return undefined;
-      return ticking ? 'strength-table__live strength-table__live--ticking' : 'strength-table__live';
-   };
+   const liveClass = (label: string): string | undefined => (label === liveLabel ? 'strength-table__live' : undefined);
    const total = totals.reduce(
       (sum, row) => ({
          goals: sum.goals + row.goals,
@@ -68,7 +65,11 @@ function StrengthTable({ side, totals, strength, position }: StrengthTableProps)
                   {
                      STRENGTHS.map((label) => {
                         const row = byLabel.get(label);
-                        return <td key={label} className={liveClass(label, true)}>{row ? secondsToClock(row.seconds) : '0:00'}</td>
+                        return (
+                           <td key={label} className={`strength-table__time ${liveClass(label) ?? ''}`}>
+                              {row ? secondsToClock(row.seconds) : '0:00'}
+                           </td>
+                        );
                      })
                   }
                   <td>{secondsToClock(total.seconds)}</td>
