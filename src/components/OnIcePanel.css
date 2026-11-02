@@ -1,0 +1,26 @@
+.on-ice {
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   gap: 4px;
+   width: 160px;
+   min-height: calc(6 * 52px + 6 * 4px + 24px);
+   margin: 0;
+   padding: 0;
+   list-style: none;
+
+   @media (max-width: 768px) {
+      width: auto;
+      min-width: 0;
+   }
+}
+
+.on-ice__empty-net {
+   height: 24px;
+   box-sizing: border-box;
+   border: 1px dashed var(--border);
+   border-radius: 6px;
+   font-size: 12px;
+   line-height: 22px;
+   text-align: center;
+}

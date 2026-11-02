@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useGame } from '@context/GameContext.tsx';
+import { onIceAt } from '@domain/onIce.ts';
 import { delayedPenaltyCall } from '@domain/plays.ts';
 import type { ReplayPosition } from '@domain/playback.ts';
 import { isGoal, isPenalty } from '@domain/types.ts';
@@ -11,7 +12,7 @@ import type { Side } from '@engine/types.ts';
 
 // The state of the game at the play being replayed, and a way to move between plays.
 export function useReplay() {
-   const { game } = useGame();
+   const { game, shifts } = useGame();
 
    // Computed once per game. Nothing here changes while stepping through plays.
    const plays = useMemo(() => game.plays.toSorted(byGameOrder), [game]);
@@ -42,6 +43,7 @@ export function useReplay() {
       calledPenalty: play.typeDescKey === 'delayed-penalty' ? delayedPenaltyCall(plays, index) : undefined,
       goalEffect:result.goals.find((goal) => goal.goalEventId === play.eventId),
       snapshot: snapshotAt(result, penaltyPlays, time),
+      onIce: onIceAt(shifts, play, time),
       totals: opportunityTotals(result, goalPlays, time),
       score: { away: lastGoal?.details.awayScore ?? 0, home: lastGoal?.details.homeScore ?? 0 },
       homeOnLeft,

@@ -83,6 +83,19 @@ export type GoalPlay = Play & {
    details: GoalDetails;
 }
 
+export type Shift = {
+   playerId: number;
+   teamId: number;
+   period: number;
+   startTime: string;
+   endTime: string;
+   typeCode: number;
+};
+
+export type ShiftChart = {
+   data: Shift[];
+};
+
 export type Game = {
    season: number;
    gameType: number; 

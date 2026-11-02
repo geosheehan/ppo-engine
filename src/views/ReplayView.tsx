@@ -4,6 +4,7 @@ import { useGame } from '@context/GameContext.tsx';
 import { isGoal } from '@domain/types.ts';
 import { useReplay } from '@views/useReplay.ts';
 import CurrentPlay from '@components/CurrentPlay.tsx';
+import OnIcePanel from '@components/OnIcePanel.tsx';
 import PenaltyClocks from '@components/PenaltyClocks.tsx';
 import PlayParticipants from '@components/PlayParticipants.tsx';
 import PlayMarker from '@components/PlayMarker.tsx';
@@ -15,7 +16,7 @@ import StrengthTable from '@components/StrengthTable.tsx';
 
 function ReplayView() {
    const { game, colors } = useGame();
-   const { play, index, time, setIndex, plays, calledPenalty, goalEffect, snapshot, totals, score, homeOnLeft, sides } = useReplay();
+   const { play, index, time, setIndex, plays, calledPenalty, goalEffect, snapshot, onIce, totals, score, homeOnLeft, sides } = useReplay();
 
    const [left, right] = sides;
    const endColors = { '--left-end-color': colors[left], '--right-end-color': colors[right] } as CSSProperties;
@@ -32,18 +33,26 @@ function ReplayView() {
             <Scoreboard play={play} time={time} score={score} homeOnLeft={homeOnLeft} scoringSide={scoringSide} />
             <CurrentPlay play={play} goalEffect={goalEffect} />
          </header>
-         <PlayParticipants play={play} sides={sides} />
-         <Rink className="replay__rink">
-            {shotLocated ? (
-               <ShotLine key={play.eventId} play={play} homeOnLeft={homeOnLeft} className="replay__icon" />
-            ) : (
-               <PlayMarker play={play} locatedBy={calledPenalty}className="replay__icon" />
-            )}
-         </Rink>
-         <div className="replay__clocks">
-            {sides.map((side, i) => (
-               <PenaltyClocks key={side} side={side} onClock={snapshot.onClock} position={i === 0 ? 'left' : 'right'} />
-            ))}
+         <div className="replay__stage">
+            <div className="replay__ice">
+               <OnIcePanel side={left} onIce={onIce} position="left" />
+               <div className="replay__center">
+                  <PlayParticipants play={play} sides={sides} />
+                  <Rink className="replay__rink">
+                     {shotLocated ? (
+                        <ShotLine key={play.eventId} play={play} homeOnLeft={homeOnLeft} className="replay__icon" />
+                     ) : (
+                        <PlayMarker play={play} locatedBy={calledPenalty}className="replay__icon" />
+                     )}
+                  </Rink>
+                  <div className="replay__clocks">
+                     {sides.map((side, i) => (
+                        <PenaltyClocks key={side} side={side} onClock={snapshot.onClock} position={i === 0 ? 'left' : 'right'} />
+                     ))}
+                  </div>
+               </div>
+               <OnIcePanel side={right} onIce={onIce} position="right" />
+            </div>
          </div>
          <ReplayControls index={index} time={time} plays={plays} onChange={setIndex} />
          <div className="replay__clocks">
