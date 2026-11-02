@@ -72,6 +72,17 @@ function Rink({ className, children }: RinkProps) {
          <rect x={-101} y={-43.5} width={202} height={87} rx={29} ry={29} fill="#1a1a1a" />
          {/* Ice */}
          <rect x={-100} y={-42.5} width={200} height={85} rx={28} ry={28} fill="#ffffff" />
+         {/* Frame around the team-color ends, inset so the edge of the viewBox doesn't clip half the stroke */}
+         <rect
+            x={-100.75}
+            y={-43.25}
+            width={201.5}
+            height={86.5}
+            fill="none"
+            style={{ stroke: 'var(--text-h)' }}
+            strokeWidth={1}
+            vectorEffect="non-scaling-stroke"
+         />
 
          <g clipPath={`url(#${iceId})`}>
             {/* Center red line (12 in) */}
