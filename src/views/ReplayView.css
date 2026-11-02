@@ -1,3 +1,7 @@
+#root:has(.replay) {
+   width: 100%;
+}
+
 .replay {
    display: flex;
    flex-direction: column;
@@ -20,7 +24,7 @@
 
 .replay__stage {
    flex: 1 1 0;
-   min-height: calc(6 * 52px + 6 * 4px + 24px);
+   min-height: calc(6 * 52px + 5 * 4px);
    container-type: size;
 
    @media (max-width: 768px) {
@@ -33,7 +37,7 @@
 .replay__ice {
    --rink-width: calc((100cqh - 2 * 72px - 2 * 12px) * 202 / 87);
    display: grid;
-   grid-template-columns: auto minmax(0, min(var(--rink-width), 100cqw - 2 * (160px + 16px))) auto;
+   grid-template-columns: auto minmax(0, var(--rink-width)) auto;
    grid-template-areas: 'left center right';
    justify-content: center;
    align-items: center;
