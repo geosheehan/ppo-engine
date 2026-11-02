@@ -2,11 +2,11 @@ import '@components/PenaltyChart.css';
 import { useMemo } from 'react';
 import type { CSSProperties } from 'react';
 import { useGame } from '@context/GameContext.tsx';
+import { chartMoments, momentClock, momentPeriod } from '@domain/penaltyChart.ts';
 import { penaltyDisplayName } from '@domain/penalties.ts';
 import { playerShortName } from '@domain/players.ts';
 import { runPenaltyEngine } from '@engine/penaltyEngine.ts';
 import type { PenaltyClock, Side } from '@engine/types.ts';
-import { chartMoments, momentClock, momentPeriod } from '@components/penaltyChart.ts';
 
 const SIDES: Side[] = ['away', 'home'];
 

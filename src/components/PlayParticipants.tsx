@@ -1,9 +1,9 @@
 import '@components/PlayParticipants.css';
 import { useGame } from '@context/GameContext.tsx';
+import { layoutParticipants } from '@domain/participantLayout.ts';
 import { playParticipants } from '@domain/participants.ts';
 import type { Play, Player, Team } from '@domain/types.ts';
 import type { Side } from '@engine/types.ts';
-import { layoutParticipants } from '@components/participantLayout.ts';
 import PlayerCard from '@components/PlayerCard.tsx';
 
 type PlayParticipantsProps = {

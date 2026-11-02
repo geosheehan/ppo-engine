@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { chartMoments, momentClock, momentPeriod } from '@components/penaltyChart';
+import { chartMoments, momentClock, momentPeriod } from '@domain/penaltyChart';
 import type { ServedPenalty } from '@engine/types';
 
 const served = (start: number, end: number) => ({ start, end }) as ServedPenalty;

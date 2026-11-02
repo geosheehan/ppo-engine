@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { layoutParticipants } from '@components/participantLayout';
-import type { ParticipantLayout, PlacedCard } from '@components/participantLayout';
+import { layoutParticipants } from '@domain/participantLayout';
+import type { ParticipantLayout, PlacedCard } from '@domain/participantLayout';
 import type { Side } from '@engine/types';
 
 type TestCard = { name: string; field: string; side: Side };
