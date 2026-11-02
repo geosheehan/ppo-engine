@@ -52,7 +52,12 @@
    place-items: center;
    height: 52px;
    box-sizing: border-box;
-   border: 1px dashed var(--border);
+   border: 2px dashed var(--text-h);
    border-radius: 6px;
+   background: color-mix(in srgb, var(--team-color) 35%, transparent);
+   color: var(--text-h);
    font-size: 12px;
+   font-weight: 700;
+   letter-spacing: 0.08em;
+   text-transform: uppercase;
 }

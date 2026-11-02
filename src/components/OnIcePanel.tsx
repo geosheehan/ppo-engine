@@ -2,6 +2,7 @@ import '@components/OnIcePanel.css';
 import { useState } from 'react';
 import type { CSSProperties } from 'react';
 import { useGame } from '@context/GameContext.tsx';
+import { byPosition, keepSlots } from '@domain/lineup.ts';
 import type { TimedShift } from '@domain/onIce.ts';
 import type { Player } from '@domain/types.ts';
 import type { Side } from '@engine/types.ts';
@@ -13,12 +14,9 @@ type OnIcePanelProps = {
    position: 'left' | 'right';
 };
 
-const POSITION_ORDER = ['L', 'C', 'R', 'D', 'G'];
-
-const byPosition = (a: Player, b: Player): number =>
-   POSITION_ORDER.indexOf(a.positionCode) - POSITION_ORDER.indexOf(b.positionCode) || a.sweaterNumber - b.sweaterNumber;
-
 const isGoalie = (player: Player): boolean => player.positionCode === 'G';
+
+const idsOf = (players: Player[]): string => players.map(({ playerId }) => playerId).toSorted().join();
 
 function OnIcePanel({ side, onIce, position }: OnIcePanelProps) {
    const { playerById, teamByHomeOrAway, teamColor } = useGame();
@@ -26,17 +24,17 @@ function OnIcePanel({ side, onIce, position }: OnIcePanelProps) {
 
    const players = onIce
       .filter(({ teamId }) => teamId === team.id)
-      .flatMap(({ playerId }) => playerById(playerId) ?? [])
-      .toSorted(byPosition);
-   const skaters = players.filter((player) => !isGoalie(player));
+      .flatMap(({ playerId }) => playerById(playerId) ?? []);
    const goalies = players.filter(isGoalie);
+   const onIceSkaters = players.filter((player) => !isGoalie(player));
 
-   const ids = players.map(({ playerId }) => playerId);
-   const [previousIds, setPreviousIds] = useState(ids);
+   const [skaters, setSkaters] = useState(() => onIceSkaters.toSorted(byPosition));
+   const [shown, setShown] = useState(players);
    const [arrivals, setArrivals] = useState<number[]>([]);
-   if (ids.join() !== previousIds.join()) {
-      setPreviousIds(ids);
-      setArrivals(ids.filter((id) => !previousIds.includes(id)));
+   if (idsOf(players) !== idsOf(shown)) {
+      setSkaters(keepSlots(skaters, onIceSkaters));
+      setShown(players);
+      setArrivals(players.filter((player) => !shown.includes(player)).map(({ playerId }) => playerId));
    }
 
    const card = (player: Player) => (
