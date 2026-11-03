@@ -1,3 +1,5 @@
+import { descKeyToLabel } from '@domain/labels';
+
 // Display names follow the NHL Official Rules 2026-27 (Reference Tables 2-8 and Rules 41-75).
 export const PENALTY_DISPLAY_NAMES: Record<string, string> = {
    'charging': 'Charging',
@@ -44,11 +46,10 @@ export const PENALTY_DISPLAY_NAMES: Record<string, string> = {
 //  'unsportsmanlike-conduct': 'Unsportsmanlike conduct',
 };
 
-// Unknown keys fall back to the slug in sentence case, e.g. 'some-new-penalty' -> 'Some new penalty'.
+// Unknown keys fall back to the desc key as a label.
 export function penaltyDisplayName(descKey: string): string {
     const name = PENALTY_DISPLAY_NAMES[descKey];
     if (name) return name;
     console.error(`Unknown key: ${descKey}`);
-    const words = descKey.replaceAll('-', ' ');
-    return words.charAt(0).toUpperCase() + words.slice(1);
+    return descKeyToLabel(descKey);
 }

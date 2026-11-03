@@ -1,4 +1,5 @@
 import { clockToSeconds, gameSeconds, PERIOD_SECONDS } from '@domain/clock';
+import { descKeyToLabel } from '@domain/labels';
 import { isPenalty } from '@domain/types';
 import type { PenaltyPlay, Play } from '@domain/types';
 
@@ -32,10 +33,7 @@ export const periodTimeLeft = (play: Play, time: number): number => {
    return periodLength - (time - periodStart);
 };
 
-export const playTypeLabel =(typeDescKey: string): string => {
-   const words = typeDescKey.replaceAll('-', ' ');
-   return words.charAt(0).toUpperCase() + words.slice(1);
-};
+export const playTypeLabel = (typeDescKey: string): string => descKeyToLabel(typeDescKey);
 
 // The penalty a delayed-penalty signal turned into: the first penalty by the same team after it. A faceoff
 // first means play restarted without the call, so a goal washed it out. `plays` must be in game order.
