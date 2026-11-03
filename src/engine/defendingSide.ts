@@ -1,19 +1,13 @@
 import { DEFENDING_SIDES, PLAY_TYPES, ZONE_CODES } from '@domain/constants';
-import type { Game, HomeTeamDefendingSide, Play, ZoneCode } from '@domain/types';
-
-type LocatedDetails = {
-   xCoord?: number;
-   zoneCode?: ZoneCode;
-   eventOwnerTeamId?: number;
-};
+import type { Game, HomeTeamDefendingSide, Play } from '@domain/types';
 
 const otherEnd = (side: HomeTeamDefendingSide): HomeTeamDefendingSide => (side === DEFENDING_SIDES.LEFT ? DEFENDING_SIDES.RIGHT : DEFENDING_SIDES.LEFT);
 
 // Which end the home team defends, judged from one play. Null when the play can't tell us:
 // no location, the neutral zone, or a blocked shot (owned by the blocking team, but zoned for the shooter).
 function sideFromLocation(play: Play, homeTeamId: number): HomeTeamDefendingSide | null {
-   if (play.typeDescKey === PLAY_TYPES.BLOCKED_SHOT) return null;
-   const { xCoord, zoneCode, eventOwnerTeamId } = (play.details ?? {}) as LocatedDetails;
+   if (play.typeDescKey === PLAY_TYPES.BLOCKED_SHOT || !play.details) return null;
+   const { xCoord, zoneCode, eventOwnerTeamId } = play.details;
    if (!xCoord || !eventOwnerTeamId || (zoneCode !== ZONE_CODES.OFFENSIVE && zoneCode !== ZONE_CODES.DEFENSIVE)) return null;
 
    // In its offensive zone the owner is at the far end from its own net.

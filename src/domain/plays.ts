@@ -17,7 +17,7 @@ export const periodTimeLeft = (play: Play, time: GameElapsed): number => {
 // The penalty a delayed-penalty signal turned into: the first penalty by the same team after it. A faceoff
 // first means play restarted without the call, so a goal washed it out. `plays` must be in game order.
 export function delayedPenaltyCall(plays: Play[], index: number): PenaltyPlay | undefined {
-   const teamId = (plays[index].details as { eventOwnerTeamId?: number } | undefined)?.eventOwnerTeamId;
+   const teamId = plays[index].details?.eventOwnerTeamId;
    for (let next = index + 1; next < plays.length; next++) {
       const play = plays[next];
       if (play.typeDescKey === PLAY_TYPES.FACEOFF) return undefined;

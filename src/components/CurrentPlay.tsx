@@ -21,9 +21,6 @@ const SITUATION_LABELS: Record<GoalSituation, string> = {
    'shorthanded': 'Short Handed',
 };
 
-const ownerTeamId = (play: Play): number | undefined =>
-   (play.details as { eventOwnerTeamId?: number } | undefined)?.eventOwnerTeamId;
-
 function CurrentPlay({ play, goalEffect, changedTeamId }: CurrentPlayProps) {
    const { playerById } = useGame();
 
@@ -39,7 +36,7 @@ function CurrentPlay({ play, goalEffect, changedTeamId }: CurrentPlayProps) {
       );
    }
 
-   const teamId = ownerTeamId(play);
+   const teamId = play.details?.eventOwnerTeamId;
    const situation = goalEffect ? goalSituation(goalEffect) : null;
 
    let detail: string | undefined;

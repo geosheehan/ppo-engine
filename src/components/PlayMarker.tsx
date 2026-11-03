@@ -34,19 +34,11 @@ export const MARKER_SIZE = 5;
 
 const STOPPAGE_COLOR = '#000000';
 
-type LocatedDetails = {
-   xCoord?: number;
-   yCoord?: number;
-   eventOwnerTeamId?: number;
-};
-
 type PlayMarkerProps = {
    play: Play;
    locatedBy?: Play;
    className?: string;
 };
-
-const detailsOf = (play: Play): LocatedDetails => (play.details ?? {}) as LocatedDetails;
 
 // The play's icon at its spot on the rink, or at center ice when it has no location. Draws nothing for plays
 // without an icon.
@@ -55,8 +47,10 @@ function PlayMarker({ play, locatedBy, className }: PlayMarkerProps) {
    const Icon = ICONS[play.typeDescKey];
    if (!Icon) return null;
 
-   const { eventOwnerTeamId } = detailsOf(play);
-   const { xCoord, yCoord } = detailsOf(locatedBy ?? play);
+   const eventOwnerTeamId = play.details?.eventOwnerTeamId;
+   const location = (locatedBy ?? play).details;
+   const xCoord = location?.xCoord;
+   const yCoord = location?.yCoord;
    const color = play.typeDescKey === PLAY_TYPES.STOPPAGE
       ? STOPPAGE_COLOR
       : eventOwnerTeamId ? teamColor(eventOwnerTeamId) : undefined;

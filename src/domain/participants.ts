@@ -1,5 +1,5 @@
 import { PLAY_TYPES } from '@domain/constants';
-import type { Play, PlayType } from '@domain/types';
+import type { Play } from '@domain/types';
 
 export type Participant = {
    field: string;
@@ -7,33 +7,40 @@ export type Participant = {
    playerId: number;
 };
 
-const ROLES: Partial<Record<PlayType, { field: string; role: string }[]>> = {
-   [PLAY_TYPES.FACEOFF]: [{ field: 'winningPlayerId', role: 'Won' }, { field: 'losingPlayerId', role: 'Lost' }],
-   [PLAY_TYPES.HIT]: [{ field: 'hittingPlayerId', role: 'Hitter' }, { field: 'hitteePlayerId', role: 'Hit' }],
-   [PLAY_TYPES.SHOT_ON_GOAL]: [{ field: 'shootingPlayerId', role: 'Shot' }, { field: 'goalieInNetId', role: 'Goalie' }],
-   [PLAY_TYPES.MISSED_SHOT]: [{ field: 'shootingPlayerId', role: 'Shot' }, { field: 'goalieInNetId', role: 'Goalie' }],
-   [PLAY_TYPES.BLOCKED_SHOT]: [{ field: 'shootingPlayerId', role: 'Shot' }, { field: 'blockingPlayerId', role: 'Blocked' }],
-   [PLAY_TYPES.GOAL]: [
-      { field: 'scoringPlayerId', role: 'Goal' },
-      { field: 'assist1PlayerId', role: '1st assist' },
-      { field: 'assist2PlayerId', role: '2nd assist' },
-      { field: 'goalieInNetId', role: 'Goalie' },
-   ],
-   [PLAY_TYPES.GIVEAWAY]: [{ field: 'playerId', role: 'Giveaway' }],
-   [PLAY_TYPES.TAKEAWAY]: [{ field: 'playerId', role: 'Takeaway' }],
-   [PLAY_TYPES.PENALTY]: [
-      { field: 'committedByPlayerId', role: 'Penalty' },
-      { field: 'drawnByPlayerId', role: 'Drawn by' },
-      { field: 'servedByPlayerId', role: 'Served by' },
-   ],
-};
+// The named players in a play's details, in the order given. Field names are checked against that play type's details.
+function named<D extends object>(details: D, ...roles: [field: keyof D & string, role: string][]): Participant[] {
+   return roles.flatMap(([field, role]) => {
+      const playerId = details[field];
+      return typeof playerId === 'number' ? [{ field, role, playerId }] : [];
+   });
+}
 
 export function playParticipants(play: Play): Participant[] {
-   const details = (play.details ?? {}) as Record<string, unknown>;
-   const participants: Participant[] = [];
-   for (const { field, role } of ROLES[play.typeDescKey] ?? []) {
-      const playerId = details[field];
-      if (typeof playerId === 'number') participants.push({ field, role, playerId });
+   switch (play.typeDescKey) {
+      case PLAY_TYPES.FACEOFF:
+         return named(play.details, ['winningPlayerId', 'Won'], ['losingPlayerId', 'Lost']);
+      case PLAY_TYPES.HIT:
+         return named(play.details, ['hittingPlayerId', 'Hitter'], ['hitteePlayerId', 'Hit']);
+      case PLAY_TYPES.SHOT_ON_GOAL:
+      case PLAY_TYPES.MISSED_SHOT:
+         return named(play.details, ['shootingPlayerId', 'Shot'], ['goalieInNetId', 'Goalie']);
+      case PLAY_TYPES.BLOCKED_SHOT:
+         return named(play.details, ['shootingPlayerId', 'Shot'], ['blockingPlayerId', 'Blocked']);
+      case PLAY_TYPES.GOAL:
+         return named(
+            play.details,
+            ['scoringPlayerId', 'Goal'],
+            ['assist1PlayerId', '1st assist'],
+            ['assist2PlayerId', '2nd assist'],
+            ['goalieInNetId', 'Goalie'],
+         );
+      case PLAY_TYPES.GIVEAWAY:
+         return named(play.details, ['playerId', 'Giveaway']);
+      case PLAY_TYPES.TAKEAWAY:
+         return named(play.details, ['playerId', 'Takeaway']);
+      case PLAY_TYPES.PENALTY:
+         return named(play.details, ['committedByPlayerId', 'Penalty'], ['drawnByPlayerId', 'Drawn by'], ['servedByPlayerId', 'Served by']);
+      default:
+         return [];
    }
-   return participants;
 }

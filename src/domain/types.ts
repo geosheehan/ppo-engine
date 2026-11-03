@@ -23,7 +23,7 @@ export type PeriodDescriptor = {
    maxRegulationPeriods: number;
 };
 
-export type Play = {
+type PlayBase = {
    eventId: number;
    periodDescriptor: PeriodDescriptor;
    timeInPeriod: string;
@@ -31,10 +31,103 @@ export type Play = {
    situationCode?: string;
    homeTeamDefendingSide?: HomeTeamDefendingSide;
    typeCode: number;
-   typeDescKey: PlayType;
    sortOrder: number;
-   details?: unknown;
 };
+
+type BaseDetails = {
+   eventOwnerTeamId?: number;
+   xCoord?: number;
+   yCoord?: number;
+   zoneCode?: ZoneCode;
+};
+
+type TeamOwnedDetails = BaseDetails & { eventOwnerTeamId: number };
+
+export type ShotType = 'backhand' | 'bat' | 'deflected' | 'slap'
+   | 'snap' | 'tip-in' | 'wrap-around' | 'wrist';
+
+export type FaceoffDetails = TeamOwnedDetails & {
+   winningPlayerId: number;
+   losingPlayerId: number;
+};
+
+export type HitDetails = TeamOwnedDetails & {
+   hittingPlayerId: number;
+   hitteePlayerId: number;
+};
+
+export type ShotOnGoalDetails = TeamOwnedDetails & {
+   shootingPlayerId: number;
+   goalieInNetId?: number;
+   shotType: ShotType;
+   awaySOG: number;
+   homeSOG: number;
+};
+
+export type MissedShotDetails = TeamOwnedDetails & {
+   shootingPlayerId: number;
+   goalieInNetId?: number;
+   shotType: ShotType;
+   reason: string;
+};
+
+export type BlockedShotDetails = TeamOwnedDetails & {
+   shootingPlayerId: number;
+   blockingPlayerId: number;
+   reason?: string;
+};
+
+export type TurnoverDetails = TeamOwnedDetails & {
+   playerId: number;
+};
+
+export type GoalDetails = TeamOwnedDetails & {
+   shotType: ShotType;
+   scoringPlayerId: number;
+   scoringPlayerTotal: number;
+   assist1PlayerId?: number;
+   assist1PlayerTotal?: number;
+   assist2PlayerId?: number;
+   assist2PlayerTotal?: number;
+   goalieInNetId?: number;
+   awayScore: number;
+   homeScore: number;
+   highlightClipSharingUrl?: string;
+};
+
+export type PenaltyDetails = TeamOwnedDetails & {
+   typeCode: PenaltySeverity;
+   descKey: string;
+   duration: number;
+   committedByPlayerId?: number;
+   servedByPlayerId?: number;
+   drawnByPlayerId?: number;
+};
+
+export type StoppageDetails = BaseDetails & {
+   reason: string;
+   secondaryReason?: string;
+};
+
+type PlayWith<T extends PlayType, D> = PlayBase & { typeDescKey: T; details: D };
+type PlayWithout<T extends PlayType> = PlayBase & { typeDescKey: T; details?: undefined };
+
+export type GoalPlay = PlayWith<typeof PLAY_TYPES.GOAL, GoalDetails>;
+export type PenaltyPlay = PlayWith<typeof PLAY_TYPES.PENALTY, PenaltyDetails>;
+
+export type Play =
+   | PlayWith<typeof PLAY_TYPES.BLOCKED_SHOT, BlockedShotDetails>
+   | PlayWith<typeof PLAY_TYPES.DELAYED_PENALTY, TeamOwnedDetails>
+   | PlayWith<typeof PLAY_TYPES.FACEOFF, FaceoffDetails>
+   | PlayWith<typeof PLAY_TYPES.GIVEAWAY, TurnoverDetails>
+   | GoalPlay
+   | PlayWith<typeof PLAY_TYPES.HIT, HitDetails>
+   | PlayWith<typeof PLAY_TYPES.MISSED_SHOT, MissedShotDetails>
+   | PenaltyPlay
+   | PlayWith<typeof PLAY_TYPES.SHOT_ON_GOAL, ShotOnGoalDetails>
+   | PlayWith<typeof PLAY_TYPES.STOPPAGE, StoppageDetails>
+   | PlayWith<typeof PLAY_TYPES.TAKEAWAY, TurnoverDetails>
+   | PlayWithout<typeof PLAY_TYPES.GAME_END | typeof PLAY_TYPES.PERIOD_END | typeof PLAY_TYPES.PERIOD_START>;
 
 export type Team = {
    id: number;
@@ -55,44 +148,6 @@ export type Player = {
    positionCode: PositionCode;
    headshot: string;
 };
-
-export type PenaltyDetails = {
-   typeCode: PenaltySeverity;
-   descKey: string;
-   duration: number;
-   eventOwnerTeamId: number;
-   committedByPlayerId?: number;
-   servedByPlayerId?: number;
-   drawnByPlayerId?: number;
-};
-
-export type PenaltyPlay = Play & {
-   typeDescKey: typeof PLAY_TYPES.PENALTY;
-   details: PenaltyDetails;
-}
-
-export type ShotType = 'backhand' | 'bat' | 'deflected' | 'slap'
-   | 'snap' | 'tip-in' | 'wrap-around' | 'wrist';
-
-export type GoalDetails = {
-   shotType: ShotType;
-   scoringPlayerId: number;
-   scoringPlayerTotal: number;
-   assist1PlayerId: number;
-   assist1PlayerTotal: number;
-   eventOwnerTeamId: number;
-   xCoord?: number;
-   yCoord?: number;
-   goalieInNetId: number;
-   awayScore: number;
-   homeScore: number;
-   highlightClipSharingUrl?: string;
-}
-
-export type GoalPlay = Play & {
-   typeDescKey: typeof PLAY_TYPES.GOAL;
-   details: GoalDetails;
-}
 
 export type Shift = {
    playerId: number;
