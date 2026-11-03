@@ -32,7 +32,7 @@ export type GoalEffect = {
    strength: Strength;
    penaltyShot: boolean;
    releasedPenaltyEventId?: number;
-   washedDoubleMinorId?: number;
+   washedPenaltyId?: number;
 };
 
 export type PenaltyEngineResult = {
