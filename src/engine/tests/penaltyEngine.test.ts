@@ -3,7 +3,7 @@ import type { Game } from '@domain/types';
 import { playTime } from '@domain/plays';
 import { runPenaltyEngine } from '@engine/penaltyEngine';
 
-// Every saved game, keyed by path from the project root (e.g. /src/data/games/20261028-SEAvTOR.json).
+// Every saved game, keyed by path from the project root (e.g. /src/data/games/20261028-TORvSEA.json).
 const games = import.meta.glob<Game>('@data/games/*.json', { eager: true, import: 'default' });
 
 // Plays that happen during live play. Penalty and stoppage plays at big stoppages carry
