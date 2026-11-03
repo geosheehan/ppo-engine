@@ -1,7 +1,7 @@
 import type { GoalPlay, Side } from '@domain/types';
 import { otherSide } from '@domain/types';
 import { playTime } from '@domain/plays';
-import { isSameStrength } from '@engine/strength';
+import { isSameStrength, strengthLabel } from '@engine/strength';
 import type { GoalEffect, PenaltyEngineResult, Strength } from '@engine/types';
 
 export type Opportunity = {
@@ -24,9 +24,6 @@ const advantagedSide = (strength: Strength): Side | null => {
 
 const advantageOf = (strength: Strength, side: Side): number =>
    Math.max(0, strength[side] - strength[otherSide(side)]);
-
-const strengthLabel = (strength: Strength, side: Side): string =>
-   `${strength[side]}v${strength[otherSide(side)]}`;
 
 export type GoalSituation = 'power-play' | 'shorthanded';
 

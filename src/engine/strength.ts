@@ -1,4 +1,5 @@
 import type { Game, Side } from '@domain/types';
+import { otherSide } from '@domain/types';
 import { PERIOD_SECONDS } from '@domain/clock';
 import type { Strength } from '@engine/types';
 
@@ -9,6 +10,9 @@ const FIRST_THREE_ON_THREE_SEASON = 20152016;
 
 export const isSameStrength = (a: Strength, b: Strength) =>
    a.away === b.away && a.home === b.home;
+
+export const strengthLabel = (strength: Strength, side: Side): string =>
+   `${strength[side]}v${strength[otherSide(side)]}`;
 
 // Regulation and playoff overtime: five skaters less one for each running penalty (never below three).
 export const entitledStrength = (running: Strength): Strength => ({

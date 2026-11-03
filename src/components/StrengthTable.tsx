@@ -5,6 +5,7 @@ import { secondsToClock } from '@domain/clock.ts';
 import { textColorOn } from '@domain/colors.ts';
 import TeamChip from '@components/TeamChip.tsx';
 import type { OpportunityTotal } from '@engine/opportunities.ts';
+import { strengthLabel } from '@engine/strength.ts';
 import type { Side } from '@domain/types.ts';
 import type { Strength } from '@engine/types.ts';
 
@@ -23,7 +24,7 @@ function StrengthTable({ side, totals, strength, position }: StrengthTableProps)
    const { teamByHomeOrAway, colors } = useGame();
    const byLabel = new Map(totals.map((row) => [row.label, row]));
    // Only the power-play strengths have columns, so even strengths and 6v5 never light one up.
-   const liveLabel = `${strength[side]}v${strength[side === 'home' ? 'away' : 'home']}`;
+   const liveLabel = strengthLabel(strength, side);
    const liveClass = (label: string): string | undefined => (label === liveLabel ? 'strength-table__live' : undefined);
    const total = totals.reduce(
       (sum, row) => ({
