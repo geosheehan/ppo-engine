@@ -1,26 +1,21 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useGame } from '@context/useGame.ts';
 import { onIceAt } from '@domain/onIce.ts';
-import { byGameOrder, delayedPenaltyCall, playTime } from '@domain/plays.ts';
+import { delayedPenaltyCall, playTime } from '@domain/plays.ts';
 import type { ReplayPosition } from '@domain/playback.ts';
 import { lineChangeAt, replaySteps, stepIndexAt, teamsYetToChange } from '@domain/steps.ts';
 import { isGoal, isPenalty } from '@domain/types.ts';
-import { homeDefendingSides } from '@engine/defendingSide.ts';
-import { runPenaltyEngine } from '@engine/penaltyEngine.ts';
 import { snapshotAt } from '@engine/snapshot.ts';
 import { opportunityTotals } from '@engine/opportunities.ts';
 import type { Side } from '@domain/types.ts';
 
 // The state of the game at the play being replayed, and a way to move between plays.
 export function useReplay() {
-   const { game, shifts } = useGame();
+   const { game, plays, shifts, penaltyResult, defendingSides } = useGame();
 
    // Computed once per game. Nothing here changes while stepping through plays.
-   const plays = useMemo(() => game.plays.toSorted(byGameOrder), [game]);
-   const result = useMemo(() => runPenaltyEngine(game), [game]);
    const penaltyPlays = useMemo(() => new Map(plays.filter(isPenalty).map((play) => [play.eventId, play])), [plays]);
    const goalPlays = useMemo(() => new Map(plays.filter(isGoal).map((play) => [play.eventId, play])), [plays]);
-   const defendingSides = useMemo(() => homeDefendingSides(game), [game]);
    const steps = useMemo(() => replaySteps(plays, shifts, [game.awayTeam.id, game.homeTeam.id]), [plays, shifts, game]);
 
    // The only replay state: which play we're on, and the game time. Between plays a live replay runs the clock on
@@ -50,10 +45,10 @@ export function useReplay() {
       changedTeamId,
       lineChange: changedTeamId ? lineChangeAt(shifts, changedTeamId, steps[stepIndex].time) : undefined,
       calledPenalty: play.typeDescKey === 'delayed-penalty' ? delayedPenaltyCall(plays, index) : undefined,
-      goalEffect:result.goals.find((goal) => goal.goalEventId === play.eventId),
-      snapshot: snapshotAt(result, penaltyPlays, time),
+      goalEffect:penaltyResult.goals.find((goal) => goal.goalEventId === play.eventId),
+      snapshot: snapshotAt(penaltyResult, penaltyPlays, time),
       onIce: onIceAt(shifts, play, time, teamsYetToChange(steps, stepIndex)),
-      totals: opportunityTotals(result, goalPlays, time),
+      totals: opportunityTotals(penaltyResult, goalPlays, time),
       score: { away: lastGoal?.details.awayScore ?? 0, home: lastGoal?.details.homeScore ?? 0 },
       homeOnLeft,
       sides,

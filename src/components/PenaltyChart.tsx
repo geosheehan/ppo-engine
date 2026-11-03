@@ -6,7 +6,6 @@ import { chartMoments, momentClock, momentPeriod } from '@layout/penaltyChart.ts
 import { periodLabel } from '@domain/labels.ts';
 import { penaltyDisplayName } from '@domain/penalties.ts';
 import { playerShortName } from '@domain/players.ts';
-import { runPenaltyEngine } from '@engine/penaltyEngine.ts';
 import type { GameElapsed, Side } from '@domain/types.ts';
 import type { PenaltyClock } from '@engine/types.ts';
 
@@ -17,8 +16,8 @@ const SIDES: Side[] = ['away', 'home'];
 const laneRow = (side: Side, penaltyClock: PenaltyClock): number => 3 + SIDES.indexOf(side) * 3 + penaltyClock;
 
 function PenaltyChart() {
-   const { game, penalties, colors, teamByHomeOrAway, playerById } = useGame();
-   const served = useMemo(() => runPenaltyEngine(game).servedPenalties.filter(({ start, end }) => start < end), [game]);
+   const { game, penalties, penaltyResult, colors, teamByHomeOrAway, playerById } = useGame();
+   const served = useMemo(() => penaltyResult.servedPenalties.filter(({ start, end }) => start < end), [penaltyResult]);
    const penaltyById = useMemo(() => new Map(penalties.map((play) => [play.eventId, play])), [penalties]);
 
    const moments = chartMoments(served);

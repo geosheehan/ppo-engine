@@ -1,19 +1,20 @@
 import type { Game, GameElapsed, GoalPlay, PenaltyPlay, Play, Side } from '@domain/types';
 import { isGoal, isPenalty, otherSide } from '@domain/types';
-import { indexGame } from '@domain/game';
-import { byGameOrder, playTime } from '@domain/plays';
+import type { GameIndex } from '@domain/game';
+import { playTime } from '@domain/plays';
 import { PenaltyBox } from '@engine/penaltyBox';
 import { STRENGTH_SEVERITIES, assessPenalties } from '@engine/assessment';
 import type { CalledPenalty } from '@engine/assessment';
 import { OnIceStrength, isSameStrength, isThreeOnThreeOvertime } from '@engine/strength';
 import type { GoalEffect, PenaltyEndReason, PenaltyEngineResult, ServedPenalty, Strength, StrengthInterval } from '@engine/types';
 
-export function runPenaltyEngine(game: Game): PenaltyEngineResult {
-   return new PenaltyEngine(game).run();
+export function runPenaltyEngine(index: GameIndex): PenaltyEngineResult {
+   return new PenaltyEngine(index).run();
 }
 
 class PenaltyEngine {
    private readonly game: Game;
+   private readonly plays: Play[];
    private readonly sideOf: (teamId: number) => Side;
    private readonly penaltyBoxes: Record<Side, PenaltyBox> = { away: new PenaltyBox('away'), home: new PenaltyBox('home') };
    private readonly onIce = new OnIceStrength();
@@ -24,15 +25,14 @@ class PenaltyEngine {
    // The latest game time the engine has reached, in game seconds like playTime.
    private currentTime: GameElapsed = 0;
 
-   constructor(game: Game) {
+   constructor({ game, plays, sideOf }: GameIndex) {
       this.game = game;
-      this.sideOf = indexGame(game).sideOf;
+      this.plays = plays;
+      this.sideOf = sideOf;
    }
 
    run(): PenaltyEngineResult {
-      const plays = this.game.plays
-         .filter((play) => play.periodDescriptor.periodType !== 'SO')
-         .sort(byGameOrder);
+      const plays = this.plays.filter((play) => play.periodDescriptor.periodType !== 'SO');
       const penaltiesByTime = groupPenaltiesByTime(plays);
       const assessedTimes = new Set<number>();
 

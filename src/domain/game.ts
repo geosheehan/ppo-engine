@@ -2,11 +2,14 @@ import { matchupColors } from '@domain/colors';
 import { TEAM_COLORS } from '@domain/teamColors';
 import { timedShifts } from '@domain/onIce';
 import type { TimedShift } from '@domain/onIce';
-import type { Game, PenaltyPlay, Player, Shift, Side, Team } from '@domain/types';
+import { byGameOrder } from '@domain/plays';
+import type { Game, PenaltyPlay, Play, Player, Shift, Side, Team } from '@domain/types';
 import { isPenalty } from '@domain/types';
 
 export type GameIndex = {
    game: Game;
+   // In game order; game.plays keeps the order the feed sent them in.
+   plays: Play[];
    penalties: PenaltyPlay[];
    shifts: TimedShift[];
    colors: { home: string; away: string };
@@ -25,9 +28,11 @@ export function indexGame(game: Game, shifts: Shift[] = []): GameIndex {
    const playersById = new Map(game.rosterSpots.map((player) => [player.playerId, player]));
    const colors = matchupColors(teamColors(game.homeTeam), teamColors(game.awayTeam));
    const sideOf = (teamId: number): Side => (teamId === game.homeTeam.id ? 'home' : 'away');
+   const plays = game.plays.toSorted(byGameOrder);
    return {
       game,
-      penalties: game.plays.filter(isPenalty),
+      plays,
+      penalties: plays.filter(isPenalty),
       shifts: timedShifts(shifts),
       colors,
       teamById: (teamId) => teamsById.get(teamId),

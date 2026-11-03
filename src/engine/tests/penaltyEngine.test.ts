@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import type { Game } from '@domain/types';
+import { indexGame } from '@domain/game';
 import { playTime } from '@domain/plays';
 import { runPenaltyEngine } from '@engine/penaltyEngine';
 
-// Every saved game, keyed by path from the project root (e.g. /src/data/games/20261028-TORvSEA.json).
+// Every saved game, keyed by path from the project root (e.g. /src/data/games/20261028-SEAvTOR.json).
 const games = import.meta.glob<Game>('@data/games/*.json', { eager: true, import: 'default' });
 
 // Plays that happen during live play. Penalty and stoppage plays at big stoppages carry
@@ -19,7 +20,7 @@ function recordedStrength(code: string) {
 describe.each(
    Object.entries(games).map(([path, game]) => [path.split('/').pop()!, game] as const),
 )('%s', (_, game) => {
-   const { strengthIntervals } = runPenaltyEngine(game);
+   const { strengthIntervals } = runPenaltyEngine(indexGame(game));
    const strengthAt = (time: number) => {
       const interval = strengthIntervals.find((s) => s.start <= time && time < s.end) ?? { away: 5, home: 5 };
       return { away: interval.away, home: interval.home };

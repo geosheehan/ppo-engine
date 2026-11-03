@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { Game, GoalPlay, Side } from '@domain/types';
 import { isGoal } from '@domain/types';
 import { gameSeconds } from '@domain/clock';
+import { indexGame } from '@domain/game';
 import { runPenaltyEngine } from '@engine/penaltyEngine';
 import { goalSituation, opportunityTotals, powerPlayOpportunities } from '@engine/opportunities';
 import type { GoalEffect, PenaltyEngineResult, ServedPenalty, StrengthInterval } from '@engine/types';
@@ -256,7 +257,7 @@ describe('powerPlayOpportunities (NHL counting)', () => {
 
 // The NHL's official power-play totals ("goals/opportunities") for the saved games.
 const OFFICIAL: Record<string, Record<Side, string>> = {
-   '20261028-TORvSEA.json': { away: '2/3', home: '1/5' },
+   '20261028-SEAvTOR.json': { away: '2/3', home: '1/5' },
    '20110211-NYIvPIT.json': { away: '3/9', home: '2/5' },
    '20261029-DETvCHI.json': { away: '0/1', home: '1/4' },
 };
@@ -266,7 +267,7 @@ const games = import.meta.glob<Game>('@data/games/*.json', { eager: true, import
 describe.each(Object.entries(games)
    .map(([path, game]) => [path.split('/').pop()!, game] as const)
    .filter(([file]) => OFFICIAL[file]))('%s matches the official power-play totals', (file, game) => {
-   const totals = opportunityTotals(runPenaltyEngine(game), new Map(game.plays.filter(isGoal).map((play) => [play.eventId, play])));
+   const totals = opportunityTotals(runPenaltyEngine(indexGame(game)), new Map(game.plays.filter(isGoal).map((play) => [play.eventId, play])));
 
    it.each(['away', 'home'] as const)('%s', (side) => {
       const goals = totals[side].reduce((sum, total) => sum + total.goals, 0);
