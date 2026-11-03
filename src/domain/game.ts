@@ -1,7 +1,7 @@
 import { matchupColors } from '@domain/colors';
 import { TEAM_COLORS } from '@domain/teamColors';
-import { timedShifts } from '@domain/onIce';
-import type { TimedShift } from '@domain/onIce';
+import { indexOnIce, timedShifts } from '@domain/onIce';
+import type { OnIceIndex, TimedShift } from '@domain/onIce';
 import { byGameOrder } from '@domain/plays';
 import type { Game, PenaltyPlay, Play, Player, Shift, Side, Team } from '@domain/types';
 import { isPenalty } from '@domain/types';
@@ -12,6 +12,7 @@ export type GameIndex = {
    plays: Play[];
    penalties: PenaltyPlay[];
    shifts: TimedShift[];
+   onIceIndex: OnIceIndex;
    colors: { home: string; away: string };
    teamById: (teamId: number) => Team | undefined;
    playerById: (playerId: number) => Player | undefined;
@@ -29,11 +30,13 @@ export function indexGame(game: Game, shifts: Shift[] = []): GameIndex {
    const colors = matchupColors(teamColors(game.homeTeam), teamColors(game.awayTeam));
    const sideOf = (teamId: number): Side => (teamId === game.homeTeam.id ? 'home' : 'away');
    const plays = game.plays.toSorted(byGameOrder);
+   const timed = timedShifts(shifts);
    return {
       game,
       plays,
       penalties: plays.filter(isPenalty),
-      shifts: timedShifts(shifts),
+      shifts: timed,
+      onIceIndex: indexOnIce(timed),
       colors,
       teamById: (teamId) => teamsById.get(teamId),
       playerById: (playerId) => playersById.get(playerId),

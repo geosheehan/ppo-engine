@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Play, Shift } from '@domain/types';
-import { onIceAt, timedShifts } from '@domain/onIce';
+import { indexOnIce, onIceAt, timedShifts } from '@domain/onIce';
 
 const play = (typeDescKey: string, clock: string, period = 1) =>
    ({ typeDescKey, timeInPeriod: clock, periodDescriptor: { number: period } }) as unknown as Play;
@@ -22,7 +22,7 @@ describe('timedShifts', () => {
 
 describe('onIceAt', () => {
    // Player 1 goes off at the 17:48 whistle and player 2 comes on for the faceoff.
-   const shifts = timedShifts([shift(1, '17:00', '17:48'), shift(2, '17:48', '18:30'), shift(3, '00:00', '20:00')]);
+   const shifts = indexOnIce(timedShifts([shift(1, '17:00', '17:48'), shift(2, '17:48', '18:30'), shift(3, '00:00', '20:00')]));
    const whistle = 17 * 60 + 48;
 
    it('shows who was on for a play at the whistle', () => {
@@ -38,13 +38,13 @@ describe('onIceAt', () => {
    });
 
    it('shows the new period\'s players at its start', () => {
-      const periods = timedShifts([shift(1, '19:00', '20:00'), shift(2, '00:00', '00:40', 2)]);
+      const periods = indexOnIce(timedShifts([shift(1, '19:00', '20:00'), shift(2, '00:00', '00:40', 2)]));
       expect(ids(onIceAt(periods, play('period-end', '20:00'), 1200))).toEqual([1]);
       expect(ids(onIceAt(periods, play('period-start', '00:00', 2), 1200))).toEqual([2]);
    });
 
    it('lists a player once when their shifts overlap', () => {
-      const overlapping = timedShifts([shift(1, '05:00', '06:00'), shift(1, '05:30', '06:10')]);
+      const overlapping = indexOnIce(timedShifts([shift(1, '05:00', '06:00'), shift(1, '05:30', '06:10')]));
       expect(ids(onIceAt(overlapping, play('hit', '05:00'), 340))).toEqual([1]);
    });
 });

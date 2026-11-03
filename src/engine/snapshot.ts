@@ -1,5 +1,6 @@
 import type { GameElapsed, PenaltyPlay } from '@domain/types';
 import { playTime } from '@domain/plays';
+import { lastIndexWhere } from '@domain/search';
 import type { PenaltyEngineResult, ServedPenalty, Strength, StrengthInterval } from '@engine/types';
 
 export type ClockedPenalty = {
@@ -28,16 +29,8 @@ function remainingAt(served: ServedPenalty, play: PenaltyPlay, time: GameElapsed
 }
 
 function intervalAt(intervals: StrengthInterval[], time: GameElapsed): StrengthInterval | undefined {
-   let low = 0;
-   let high = intervals.length - 1;
-   while (low <= high) {
-      const middle = Math.floor((low + high) / 2);
-      const interval = intervals[middle];
-      if (time < interval.start) high = middle - 1;
-      else if (time >= interval.end) low = middle + 1;
-      else return interval;
-   }
-   return undefined;
+   const interval = intervals[lastIndexWhere(intervals, ({ start }) => start <= time)];
+   return interval && time < interval.end ? interval : undefined;
 }
 
 export function snapshotAt(result: PenaltyEngineResult, penaltyPlays: Map<number, PenaltyPlay>, time: GameElapsed): Snapshot {

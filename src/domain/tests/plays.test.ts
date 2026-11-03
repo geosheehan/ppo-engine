@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Game, Play } from '@domain/types';
-import { byGameOrder, delayedPenaltyCall } from '@domain/plays';
+import { byGameOrder, delayedPenaltyCall, runningScores } from '@domain/plays';
 
 const games = import.meta.glob<Game>('@data/games/*.json', { eager: true, import: 'default' });
 
@@ -41,5 +41,21 @@ describe('delayedPenaltyCall', () => {
          const called = delayedPenaltyCall(plays, i);
          expect(called?.details.eventOwnerTeamId).toBe((p.details as { eventOwnerTeamId: number }).eventOwnerTeamId);
       });
+   });
+});
+
+describe('runningScores', () => {
+   const goal = (awayScore: number, homeScore: number) =>
+      ({ typeDescKey: 'goal', typeCode: 505, details: { awayScore, homeScore } }) as unknown as Play;
+
+   it('carries the score from each goal forward to every later play', () => {
+      const plays = [play('faceoff', SEA), goal(0, 1), play('hit', TOR), goal(1, 1), play('faceoff', TOR)];
+      expect(runningScores(plays)).toEqual([
+         { away: 0, home: 0 },
+         { away: 0, home: 1 },
+         { away: 0, home: 1 },
+         { away: 1, home: 1 },
+         { away: 1, home: 1 },
+      ]);
    });
 });

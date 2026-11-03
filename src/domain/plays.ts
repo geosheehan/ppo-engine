@@ -1,7 +1,7 @@
 import { clockToSeconds, gameSeconds, PERIOD_SECONDS } from '@domain/clock';
 import { descKeyToLabel } from '@domain/labels';
-import { isPenalty } from '@domain/types';
-import type { GameElapsed, PenaltyPlay, Play } from '@domain/types';
+import { isGoal, isPenalty } from '@domain/types';
+import type { GameElapsed, PenaltyPlay, Play, Side } from '@domain/types';
 
 export const playTime = (play: Play): GameElapsed => gameSeconds(play.periodDescriptor.number, play.timeInPeriod);
 
@@ -36,9 +36,20 @@ export const playTypeLabel = (typeDescKey: string): string => descKeyToLabel(typ
 // first means play restarted without the call, so a goal washed it out. `plays` must be in game order.
 export function delayedPenaltyCall(plays: Play[], index: number): PenaltyPlay | undefined {
    const teamId = (plays[index].details as { eventOwnerTeamId?: number } | undefined)?.eventOwnerTeamId;
-   for (const play of plays.slice(index + 1)) {
+   for (let next = index + 1; next < plays.length; next++) {
+      const play = plays[next];
       if (play.typeDescKey === 'faceoff') return undefined;
       if (isPenalty(play) && play.details.eventOwnerTeamId === teamId) return play;
    }
    return undefined;
+}
+
+export type Score = Record<Side, number>;
+
+export function runningScores(plays: Play[]): Score[] {
+   let score: Score = { away: 0, home: 0 };
+   return plays.map((play) => {
+      if (isGoal(play)) score = { away: play.details.awayScore, home: play.details.homeScore };
+      return score;
+   });
 }

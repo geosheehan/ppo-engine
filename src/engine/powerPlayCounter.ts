@@ -1,5 +1,6 @@
 import type { GameElapsed, Side } from '@domain/types';
 import { otherSide } from '@domain/types';
+import { lastIndexWhere } from '@domain/search';
 import { isSameStrength, strengthLabel } from '@engine/strength';
 import type { GoalEffect, Strength, TimelineEntry } from '@engine/types';
 
@@ -73,7 +74,7 @@ export function countPowerPlays(timeline: TimelineEntry[]): PowerPlayCount {
 
 // Opportunities, power-play goals and power-play time per team and strength, up to `time`.
 export function totalsAt({ checkpoints }: PowerPlayCount, time: GameElapsed = Infinity): PowerPlayTotals {
-   const checkpoint = lastCheckpointAt(checkpoints, time);
+   const checkpoint = checkpoints[lastIndexWhere(checkpoints, (checkpoint) => checkpoint.time <= time)];
    if (!checkpoint) return { away: [], home: [] };
 
    const side = advantagedSide(checkpoint.strength);
@@ -86,22 +87,6 @@ export function totalsAt({ checkpoints }: PowerPlayCount, time: GameElapsed = In
       ? totals.map((total) => (total.label === label ? { ...total, seconds: total.seconds + seconds } : total))
       : [...totals, { label, opportunities: 0, goals: 0, seconds }];
    return { ...checkpoint.totals, [side]: running };
-}
-
-function lastCheckpointAt(checkpoints: Checkpoint[], time: GameElapsed): Checkpoint | undefined {
-   let found: Checkpoint | undefined;
-   let low = 0;
-   let high = checkpoints.length - 1;
-   while (low <= high) {
-      const middle = Math.floor((low + high) / 2);
-      if (checkpoints[middle].time <= time) {
-         found = checkpoints[middle];
-         low = middle + 1;
-      } else {
-         high = middle - 1;
-      }
-   }
-   return found;
 }
 
 class PowerPlayCounter {

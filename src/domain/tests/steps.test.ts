@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { onIceAt } from '@domain/onIce';
+import { indexOnIce, onIceAt } from '@domain/onIce';
 import type { TimedShift } from '@domain/onIce';
 import { lineChangeAt, replaySteps, stepIndexAt, stepType, teamsYetToChange } from '@domain/steps';
 import type { Play } from '@domain/types';
@@ -77,25 +77,25 @@ describe('teamsYetToChange', () => {
    it('holds the home team\'s old line on the away team\'s change step', () => {
       const awayStep = stepIndexAt(steps, { index: 0, time: 25, changedTeamId: TOR });
       expect(teamsYetToChange(steps, awayStep)).toEqual([SEA]);
-      expect(onIceAt(shifts, plays[0], 25, teamsYetToChange(steps, awayStep)).map(({ playerId }) => playerId).sort()).toEqual([2, 3]);
+      expect(onIceAt(indexOnIce(shifts), plays[0], 25, teamsYetToChange(steps, awayStep)).map(({ playerId }) => playerId).sort()).toEqual([2, 3]);
    });
 
    it('shows both new lines once the home team has changed too', () => {
       const homeStep = stepIndexAt(steps, { index: 0, time: 25, changedTeamId: SEA });
       expect(teamsYetToChange(steps, homeStep)).toEqual([]);
-      expect(onIceAt(shifts, plays[0], 25, []).map(({ playerId }) => playerId).sort()).toEqual([2, 4]);
+      expect(onIceAt(indexOnIce(shifts), plays[0], 25, []).map(({ playerId }) => playerId).sort()).toEqual([2, 4]);
    });
 });
 
 describe('lineChangeAt', () => {
    it('lists who came off and who went on for one team', () => {
       const shifts = [shift(SEA, 0, 25, 1), shift(SEA, 0, 25, 2), shift(SEA, 25, 60, 3), shift(TOR, 25, 60, 4)];
-      expect(lineChangeAt(shifts, SEA, 25)).toEqual({ off: [1, 2], on: [3] });
+      expect(lineChangeAt(indexOnIce(shifts), SEA, 25)).toEqual({ off: [1, 2], on: [3] });
    });
 
    it('leaves out a player whose shift record just splits at that second', () => {
       const shifts = [shift(SEA, 0, 25, 1), shift(SEA, 25, 60, 1), shift(SEA, 25, 60, 2)];
-      expect(lineChangeAt(shifts, SEA, 25)).toEqual({ off: [], on: [2] });
+      expect(lineChangeAt(indexOnIce(shifts), SEA, 25)).toEqual({ off: [], on: [2] });
    });
 });
 
