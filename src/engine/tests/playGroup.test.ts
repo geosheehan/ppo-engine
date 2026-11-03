@@ -1,42 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { Game, Play } from '@domain/types';
-import { indexGame } from '@domain/game';
-import { runPenaltyEngine } from '@engine/penaltyEngine';
-
-const AWAY = 1;
-const HOME = 2;
-
-let nextId = 1;
-const play = (typeDescKey: string, typeCode: number, clock: string, details: object, extra: Partial<Play> = {}): Play => {
-   const eventId = nextId++;
-   return {
-      eventId,
-      sortOrder: eventId,
-      typeCode,
-      typeDescKey,
-      periodDescriptor: { number: 1, periodType: 'REG', maxRegulationPeriods: 3 },
-      timeInPeriod: clock,
-      timeRemaining: '00:00',
-      details,
-      ...extra,
-   };
-};
-
-const penalty = (teamId: number, clock: string, duration: number, typeCode = 'MIN') =>
-   play('penalty', 509, clock, { typeCode, descKey: 'tripping', duration, eventOwnerTeamId: teamId, committedByPlayerId: 1000 + nextId });
-
-const goal = (teamId: number, clock: string, situationCode?: string) =>
-   play('goal', 505, clock, { eventOwnerTeamId: teamId }, situationCode ? { situationCode } : {});
-
-const engineFor = (...plays: Play[]) => runPenaltyEngine(indexGame({
-   season: 20262027,
-   gameType: 2,
-   regPeriods: 3,
-   homeTeam: { id: HOME, abbrev: 'HOM' },
-   awayTeam: { id: AWAY, abbrev: 'AWY' },
-   rosterSpots: [],
-   plays,
-} as unknown as Game));
+import { AWAY, HOME, engineFor, goal, penalty } from '@engine/tests/fixtures';
 
 describe('PlayGroup: a goal on a delayed penalty', () => {
    it('washes out a delayed minor', () => {
