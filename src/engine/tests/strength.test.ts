@@ -1,5 +1,27 @@
 import { describe, expect, it } from 'vitest';
-import { OnIceStrength, overtimeStrength } from '@engine/strength';
+import type { Game } from '@domain/types';
+import { OnIceStrength, isThreeOnThreeOvertime, overtimeStrength } from '@engine/strength';
+
+describe('isThreeOnThreeOvertime', () => {
+   const game = (gameType: number, season = 20262027) => ({ gameType, season, regPeriods: 3 }) as Game;
+   const overtime = 3 * 20 * 60 + 30;
+
+   it.each([
+      ['pre-season', 1, true],
+      ['regular season', 2, true],
+      ['playoffs', 3, false],
+   ])('%s overtime', (_, gameType, expected) => {
+      expect(isThreeOnThreeOvertime(game(gameType), overtime)).toBe(expected);
+   });
+
+   it('is never 3-on-3 in regulation', () => {
+      expect(isThreeOnThreeOvertime(game(2), overtime - 60)).toBe(false);
+   });
+
+   it('is not 3-on-3 before the 2015-16 season', () => {
+      expect(isThreeOnThreeOvertime(game(2, 20142015), overtime)).toBe(false);
+   });
+});
 
 describe('overtimeStrength (Rule 84.3)', () => {
    it.each([

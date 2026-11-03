@@ -6,6 +6,8 @@ import type { Strength } from '@engine/types';
 const SIDES: Side[] = ['away', 'home'];
 // 3-on-3 overtime was introduced in the 2015-16 regular season.
 const FIRST_THREE_ON_THREE_SEASON = 20152016;
+const PRESEASON = 1;
+const REGULAR_SEASON = 2;
 
 export const isSameStrength = (a: Strength, b: Strength) =>
    a.away === b.away && a.home === b.home;
@@ -28,7 +30,7 @@ export function overtimeStrength(entitled: Strength): Strength {
 }
 
 export const isThreeOnThreeOvertime = (game: Game, time: GameElapsed) =>
-   game.gameType === 2
+   (game.gameType === PRESEASON || game.gameType === REGULAR_SEASON)
    && game.season >= FIRST_THREE_ON_THREE_SEASON
    && Math.floor(time / PERIOD_SECONDS) + 1 > game.regPeriods;
 
