@@ -46,10 +46,15 @@ export const PENALTY_DISPLAY_NAMES: Record<string, string> = {
 //  'unsportsmanlike-conduct': 'Unsportsmanlike conduct',
 };
 
-// Unknown keys fall back to the desc key as a label.
+const reportedUnknownKeys = new Set<string>();
+
+// Unknown keys fall back to the desc key as a label, and are reported once so they can be added above.
 export function penaltyDisplayName(descKey: string): string {
     const name = PENALTY_DISPLAY_NAMES[descKey];
     if (name) return name;
-    console.error(`Unknown key: ${descKey}`);
+    if (!reportedUnknownKeys.has(descKey)) {
+        reportedUnknownKeys.add(descKey);
+        console.error(`Unknown key: ${descKey}`);
+    }
     return descKeyToLabel(descKey);
 }
