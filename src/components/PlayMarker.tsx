@@ -1,7 +1,8 @@
 import type { ComponentType } from 'react';
 import { useGame } from '@context/useGame.ts';
 import { boundToIce, CENTER_DOT, nearestFaceoffDot } from '@layout/rink.ts';
-import type { Play } from '@domain/types.ts';
+import { PLAY_TYPES } from '@domain/constants.ts';
+import type { Play, PlayType } from '@domain/types.ts';
 import type { IconProps } from '@components/event-icons/IconFrame.tsx';
 import BlockedShotIcon from '@components/event-icons/BlockedShotIcon.tsx';
 import DelayedPenaltyIcon from '@components/event-icons/DelayedPenaltyIcon.tsx';
@@ -14,18 +15,18 @@ import ShotOnGoalIcon from '@components/event-icons/ShotOnGoalIcon.tsx';
 import StoppageIcon from '@components/event-icons/StoppageIcon.tsx';
 import TakeawayIcon from '@components/event-icons/TakeawayIcon.tsx';
 
-const ICONS: Record<string, ComponentType<IconProps>> = {
-   'stoppage': StoppageIcon,
-   'shot-on-goal': ShotOnGoalIcon,
-   'goal': ShotOnGoalIcon,
-   'missed-shot': MissedShotIcon,
-   'blocked-shot': BlockedShotIcon,
-   'hit': HitIcon,
-   'giveaway': GiveawayIcon,
-   'takeaway': TakeawayIcon,
-   'faceoff': FaceoffIcon,
-   'penalty': PenaltyIcon,
-   'delayed-penalty': DelayedPenaltyIcon,
+const ICONS: Partial<Record<PlayType, ComponentType<IconProps>>> = {
+   [PLAY_TYPES.STOPPAGE]: StoppageIcon,
+   [PLAY_TYPES.SHOT_ON_GOAL]: ShotOnGoalIcon,
+   [PLAY_TYPES.GOAL]: ShotOnGoalIcon,
+   [PLAY_TYPES.MISSED_SHOT]: MissedShotIcon,
+   [PLAY_TYPES.BLOCKED_SHOT]: BlockedShotIcon,
+   [PLAY_TYPES.HIT]: HitIcon,
+   [PLAY_TYPES.GIVEAWAY]: GiveawayIcon,
+   [PLAY_TYPES.TAKEAWAY]: TakeawayIcon,
+   [PLAY_TYPES.FACEOFF]: FaceoffIcon,
+   [PLAY_TYPES.PENALTY]: PenaltyIcon,
+   [PLAY_TYPES.DELAYED_PENALTY]: DelayedPenaltyIcon,
 };
 
 // Icon width on the rink, in feet.
@@ -56,14 +57,14 @@ function PlayMarker({ play, locatedBy, className }: PlayMarkerProps) {
 
    const { eventOwnerTeamId } = detailsOf(play);
    const { xCoord, yCoord } = detailsOf(locatedBy ?? play);
-   const color = play.typeDescKey === 'stoppage'
+   const color = play.typeDescKey === PLAY_TYPES.STOPPAGE
       ? STOPPAGE_COLOR
       : eventOwnerTeamId ? teamColor(eventOwnerTeamId) : undefined;
 
    let point = CENTER_DOT;
    if (xCoord !== undefined && yCoord !== undefined) {
       const recorded = { x: xCoord, y: yCoord };
-      point = play.typeDescKey === 'faceoff' ? nearestFaceoffDot(recorded) : boundToIce(recorded);
+      point = play.typeDescKey === PLAY_TYPES.FACEOFF ? nearestFaceoffDot(recorded) : boundToIce(recorded);
    }
 
    return <Icon className={className} x={point.x} y={point.y} size={MARKER_SIZE} color={color} />;

@@ -1,5 +1,6 @@
 import { useGame } from '@context/useGame.ts';
 import { attackedNet, boundToIce } from '@layout/rink.ts';
+import { SIDES } from '@domain/constants.ts';
 import { isGoal } from '@domain/types.ts';
 import type { Play } from '@domain/types.ts';
 import ShotOnGoalIcon from '@components/event-icons/ShotOnGoalIcon.tsx';
@@ -23,7 +24,7 @@ function ShotLine({ play, homeOnLeft, className }: ShotLineProps) {
    if (xCoord === undefined || yCoord === undefined) return null;
 
    const shot = boundToIce({ x: xCoord, y: yCoord });
-   const net = attackedNet(sideOf(eventOwnerTeamId) === 'home', homeOnLeft);
+   const net = attackedNet(sideOf(eventOwnerTeamId) === SIDES.HOME, homeOnLeft);
    const puck = { x: shot.x + (net.x - shot.x) * progress, y: shot.y + (net.y - shot.y) * progress };
    const color = teamColor(eventOwnerTeamId);
 

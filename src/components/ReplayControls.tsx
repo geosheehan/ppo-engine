@@ -9,9 +9,9 @@ import NextIcon from '@components/replay-icons/NextIcon.tsx';
 import EndIcon from '@components/replay-icons/EndIcon.tsx';
 import { useLivePlayback } from '@components/useLivePlayback.ts';
 import { SHOT_ANIMATION_MS } from '@components/useShotProgress.ts';
-import { EVENT_TYPES, playTypeLabel } from '@domain/plays.ts';
-import { LINE_CHANGE, stepType } from '@domain/steps.ts';
-import type { ReplayStep } from '@domain/steps.ts';
+import { PLAY_TYPES } from '@domain/constants.ts';
+import { STEP_TYPES, stepType, stepTypeLabel } from '@domain/steps.ts';
+import type { ReplayStep, StepType } from '@domain/steps.ts';
 import { isGoal } from '@domain/types.ts';
 import type { GameElapsed, Play } from '@domain/types.ts';
 
@@ -48,7 +48,7 @@ const playbackOptions = (mode: Playback['mode']) =>
       .filter(([, playback]) => playback.mode === mode)
       .map(([value, { label }]) => <option key={value} value={value}>{label}</option>);
 
-const JUMP_TYPES = [...EVENT_TYPES, LINE_CHANGE].toSorted();
+const JUMP_TYPES = STEP_TYPES.toSorted((a, b) => stepTypeLabel(a).localeCompare(stepTypeLabel(b)));
 
 const GOAL_HOLD = 3;
 
@@ -70,10 +70,10 @@ function ReplayControls({ index, time, plays, steps, stepIndex, onChange }: Repl
 
    const goalSteps = steps.flatMap((step, i) => (isGoalStep(step) ? [i] : []));
 
-   const [eventType, setEventType] = useState('goal');
+   const [eventType, setEventType] = useState<StepType>(PLAY_TYPES.GOAL);
    const previousOfType = steps.findLastIndex((step, i) => i < stepIndex && stepType(step, plays) === eventType);
    const nextOfType = steps.findIndex((step, i) => i > stepIndex && stepType(step, plays) === eventType);
-   const eventLabel = playTypeLabel(eventType).toLowerCase();
+   const eventLabel = stepTypeLabel(eventType).toLowerCase();
 
    useEffect(() => {
       if (!playing || live) return;
@@ -147,9 +147,9 @@ function ReplayControls({ index, time, plays, steps, stepIndex, onChange }: Repl
                >
                   <PreviousIcon />
                </button>
-               <select aria-label="Event type" value={eventType} onChange={(event) => setEventType(event.target.value)}>
+               <select aria-label="Event type" value={eventType} onChange={(event) => setEventType(JUMP_TYPES.find((type) => type === event.target.value) ?? eventType)}>
                   {JUMP_TYPES.map((type) => (
-                     <option key={type} value={type}>{playTypeLabel(type)}</option>
+                     <option key={type} value={type}>{stepTypeLabel(type)}</option>
                   ))}
                </select>
                <button

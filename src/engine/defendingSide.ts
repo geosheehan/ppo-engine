@@ -1,23 +1,24 @@
-import type { Game, HomeTeamDefendingSide, Play } from '@domain/types';
+import { DEFENDING_SIDES, PLAY_TYPES, ZONE_CODES } from '@domain/constants';
+import type { Game, HomeTeamDefendingSide, Play, ZoneCode } from '@domain/types';
 
 type LocatedDetails = {
    xCoord?: number;
-   zoneCode?: string;
+   zoneCode?: ZoneCode;
    eventOwnerTeamId?: number;
 };
 
-const otherEnd = (side: HomeTeamDefendingSide): HomeTeamDefendingSide => (side === 'left' ? 'right' : 'left');
+const otherEnd = (side: HomeTeamDefendingSide): HomeTeamDefendingSide => (side === DEFENDING_SIDES.LEFT ? DEFENDING_SIDES.RIGHT : DEFENDING_SIDES.LEFT);
 
 // Which end the home team defends, judged from one play. Null when the play can't tell us:
 // no location, the neutral zone, or a blocked shot (owned by the blocking team, but zoned for the shooter).
 function sideFromLocation(play: Play, homeTeamId: number): HomeTeamDefendingSide | null {
-   if (play.typeDescKey === 'blocked-shot') return null;
+   if (play.typeDescKey === PLAY_TYPES.BLOCKED_SHOT) return null;
    const { xCoord, zoneCode, eventOwnerTeamId } = (play.details ?? {}) as LocatedDetails;
-   if (!xCoord || !eventOwnerTeamId || (zoneCode !== 'O' && zoneCode !== 'D')) return null;
+   if (!xCoord || !eventOwnerTeamId || (zoneCode !== ZONE_CODES.OFFENSIVE && zoneCode !== ZONE_CODES.DEFENSIVE)) return null;
 
    // In its offensive zone the owner is at the far end from its own net.
-   const endOfPlay: HomeTeamDefendingSide = xCoord < 0 ? 'left' : 'right';
-   const ownerDefends = zoneCode === 'D' ? endOfPlay : otherEnd(endOfPlay);
+   const endOfPlay: HomeTeamDefendingSide = xCoord < 0 ? DEFENDING_SIDES.LEFT : DEFENDING_SIDES.RIGHT;
+   const ownerDefends = zoneCode === ZONE_CODES.DEFENSIVE ? endOfPlay : otherEnd(endOfPlay);
    return eventOwnerTeamId === homeTeamId ? ownerDefends : otherEnd(ownerDefends);
 }
 
@@ -44,8 +45,8 @@ export function homeDefendingSides(game: Game): Map<number, HomeTeamDefendingSid
    for (const period of periods) {
       const tally = votes.get(period);
       const side = recorded.get(period)
-         ?? (tally && tally.left !== tally.right ? (tally.left > tally.right ? 'left' : 'right') : undefined)
-         ?? (previous ? otherEnd(previous) : 'left');
+         ?? (tally && tally.left !== tally.right ? (tally.left > tally.right ? DEFENDING_SIDES.LEFT : DEFENDING_SIDES.RIGHT) : undefined)
+         ?? (previous ? otherEnd(previous) : DEFENDING_SIDES.LEFT);
       sides.set(period, side);
       previous = side;
    }

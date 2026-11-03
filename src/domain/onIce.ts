@@ -1,7 +1,8 @@
 import { gameSeconds } from '@domain/clock';
+import { PLAY_TYPES, SHIFT_TYPE_CODE } from '@domain/constants';
 import { playTime } from '@domain/plays';
 import { lastIndexWhere } from '@domain/search';
-import type { GameElapsed, Play, Shift } from '@domain/types';
+import type { GameElapsed, Play, PlayType, Shift } from '@domain/types';
 
 export type TimedShift = {
    playerId: number;
@@ -10,8 +11,7 @@ export type TimedShift = {
    end: GameElapsed;
 };
 
-const SHIFT_TYPE_CODE = 517;
-const RESTARTS = ['faceoff', 'period-start'];
+const RESTARTS: PlayType[] = [PLAY_TYPES.FACEOFF, PLAY_TYPES.PERIOD_START];
 
 export const timedShifts = (shifts: Shift[]): TimedShift[] =>
    shifts

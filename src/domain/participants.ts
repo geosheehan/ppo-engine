@@ -1,4 +1,5 @@
-import type { Play } from '@domain/types';
+import { PLAY_TYPES } from '@domain/constants';
+import type { Play, PlayType } from '@domain/types';
 
 export type Participant = {
    field: string;
@@ -6,21 +7,21 @@ export type Participant = {
    playerId: number;
 };
 
-const ROLES: Record<string, { field: string; role: string }[]> = {
-   'faceoff': [{ field: 'winningPlayerId', role: 'Won' }, { field: 'losingPlayerId', role: 'Lost' }],
-   'hit': [{ field: 'hittingPlayerId', role: 'Hitter' }, { field: 'hitteePlayerId', role: 'Hit' }],
-   'shot-on-goal': [{ field: 'shootingPlayerId', role: 'Shot' }, { field: 'goalieInNetId', role: 'Goalie' }],
-   'missed-shot': [{ field: 'shootingPlayerId', role: 'Shot' }, { field: 'goalieInNetId', role: 'Goalie' }],
-   'blocked-shot': [{ field: 'shootingPlayerId', role: 'Shot' }, { field: 'blockingPlayerId', role: 'Blocked' }],
-   'goal': [
+const ROLES: Partial<Record<PlayType, { field: string; role: string }[]>> = {
+   [PLAY_TYPES.FACEOFF]: [{ field: 'winningPlayerId', role: 'Won' }, { field: 'losingPlayerId', role: 'Lost' }],
+   [PLAY_TYPES.HIT]: [{ field: 'hittingPlayerId', role: 'Hitter' }, { field: 'hitteePlayerId', role: 'Hit' }],
+   [PLAY_TYPES.SHOT_ON_GOAL]: [{ field: 'shootingPlayerId', role: 'Shot' }, { field: 'goalieInNetId', role: 'Goalie' }],
+   [PLAY_TYPES.MISSED_SHOT]: [{ field: 'shootingPlayerId', role: 'Shot' }, { field: 'goalieInNetId', role: 'Goalie' }],
+   [PLAY_TYPES.BLOCKED_SHOT]: [{ field: 'shootingPlayerId', role: 'Shot' }, { field: 'blockingPlayerId', role: 'Blocked' }],
+   [PLAY_TYPES.GOAL]: [
       { field: 'scoringPlayerId', role: 'Goal' },
       { field: 'assist1PlayerId', role: '1st assist' },
       { field: 'assist2PlayerId', role: '2nd assist' },
       { field: 'goalieInNetId', role: 'Goalie' },
    ],
-   'giveaway': [{ field: 'playerId', role: 'Giveaway' }],
-   'takeaway': [{ field: 'playerId', role: 'Takeaway' }],
-   'penalty': [
+   [PLAY_TYPES.GIVEAWAY]: [{ field: 'playerId', role: 'Giveaway' }],
+   [PLAY_TYPES.TAKEAWAY]: [{ field: 'playerId', role: 'Takeaway' }],
+   [PLAY_TYPES.PENALTY]: [
       { field: 'committedByPlayerId', role: 'Penalty' },
       { field: 'drawnByPlayerId', role: 'Drawn by' },
       { field: 'servedByPlayerId', role: 'Served by' },

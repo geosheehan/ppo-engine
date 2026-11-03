@@ -2,6 +2,7 @@ import '@components/OnIcePanel.css';
 import { useState } from 'react';
 import type { CSSProperties } from 'react';
 import { useGame } from '@context/useGame.ts';
+import { POSITION_CODES } from '@domain/constants.ts';
 import { byPosition, keepSlots } from '@domain/lineup.ts';
 import type { TimedShift } from '@domain/onIce.ts';
 import type { Player, Side } from '@domain/types.ts';
@@ -13,7 +14,7 @@ type OnIcePanelProps = {
    position: 'left' | 'right';
 };
 
-const isGoalie = (player: Player): boolean => player.positionCode === 'G';
+const isGoalie = (player: Player): boolean => player.positionCode === POSITION_CODES.GOALIE;
 
 const idsOf = (players: Player[]): string => players.map(({ playerId }) => playerId).toSorted().join();
 

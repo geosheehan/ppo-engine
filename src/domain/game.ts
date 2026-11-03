@@ -1,4 +1,5 @@
 import { matchupColors } from '@domain/colors';
+import { SIDES } from '@domain/constants';
 import { TEAM_COLORS } from '@domain/teamColors';
 import { indexOnIce, timedShifts } from '@domain/onIce';
 import type { OnIceIndex, TimedShift } from '@domain/onIce';
@@ -28,7 +29,7 @@ export function indexGame(game: Game, shifts: Shift[] = []): GameIndex {
    const teamsById = new Map([game.homeTeam, game.awayTeam].map((team) => [team.id, team]));
    const playersById = new Map(game.rosterSpots.map((player) => [player.playerId, player]));
    const colors = matchupColors(teamColors(game.homeTeam), teamColors(game.awayTeam));
-   const sideOf = (teamId: number): Side => (teamId === game.homeTeam.id ? 'home' : 'away');
+   const sideOf = (teamId: number): Side => (teamId === game.homeTeam.id ? SIDES.HOME : SIDES.AWAY);
    const plays = game.plays.toSorted(byGameOrder);
    const timed = timedShifts(shifts);
    return {
@@ -40,7 +41,7 @@ export function indexGame(game: Game, shifts: Shift[] = []): GameIndex {
       colors,
       teamById: (teamId) => teamsById.get(teamId),
       playerById: (playerId) => playersById.get(playerId),
-      teamByHomeOrAway: (homeOrAway) => (homeOrAway === 'home' ? game.homeTeam : game.awayTeam),
+      teamByHomeOrAway: (homeOrAway) => (homeOrAway === SIDES.HOME ? game.homeTeam : game.awayTeam),
       sideOf,
       teamColor: (teamId) => colors[sideOf(teamId)],
    };

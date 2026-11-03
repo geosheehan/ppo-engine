@@ -3,17 +3,18 @@ import { useMemo } from 'react';
 import type { CSSProperties } from 'react';
 import { useGame } from '@context/useGame.ts';
 import { chartMoments, momentClock, momentPeriod } from '@layout/penaltyChart.ts';
+import { SIDES } from '@domain/constants.ts';
 import { periodLabel } from '@domain/labels.ts';
 import { penaltyDisplayName } from '@domain/penalties.ts';
 import { playerShortName } from '@domain/players.ts';
 import type { GameElapsed, Side } from '@domain/types.ts';
 import type { PenaltyClock } from '@engine/types.ts';
 
-const SIDES: Side[] = ['away', 'home'];
+const TEAM_ROWS: Side[] = [SIDES.AWAY, SIDES.HOME];
 
 // Rows 1 and 2 hold the period and time labels. Each team then gets a row per penalty clock, with a spacer
 // row between the teams.
-const laneRow = (side: Side, penaltyClock: PenaltyClock): number => 3 + SIDES.indexOf(side) * 3 + penaltyClock;
+const laneRow = (side: Side, penaltyClock: PenaltyClock): number => 3 + TEAM_ROWS.indexOf(side) * 3 + penaltyClock;
 
 function PenaltyChart() {
    const { game, penalties, penaltyResult, colors, teamByHomeOrAway, playerById } = useGame();
@@ -28,12 +29,12 @@ function PenaltyChart() {
    return (
       <div className="penalty-chart">
          <div className="penalty-chart__grid" style={{ '--intervals': Math.max(moments.length - 1, 1) } as CSSProperties}>
-            {SIDES.map((side) => (
+            {TEAM_ROWS.map((side) => (
                <div key={side} className="penalty-chart__team" style={{ gridRow: `${laneRow(side, 0)} / span 2` }}>
                   {teamByHomeOrAway(side).abbrev}
                </div>
             ))}
-            {SIDES.flatMap((side) => ([0, 1] as const).map((penaltyClock) => (
+            {TEAM_ROWS.flatMap((side) => ([0, 1] as const).map((penaltyClock) => (
                <div key={`${side}-${penaltyClock}`} className="penalty-chart__lane" style={{ gridRow: laneRow(side, penaltyClock) }} />
             )))}
 

@@ -1,6 +1,7 @@
 import '@components/Scoreboard.css';
 import { useGame } from '@context/useGame.ts';
 import { secondsToClock } from '@domain/clock.ts';
+import { SIDES } from '@domain/constants.ts';
 import { playPeriodLabel } from '@domain/labels.ts';
 import { periodTimeLeft } from '@domain/plays.ts';
 import type { GameElapsed, Play, Side } from '@domain/types.ts';
@@ -16,8 +17,8 @@ type ScoreboardProps = {
 
 function Scoreboard({ play, time, score, homeOnLeft, scoringSide }: ScoreboardProps) {
    const { game } = useGame();
-   const away = { side: 'away', teamId: game.awayTeam.id, score: score.away };
-   const home = { side: 'home', teamId: game.homeTeam.id, score: score.home };
+   const away = { side: SIDES.AWAY, teamId: game.awayTeam.id, score: score.away };
+   const home = { side: SIDES.HOME, teamId: game.homeTeam.id, score: score.home };
    const [left, right] = homeOnLeft ? [home, away] : [away, home];
 
    // Keyed by the score so the number remounts, and its pop animation replays, on every goal.

@@ -1,5 +1,6 @@
 import type { Game, GameElapsed, GoalPlay, PenaltyPlay, Play, Side } from '@domain/types';
 import { otherSide } from '@domain/types';
+import { PENALTY_SEVERITIES, PERIOD_TYPES, PLAY_TYPES, SIDES } from '@domain/constants';
 import type { GameIndex } from '@domain/game';
 import { playTime } from '@domain/plays';
 import { PenaltyBox } from '@engine/penaltyBox';
@@ -20,8 +21,8 @@ class PenaltyEngine {
    private readonly timeline: TimelineEntry[] = [];
    private readonly record = (entry: TimelineEntry) => this.timeline.push(entry);
    private readonly penaltyBoxes: Record<Side, PenaltyBox> = {
-      away: new PenaltyBox('away', this.record),
-      home: new PenaltyBox('home', this.record),
+      away: new PenaltyBox(SIDES.AWAY, this.record),
+      home: new PenaltyBox(SIDES.HOME, this.record),
    };
    private readonly onIce = new OnIceStrength();
    private readonly servedPenalties: ServedPenalty[] = [];
@@ -41,10 +42,10 @@ class PenaltyEngine {
    run(): PenaltyEngineResult {
       let group: PlayGroup | undefined;
       for (const play of this.plays) {
-         if (play.periodDescriptor.periodType === 'SO') continue;
+         if (play.periodDescriptor.periodType === PERIOD_TYPES.SHOOTOUT) continue;
 
          const time = playTime(play);
-         if (play.typeDescKey === 'game-end') this.gameEnd = time;
+         if (play.typeDescKey === PLAY_TYPES.GAME_END) this.gameEnd = time;
          if (group?.time !== time) {
             if (group) this.resolve(group);
             group = new PlayGroup(time);
@@ -169,6 +170,7 @@ const earliest = (...times: (GameElapsed | undefined)[]) => {
    return defined.length > 0 ? Math.min(...defined) : undefined;
 };
 
-const isMinor = (penalty: PenaltyPlay) => penalty.details.typeCode === 'MIN' || penalty.details.typeCode === 'BEN';
+const isMinor = (penalty: PenaltyPlay) => penalty.details.typeCode === PENALTY_SEVERITIES.MINOR
+   || penalty.details.typeCode === PENALTY_SEVERITIES.BENCH_MINOR;
 
 const isDoubleMinor = (penalty: PenaltyPlay) => isMinor(penalty) && penalty.details.duration === 4;

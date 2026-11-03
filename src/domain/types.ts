@@ -1,18 +1,27 @@
+import { PLAY_TYPES, SIDES } from '@domain/constants';
+import type { DEFENDING_SIDES, GAME_TYPES, PENALTY_SEVERITIES, PERIOD_TYPES, POSITION_CODES, ZONE_CODES } from '@domain/constants';
+
+type ValueOf<T> = T[keyof T];
+
 export type GameElapsed = number;
 
-export type Side = 'away' | 'home';
+export type Side = ValueOf<typeof SIDES>;
 
-export const otherSide = (side: Side): Side => (side === 'home' ? 'away' : 'home');
+export const otherSide = (side: Side): Side => (side === SIDES.HOME ? SIDES.AWAY : SIDES.HOME);
 
-export type PeriodType = 'REG' | 'OT' | 'SO';
+export type GameType = ValueOf<typeof GAME_TYPES>;
+export type PlayType = ValueOf<typeof PLAY_TYPES>;
+export type PeriodType = ValueOf<typeof PERIOD_TYPES>;
+export type PenaltySeverity = ValueOf<typeof PENALTY_SEVERITIES>;
+export type ZoneCode = ValueOf<typeof ZONE_CODES>;
+export type HomeTeamDefendingSide = ValueOf<typeof DEFENDING_SIDES>;
+export type PositionCode = ValueOf<typeof POSITION_CODES>;
 
 export type PeriodDescriptor = {
    number: number;
    periodType: PeriodType;
    maxRegulationPeriods: number;
 };
-
-export type HomeTeamDefendingSide = 'left' | 'right';
 
 export type Play = {
    eventId: number;
@@ -22,7 +31,7 @@ export type Play = {
    situationCode?: string;
    homeTeamDefendingSide?: HomeTeamDefendingSide;
    typeCode: number;
-   typeDescKey: string;
+   typeDescKey: PlayType;
    sortOrder: number;
    details?: unknown;
 };
@@ -43,11 +52,9 @@ export type Player = {
    firstName: { default: string };
    lastName: { default: string };
    sweaterNumber: number;
-   positionCode: string;
+   positionCode: PositionCode;
    headshot: string;
 };
-
-export type PenaltySeverity = 'MIN' | 'MAJ' | 'BEN' | 'GAM' | 'MIS' | 'MAT' | 'PS';
 
 export type PenaltyDetails = {
    typeCode: PenaltySeverity;
@@ -60,8 +67,7 @@ export type PenaltyDetails = {
 };
 
 export type PenaltyPlay = Play & {
-   typeCode: 509;
-   typeDescKey: 'penalty';
+   typeDescKey: typeof PLAY_TYPES.PENALTY;
    details: PenaltyDetails;
 }
 
@@ -84,8 +90,7 @@ export type GoalDetails = {
 }
 
 export type GoalPlay = Play & {
-   typeCode: 505;
-   typeDescKey: 'goal';
+   typeDescKey: typeof PLAY_TYPES.GOAL;
    details: GoalDetails;
 }
 
@@ -104,7 +109,7 @@ export type ShiftChart = {
 
 export type Game = {
    season: number;
-   gameType: number; 
+   gameType: GameType;
    regPeriods: number;
    homeTeam: Team;
    awayTeam: Team;
@@ -112,5 +117,5 @@ export type Game = {
    rosterSpots: Player[];
 };
 
-export const isPenalty = (play: Play): play is PenaltyPlay => play.typeCode === 509;
-export const isGoal = (play: Play): play is GoalPlay => play.typeCode === 505;
+export const isPenalty = (play: Play): play is PenaltyPlay => play.typeDescKey === PLAY_TYPES.PENALTY;
+export const isGoal = (play: Play): play is GoalPlay => play.typeDescKey === PLAY_TYPES.GOAL;

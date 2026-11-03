@@ -5,8 +5,7 @@ import { isGoal, isPenalty } from '@domain/types.ts';
 import type { Play } from '@domain/types.ts';
 import { penaltyDisplayName } from '@domain/penalties.ts';
 import { playerShortName } from '@domain/players.ts';
-import { playTypeLabel } from '@domain/plays.ts';
-import { LINE_CHANGE } from '@domain/steps.ts';
+import { LINE_CHANGE, stepTypeLabel } from '@domain/steps.ts';
 import { goalSituation } from '@engine/powerPlayCounter.ts';
 import type { GoalSituation } from '@engine/powerPlayCounter.ts';
 import type { GoalEffect } from '@engine/types.ts';
@@ -33,7 +32,7 @@ function CurrentPlay({ play, goalEffect, changedTeamId }: CurrentPlayProps) {
          <div className="current-play">
             <div className="current-play__what">
                <TeamChip teamId={changedTeamId} />
-               {playTypeLabel(LINE_CHANGE)}
+               {stepTypeLabel(LINE_CHANGE)}
             </div>
             <div className="current-play__detail" />
          </div>
@@ -57,7 +56,7 @@ function CurrentPlay({ play, goalEffect, changedTeamId }: CurrentPlayProps) {
          <div className="current-play__what">
             {teamId && <TeamChip teamId={teamId} />}
             {situation && `${SITUATION_LABELS[situation]} `}
-            {playTypeLabel(play.typeDescKey)}
+            {stepTypeLabel(play.typeDescKey)}
          </div>
          <div className="current-play__detail">{detail}</div>
       </div>

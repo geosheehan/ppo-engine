@@ -1,11 +1,18 @@
-import type { Player } from '@domain/types';
+import { POSITION_CODES } from '@domain/constants';
+import type { Player, PositionCode } from '@domain/types';
 
-const POSITION_ORDER = ['L', 'C', 'R', 'D', 'G'];
+const POSITION_ORDER: PositionCode[] = [
+   POSITION_CODES.LEFT_WING,
+   POSITION_CODES.CENTER,
+   POSITION_CODES.RIGHT_WING,
+   POSITION_CODES.DEFENSE,
+   POSITION_CODES.GOALIE,
+];
 
 export const byPosition = (a: Player, b: Player): number =>
    POSITION_ORDER.indexOf(a.positionCode) - POSITION_ORDER.indexOf(b.positionCode) || a.sweaterNumber - b.sweaterNumber;
 
-const group = (player: Player): string => (player.positionCode === 'D' ? 'D' : 'F');
+const group = (player: Player): string => (player.positionCode === POSITION_CODES.DEFENSE ? 'D' : 'F');
 
 export function keepSlots(previous: Player[], current: Player[]): Player[] {
    const currentIds = new Set(current.map(({ playerId }) => playerId));

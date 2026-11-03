@@ -1,5 +1,6 @@
 import type { GameElapsed, Side } from '@domain/types';
 import { otherSide } from '@domain/types';
+import { SIDES } from '@domain/constants';
 import { lastIndexWhere } from '@domain/search';
 import { isSameStrength, strengthLabel } from '@engine/strength';
 import type { GoalEffect, Strength, TimelineEntry } from '@engine/types';
@@ -33,7 +34,7 @@ export type PowerPlayCount = {
 
 const advantagedSide = (strength: Strength): Side | null => {
    if (strength.away === strength.home) return null;
-   return strength.away > strength.home ? 'away' : 'home';
+   return strength.away > strength.home ? SIDES.AWAY : SIDES.HOME;
 };
 
 const advantageOf = (strength: Strength, side: Side): number =>

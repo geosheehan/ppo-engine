@@ -1,3 +1,4 @@
+import { PENALTY_SEVERITIES, SIDES } from '@domain/constants';
 import type { PenaltySeverity, Side } from '@domain/types';
 import type { PenaltyKind } from '@engine/types';
 
@@ -24,10 +25,15 @@ export type Sentence = {
    coincidental: boolean;
 };
 
-export const STRENGTH_SEVERITIES = new Set<PenaltySeverity>(['MIN', 'BEN', 'MAJ', 'MAT']);
+export const STRENGTH_SEVERITIES = new Set<PenaltySeverity>([
+   PENALTY_SEVERITIES.MINOR,
+   PENALTY_SEVERITIES.BENCH_MINOR,
+   PENALTY_SEVERITIES.MAJOR,
+   PENALTY_SEVERITIES.MATCH,
+]);
 
 export function toTimedPenalties(called: CalledPenalty): TimedPenalty[] {
-   if (called.severity === 'MAJ' || called.severity === 'MAT') {
+   if (called.severity === PENALTY_SEVERITIES.MAJOR || called.severity === PENALTY_SEVERITIES.MATCH) {
       return [{ eventId: called.eventId, kind: 'major', seconds: called.minutes * 60 }];
    }
    if (called.minutes === 4) {
@@ -43,8 +49,8 @@ export function toTimedPenalties(called: CalledPenalty): TimedPenalty[] {
 // Rule 19: one minor each with nothing else on the clocks is served 4-on-4;
 // otherwise equal numbers of minors and majors cancel and only the difference is served.
 export function assessPenalties(called: CalledPenalty[], penaltiesInEffect: boolean): Sentence[] {
-   const away = called.filter((calledPenalty) => calledPenalty.side === 'away');
-   const home = called.filter((calledPenalty) => calledPenalty.side === 'home');
+   const away = called.filter((calledPenalty) => calledPenalty.side === SIDES.AWAY);
+   const home = called.filter((calledPenalty) => calledPenalty.side === SIDES.HOME);
 
    const isSingleMinor = (calledPenalty: CalledPenalty) => {
       const timed = toTimedPenalties(calledPenalty);
@@ -68,8 +74,8 @@ export function assessPenalties(called: CalledPenalty[], penaltiesInEffect: bool
    }
 
    return [
-      ...toSentences('away', awayPenalties, majorsCancelled),
-      ...toSentences('home', homePenalties, majorsCancelled),
+      ...toSentences(SIDES.AWAY, awayPenalties, majorsCancelled),
+      ...toSentences(SIDES.HOME, homePenalties, majorsCancelled),
    ];
 }
 

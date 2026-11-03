@@ -1,14 +1,22 @@
+import { PLAY_TYPES } from '@domain/constants';
+import { PLAY_TYPE_LABELS } from '@domain/labels';
 import type { ReplayPosition } from '@domain/playback';
 import type { OnIceIndex, TimedShift } from '@domain/onIce';
 import { playTime } from '@domain/plays';
 import { lastIndexWhere } from '@domain/search';
-import type { GameElapsed, Play } from '@domain/types';
+import type { GameElapsed, Play, PlayType } from '@domain/types';
 
 export type ReplayStep = ReplayPosition;
 
 export const LINE_CHANGE = 'line-change';
 
-export const stepType = (step: ReplayStep, plays: Play[]): string =>
+export type StepType = PlayType | typeof LINE_CHANGE;
+
+export const STEP_TYPES: StepType[] = [...Object.values(PLAY_TYPES), LINE_CHANGE];
+
+export const stepTypeLabel = (type: StepType): string => (type === LINE_CHANGE ? 'Line change' : PLAY_TYPE_LABELS[type]);
+
+export const stepType = (step: ReplayStep, plays: Play[]): StepType =>
    step.changedTeamId ? LINE_CHANGE : plays[step.index].typeDescKey;
 
 export function replaySteps(plays: Play[], shifts: TimedShift[], teamOrder: number[]): ReplayStep[] {
