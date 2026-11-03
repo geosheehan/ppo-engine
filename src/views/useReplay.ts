@@ -15,6 +15,7 @@ export function useReplay() {
 
    // Computed once per game. Nothing here changes while stepping through plays.
    const penaltyPlays = useMemo(() => new Map(plays.filter(isPenalty).map((play) => [play.eventId, play])), [plays]);
+   const goalEffects = useMemo(() => new Map(penaltyResult.goals.map((goal) => [goal.goalEventId, goal])), [penaltyResult]);
    const steps = useMemo(() => replaySteps(plays, shifts, [game.awayTeam.id, game.homeTeam.id]), [plays, shifts, game]);
 
    // The only replay state: which play we're on, and the game time. Between plays a live replay runs the clock on
@@ -44,7 +45,7 @@ export function useReplay() {
       changedTeamId,
       lineChange: changedTeamId ? lineChangeAt(shifts, changedTeamId, steps[stepIndex].time) : undefined,
       calledPenalty: play.typeDescKey === 'delayed-penalty' ? delayedPenaltyCall(plays, index) : undefined,
-      goalEffect:penaltyResult.goals.find((goal) => goal.goalEventId === play.eventId),
+      goalEffect: goalEffects.get(play.eventId),
       snapshot: snapshotAt(penaltyResult, penaltyPlays, time),
       onIce: onIceAt(shifts, play, time, teamsYetToChange(steps, stepIndex)),
       totals: totalsAt(powerPlays, time),

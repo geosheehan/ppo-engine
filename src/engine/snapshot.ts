@@ -1,6 +1,6 @@
 import type { GameElapsed, PenaltyPlay } from '@domain/types';
 import { playTime } from '@domain/plays';
-import type { PenaltyEngineResult, ServedPenalty, Strength } from '@engine/types';
+import type { PenaltyEngineResult, ServedPenalty, Strength, StrengthInterval } from '@engine/types';
 
 export type ClockedPenalty = {
    served: ServedPenalty;
@@ -27,9 +27,22 @@ function remainingAt(served: ServedPenalty, play: PenaltyPlay, time: GameElapsed
    return served.start + play.details.duration * 60 - time;
 }
 
+function intervalAt(intervals: StrengthInterval[], time: GameElapsed): StrengthInterval | undefined {
+   let low = 0;
+   let high = intervals.length - 1;
+   while (low <= high) {
+      const middle = Math.floor((low + high) / 2);
+      const interval = intervals[middle];
+      if (time < interval.start) high = middle - 1;
+      else if (time >= interval.end) low = middle + 1;
+      else return interval;
+   }
+   return undefined;
+}
+
 export function snapshotAt(result: PenaltyEngineResult, penaltyPlays: Map<number, PenaltyPlay>, time: GameElapsed): Snapshot {
-   const strInterval = result.strengthIntervals.find((s) => s.start <= time && time < s.end);
-   const strength = strInterval ? { away: strInterval.away, home: strInterval.home } : { away: 5, home: 5 };
+   const interval = intervalAt(result.strengthIntervals, time);
+   const strength = interval ? { away: interval.away, home: interval.home } : { away: 5, home: 5 };
 
    const onClock: ClockedPenalty[] = [];
    const queued: QueuedPenalty[] = [];

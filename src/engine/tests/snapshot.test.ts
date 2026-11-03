@@ -51,6 +51,23 @@ describe('snapshotAt', () => {
       expect(snapshotAt(releasedMinor, penaltyPlays, 1065).strength).toEqual({ away: 5, home: 5 });
    });
 
+   it('finds the strength among several intervals, including at their edges', () => {
+      const result: PenaltyEngineResult = {
+         timeline: [],
+         servedPenalties: [],
+         strengthIntervals: [
+            { away: 5, home: 5, start: 0, end: 60 },
+            { away: 5, home: 4, start: 60, end: 120 },
+            { away: 5, home: 3, start: 120, end: 150 },
+            { away: 5, home: 4, start: 150, end: 240 },
+         ],
+         goals: [],
+      };
+      const strengthAt = (time: number) => snapshotAt(result, plays(), time).strength;
+      expect([0, 59, 60, 119, 120, 149, 150, 239, 240].map(strengthAt).map(({ away, home }) => `${away}v${home}`))
+         .toEqual(['5v5', '5v5', '5v4', '5v4', '5v3', '5v3', '5v4', '5v4', '5v5']);
+   });
+
    it('lists a called penalty as queued until a penalty clock frees up', () => {
       // Called at 16:10 but waits until 18:10 (1090 s) for a clock.
       const result: PenaltyEngineResult = {
