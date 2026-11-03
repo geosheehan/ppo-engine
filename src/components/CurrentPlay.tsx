@@ -7,8 +7,8 @@ import { penaltyDisplayName } from '@domain/penalties.ts';
 import { playerShortName } from '@domain/players.ts';
 import { playTypeLabel } from '@domain/plays.ts';
 import { LINE_CHANGE } from '@domain/steps.ts';
-import { goalSituation } from '@engine/opportunities.ts';
-import type { GoalSituation } from '@engine/opportunities.ts';
+import { goalSituation } from '@engine/powerPlayCounter.ts';
+import type { GoalSituation } from '@engine/powerPlayCounter.ts';
 import type { GoalEffect } from '@engine/types.ts';
 
 type CurrentPlayProps = {

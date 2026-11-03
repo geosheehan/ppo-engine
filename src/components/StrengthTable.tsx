@@ -4,7 +4,7 @@ import { useGame } from '@context/useGame.ts';
 import { secondsToClock } from '@domain/clock.ts';
 import { textColorOn } from '@domain/colors.ts';
 import TeamChip from '@components/TeamChip.tsx';
-import type { OpportunityTotal } from '@engine/opportunities.ts';
+import type { OpportunityTotal } from '@engine/powerPlayCounter.ts';
 import { strengthLabel } from '@engine/strength.ts';
 import type { Side } from '@domain/types.ts';
 import type { Strength } from '@engine/types.ts';

@@ -139,6 +139,7 @@ class PenaltyEngine {
       if (gameEnd !== undefined) {
          this.advanceTo(gameEnd);
          this.servedPenalties.push(...this.penaltyBoxes.away.closeAll(gameEnd, 'gameEnd'), ...this.penaltyBoxes.home.closeAll(gameEnd, 'gameEnd'));
+         this.updateStrength(gameEnd, true);
          this.closeStrengthInterval(gameEnd);
       } else {
          this.advanceTo(Infinity, 'projected');

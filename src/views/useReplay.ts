@@ -6,16 +6,15 @@ import type { ReplayPosition } from '@domain/playback.ts';
 import { lineChangeAt, replaySteps, stepIndexAt, teamsYetToChange } from '@domain/steps.ts';
 import { isGoal, isPenalty } from '@domain/types.ts';
 import { snapshotAt } from '@engine/snapshot.ts';
-import { opportunityTotals } from '@engine/opportunities.ts';
+import { totalsAt } from '@engine/powerPlayCounter.ts';
 import type { Side } from '@domain/types.ts';
 
 // The state of the game at the play being replayed, and a way to move between plays.
 export function useReplay() {
-   const { game, plays, shifts, penaltyResult, defendingSides } = useGame();
+   const { game, plays, shifts, penaltyResult, powerPlays, defendingSides } = useGame();
 
    // Computed once per game. Nothing here changes while stepping through plays.
    const penaltyPlays = useMemo(() => new Map(plays.filter(isPenalty).map((play) => [play.eventId, play])), [plays]);
-   const goalPlays = useMemo(() => new Map(plays.filter(isGoal).map((play) => [play.eventId, play])), [plays]);
    const steps = useMemo(() => replaySteps(plays, shifts, [game.awayTeam.id, game.homeTeam.id]), [plays, shifts, game]);
 
    // The only replay state: which play we're on, and the game time. Between plays a live replay runs the clock on
@@ -48,7 +47,7 @@ export function useReplay() {
       goalEffect:penaltyResult.goals.find((goal) => goal.goalEventId === play.eventId),
       snapshot: snapshotAt(penaltyResult, penaltyPlays, time),
       onIce: onIceAt(shifts, play, time, teamsYetToChange(steps, stepIndex)),
-      totals: opportunityTotals(penaltyResult, goalPlays, time),
+      totals: totalsAt(powerPlays, time),
       score: { away: lastGoal?.details.awayScore ?? 0, home: lastGoal?.details.homeScore ?? 0 },
       homeOnLeft,
       sides,
