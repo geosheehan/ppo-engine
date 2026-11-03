@@ -1,6 +1,6 @@
 import '@views/ReplayView.css';
 import type { CSSProperties } from 'react';
-import { useGame } from '@context/GameContext.tsx';
+import { useGame } from '@context/useGame.ts';
 import { isGoal } from '@domain/types.ts';
 import { useReplay } from '@views/useReplay.ts';
 import CurrentPlay from '@components/CurrentPlay.tsx';

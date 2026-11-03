@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { useGame } from '@context/GameContext.tsx';
+import { useGame } from '@context/useGame.ts';
 import { onIceAt } from '@domain/onIce.ts';
 import { delayedPenaltyCall } from '@domain/plays.ts';
 import type { ReplayPosition } from '@domain/playback.ts';

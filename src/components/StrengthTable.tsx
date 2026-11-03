@@ -1,6 +1,6 @@
 import '@components/StrengthTable.css';
 import type { CSSProperties } from 'react';
-import { useGame } from '@context/GameContext.tsx';
+import { useGame } from '@context/useGame.ts';
 import { secondsToClock } from '@domain/clock.ts';
 import { textColorOn } from '@domain/colors.ts';
 import TeamChip from '@components/TeamChip.tsx';

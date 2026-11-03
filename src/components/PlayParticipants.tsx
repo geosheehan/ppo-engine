@@ -1,5 +1,5 @@
 import '@components/PlayParticipants.css';
-import { useGame } from '@context/GameContext.tsx';
+import { useGame } from '@context/useGame.ts';
 import { layoutParticipants } from '@domain/participantLayout.ts';
 import type { ParticipantLayout } from '@domain/participantLayout.ts';
 import { playParticipants } from '@domain/participants.ts';

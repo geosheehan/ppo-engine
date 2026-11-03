@@ -1,5 +1,5 @@
 import '@components/Scoreboard.css';
-import { useGame } from '@context/GameContext.tsx';
+import { useGame } from '@context/useGame.ts';
 import { secondsToClock } from '@domain/clock.ts';
 import { periodLabel, periodTimeLeft } from '@domain/plays.ts';
 import type { Play } from '@domain/types.ts';

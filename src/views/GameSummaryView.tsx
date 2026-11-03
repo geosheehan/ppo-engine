@@ -1,4 +1,4 @@
-import { useGame } from '@context/GameContext.tsx';
+import { useGame } from '@context/useGame.ts';
 import type { Team } from '@domain/types.ts';
 import PenaltyTable from '@components/PenaltyTable.tsx';
 import PenaltyChart from '@components/PenaltyChart.tsx';

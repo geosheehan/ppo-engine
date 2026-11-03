@@ -1,5 +1,5 @@
 import '@components/PenaltyCard.css';
-import { useGame } from '@context/GameContext.tsx';
+import { useGame } from '@context/useGame.ts';
 import { secondsToClock } from '@domain/clock.ts';
 import { penaltyDisplayName } from '@domain/penalties.ts';
 import type { ClockedPenalty } from '@engine/snapshot.ts';

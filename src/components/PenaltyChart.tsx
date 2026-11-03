@@ -1,7 +1,7 @@
 import '@components/PenaltyChart.css';
 import { useMemo } from 'react';
 import type { CSSProperties } from 'react';
-import { useGame } from '@context/GameContext.tsx';
+import { useGame } from '@context/useGame.ts';
 import { chartMoments, momentClock, momentPeriod } from '@domain/penaltyChart.ts';
 import { penaltyDisplayName } from '@domain/penalties.ts';
 import { playerShortName } from '@domain/players.ts';

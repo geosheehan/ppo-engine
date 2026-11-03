@@ -1,5 +1,5 @@
 import '@components/CurrentPlay.css';
-import { useGame } from '@context/GameContext.tsx';
+import { useGame } from '@context/useGame.ts';
 import TeamChip from '@components/TeamChip.tsx';
 import { isGoal, isPenalty } from '@domain/types.ts';
 import type { Play } from '@domain/types.ts';

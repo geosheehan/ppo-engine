@@ -1,4 +1,4 @@
-import { useGame } from '@context/GameContext.tsx';
+import { useGame } from '@context/useGame.ts';
 import { attackedNet, boundToIce } from '@domain/rink.ts';
 import { isGoal } from '@domain/types.ts';
 import type { Play } from '@domain/types.ts';
