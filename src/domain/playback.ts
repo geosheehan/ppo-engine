@@ -1,4 +1,4 @@
-import { gameSeconds } from '@domain/clock';
+import { playTime } from '@domain/plays';
 import { isGoal } from '@domain/types';
 import type { Play } from '@domain/types';
 
@@ -9,8 +9,6 @@ export type ReplayPosition = {
 };
 
 const SAME_SECOND_HOLD_MS = 3000;
-
-const timeOf = (play: Play): number => gameSeconds(play.periodDescriptor.number, play.timeInPeriod);
 
 export function livePosition(
    plays: Play[],
@@ -23,8 +21,8 @@ export function livePosition(
    let left = elapsedMs;
 
    while (index < plays.length - 1) {
-      const playAt = timeOf(plays[index]);
-      const nextAt = timeOf(plays[index + 1]);
+      const playAt = playTime(plays[index]);
+      const nextAt = playTime(plays[index + 1]);
 
       if (time === playAt) {
          let hold = 0;
