@@ -103,6 +103,7 @@ export type ShiftChart = {
 export type Game = {
    season: number;
    gameType: number; 
+   regPeriods: number;
    homeTeam: Team;
    awayTeam: Team;
    plays: Play[];
