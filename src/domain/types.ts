@@ -1,3 +1,5 @@
+export type GameElapsed = number;
+
 export type Side = 'away' | 'home';
 
 export const otherSide = (side: Side): Side => (side === 'home' ? 'away' : 'home');

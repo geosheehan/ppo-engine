@@ -13,15 +13,15 @@ import { EVENT_TYPES, playTypeLabel } from '@domain/plays.ts';
 import { LINE_CHANGE, stepType } from '@domain/steps.ts';
 import type { ReplayStep } from '@domain/steps.ts';
 import { isGoal } from '@domain/types.ts';
-import type { Play } from '@domain/types.ts';
+import type { GameElapsed, Play } from '@domain/types.ts';
 
 type ReplayControlsProps = {
    index: number;
-   time: number;
+   time: GameElapsed;
    plays: Play[];
    steps: ReplayStep[];
    stepIndex: number;
-   onChange: (index: number, time?: number, changedTeamId?: number) => void;
+   onChange: (index: number, time?: GameElapsed, changedTeamId?: number) => void;
 };
 
 type Playback = { label: string } & (

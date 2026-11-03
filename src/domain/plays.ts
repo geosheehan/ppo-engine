@@ -1,9 +1,9 @@
 import { clockToSeconds, gameSeconds, PERIOD_SECONDS } from '@domain/clock';
 import { descKeyToLabel } from '@domain/labels';
 import { isPenalty } from '@domain/types';
-import type { PenaltyPlay, Play } from '@domain/types';
+import type { GameElapsed, PenaltyPlay, Play } from '@domain/types';
 
-export const playTime = (play: Play) => gameSeconds(play.periodDescriptor.number, play.timeInPeriod);
+export const playTime = (play: Play): GameElapsed => gameSeconds(play.periodDescriptor.number, play.timeInPeriod);
 
 // Game time first; sortOrder breaks ties between plays in the same second.
 export const byGameOrder = (a: Play, b: Play) => playTime(a) - playTime(b) || a.sortOrder - b.sortOrder;
@@ -24,7 +24,7 @@ export const EVENT_TYPES: string[] = [
    'takeaway',
 ];
 
-export const periodTimeLeft = (play: Play, time: number): number => {
+export const periodTimeLeft = (play: Play, time: GameElapsed): number => {
    const periodStart = (play.periodDescriptor.number - 1) * PERIOD_SECONDS;
    const periodLength = clockToSeconds(play.timeInPeriod) + clockToSeconds(play.timeRemaining);
    return periodLength - (time - periodStart);

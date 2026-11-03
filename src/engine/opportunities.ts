@@ -1,4 +1,4 @@
-import type { GoalPlay, Side } from '@domain/types';
+import type { GameElapsed, GoalPlay, Side } from '@domain/types';
 import { otherSide } from '@domain/types';
 import { playTime } from '@domain/plays';
 import { isSameStrength, strengthLabel } from '@engine/strength';
@@ -7,7 +7,7 @@ import type { GoalEffect, PenaltyEngineResult, Strength } from '@engine/types';
 export type Opportunity = {
    side: Side;
    strength: Strength;
-   time: number;
+   time: GameElapsed;
 };
 
 export type OpportunityTotal = {
@@ -48,7 +48,7 @@ function powerPlayGoalTimes(result: PenaltyEngineResult, goalPlays: Map<number, 
 // Times a different penalty took over a penalty clock in the same second another one ended:
 // a queued penalty starting, or a player's minor following their major. The second half of a
 // double minor has the same penaltyEventId, so it isn't a takeover.
-function takeoverTimes(result: PenaltyEngineResult): number[] {
+function takeoverTimes(result: PenaltyEngineResult): GameElapsed[] {
    return result.servedPenalties
       .filter((next) => result.servedPenalties.some((previous) => previous.side === next.side
          && previous.penaltyClock === next.penaltyClock
@@ -58,7 +58,7 @@ function takeoverTimes(result: PenaltyEngineResult): number[] {
 }
 
 // Times the second half of a double minor started running, by the side serving it.
-function secondHalfStarts(result: PenaltyEngineResult): { side: Side; time: number }[] {
+function secondHalfStarts(result: PenaltyEngineResult): { side: Side; time: GameElapsed }[] {
    return result.servedPenalties
       .filter((penalty) => penalty.doubleMinorHalf === 2 && !penalty.coincidental)
       .map((penalty) => ({ side: penalty.side, time: penalty.start }));
@@ -75,7 +75,7 @@ function secondHalfStarts(result: PenaltyEngineResult): { side: Side; time: numb
 //    own opportunity, typed by the strength when that half starts, so a double minor is 0/2.
 //    A goal in the first half starts the second half early; it isn't a third opportunity.
 // Short-handed and penalty-shot goals neither start nor end an opportunity.
-export function powerPlayOpportunities(result: PenaltyEngineResult, goalPlays: Map<number, GoalPlay>, time = Infinity): Opportunity[] {
+export function powerPlayOpportunities(result: PenaltyEngineResult, goalPlays: Map<number, GoalPlay>, time: GameElapsed = Infinity): Opportunity[] {
    const goals = powerPlayGoalTimes(result, goalPlays);
    const takeovers = takeoverTimes(result);
    const secondHalves = secondHalfStarts(result);
@@ -95,7 +95,7 @@ export function powerPlayOpportunities(result: PenaltyEngineResult, goalPlays: M
          }
 
          // Rules 2 and 3 only apply inside the interval, where the strength doesn't change.
-         const inside = (at: number) => interval.start < at && at < interval.end && at <= time;
+         const inside = (at: GameElapsed) => interval.start < at && at < interval.end && at <= time;
          const goalSplits = goals
             .filter((scored) => scored.goal.side === side && isSameStrength(scored.goal.strength, strength))
             .map((scored) => scored.time);
@@ -117,7 +117,7 @@ export function powerPlayOpportunities(result: PenaltyEngineResult, goalPlays: M
 
 // Opportunities, power-play goals and power-play time per team and strength, up to `time`.
 // Goals and time are counted by the strength they happened at, separately from the opportunities.
-export function opportunityTotals(result: PenaltyEngineResult, goalPlays: Map<number, GoalPlay>, time = Infinity): Record<Side, OpportunityTotal[]> {
+export function opportunityTotals(result: PenaltyEngineResult, goalPlays: Map<number, GoalPlay>, time: GameElapsed = Infinity): Record<Side, OpportunityTotal[]> {
    const totals: Record<Side, Map<string, OpportunityTotal>> = { away: new Map(), home: new Map() };
    const totalFor = (side: Side, strength: Strength): OpportunityTotal => {
       const label = strengthLabel(strength, side);

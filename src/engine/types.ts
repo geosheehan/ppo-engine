@@ -1,4 +1,4 @@
-import type { Side } from '@domain/types';
+import type { GameElapsed, Side } from '@domain/types';
 
 export type PenaltyClock = 0 | 1;
 
@@ -14,16 +14,16 @@ export type ServedPenalty = {
    penaltyClock: PenaltyClock;
    kind: PenaltyKind;
    doubleMinorHalf?: 1 | 2;
-   start: number;
-   end: number;
+   start: GameElapsed;
+   end: GameElapsed;
    endReason: PenaltyEndReason;
    releasedByGoalId?: number;
    coincidental: boolean;
 };
 
 export type StrengthInterval = Strength & {
-   start: number;
-   end: number;
+   start: GameElapsed;
+   end: GameElapsed;
 };
 
 export type GoalEffect = {

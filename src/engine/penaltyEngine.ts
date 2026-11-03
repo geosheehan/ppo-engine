@@ -1,4 +1,4 @@
-import type { Game, GoalPlay, PenaltyPlay, Play, Side } from '@domain/types';
+import type { Game, GameElapsed, GoalPlay, PenaltyPlay, Play, Side } from '@domain/types';
 import { isGoal, isPenalty, otherSide } from '@domain/types';
 import { indexGame } from '@domain/game';
 import { byGameOrder, playTime } from '@domain/plays';
@@ -20,9 +20,9 @@ class PenaltyEngine {
    private readonly servedPenalties: ServedPenalty[] = [];
    private readonly strengthIntervals: StrengthInterval[] = [];
    private readonly goals: GoalEffect[] = [];
-   private strengthStart = 0;
+   private strengthStart: GameElapsed = 0;
    // The latest game time the engine has reached, in game seconds like playTime.
-   private currentTime = 0;
+   private currentTime: GameElapsed = 0;
 
    constructor(game: Game) {
       this.game = game;
@@ -56,7 +56,7 @@ class PenaltyEngine {
 
    // Penalties run out between plays. Each expiry can start a queued penalty, which may itself
    // run out before `time`, so keep going until nothing expires before it.
-   private advanceTo(time: number, reason: PenaltyEndReason = 'expired'): void {
+   private advanceTo(time: GameElapsed, reason: PenaltyEndReason = 'expired'): void {
       for (;;) {
          const next = earliest(this.penaltyBoxes.away.nextExpiry(), this.penaltyBoxes.home.nextExpiry());
          if (next === undefined || next > time) break;
@@ -66,7 +66,7 @@ class PenaltyEngine {
       this.currentTime = Math.max(this.currentTime, time);
    }
 
-   private handleGoal(goal: GoalPlay, time: number, plays: Play[]): void {
+   private handleGoal(goal: GoalPlay, time: GameElapsed, plays: Play[]): void {
       const side = this.sideOf(goal.details.eventOwnerTeamId);
       const against = otherSide(side);
       const strengthAtGoal = this.onIce.current;
@@ -89,7 +89,7 @@ class PenaltyEngine {
       this.updateStrength(time, true);
    }
 
-   private handlePenalties(called: PenaltyPlay[], time: number, plays: Play[]): void {
+   private handlePenalties(called: PenaltyPlay[], time: GameElapsed, plays: Play[]): void {
       const penalties = called
          .filter((penalty) => STRENGTH_SEVERITIES.has(penalty.details.typeCode))
          .map((penalty): CalledPenalty => ({
@@ -123,7 +123,7 @@ class PenaltyEngine {
       }
    }
 
-   private updateStrength(time: number, atStoppage: boolean): void {
+   private updateStrength(time: GameElapsed, atStoppage: boolean): void {
       const prevStrength = this.onIce.current;
       const running: Strength = { away: this.penaltyBoxes.away.runningClockCount, home: this.penaltyBoxes.home.runningClockCount };
       const nextStrength = this.onIce.update(running, isThreeOnThreeOvertime(this.game, time), atStoppage);
@@ -134,19 +134,19 @@ class PenaltyEngine {
       this.currentTime = Math.max(this.currentTime, time);
    }
 
-   private closeStrengthInterval(time: number, strength: Strength = this.onIce.current): void {
+   private closeStrengthInterval(time: GameElapsed, strength: Strength = this.onIce.current): void {
       if (time > this.strengthStart) this.strengthIntervals.push({ ...strength, start: this.strengthStart, end: time });
    }
 }
 
-const earliest = (...times: (number | undefined)[]) => {
-   const defined = times.filter((time): time is number => time !== undefined);
+const earliest = (...times: (GameElapsed | undefined)[]) => {
+   const defined = times.filter((time): time is GameElapsed => time !== undefined);
    return defined.length > 0 ? Math.min(...defined) : undefined;
 };
 
 // Penalties called in the same second were called at the same stoppage.
-function groupPenaltiesByTime(plays: Play[]): Map<number, PenaltyPlay[]> {
-   const penaltiesByTime = new Map<number, PenaltyPlay[]>();
+function groupPenaltiesByTime(plays: Play[]): Map<GameElapsed, PenaltyPlay[]> {
+   const penaltiesByTime = new Map<GameElapsed, PenaltyPlay[]>();
    for (const play of plays.filter(isPenalty)) {
       const time = playTime(play);
       penaltiesByTime.set(time, [...(penaltiesByTime.get(time) ?? []), play]);
@@ -154,7 +154,7 @@ function groupPenaltiesByTime(plays: Play[]): Map<number, PenaltyPlay[]> {
    return penaltiesByTime;
 }
 
-function findGameEnd(plays: Play[]): number | undefined {
+function findGameEnd(plays: Play[]): GameElapsed | undefined {
    if (!plays.some((play) => play.typeDescKey === 'game-end')) return undefined;
    return Math.max(...plays.filter((play) => play.typeDescKey === 'period-end' || play.typeDescKey === 'game-end').map(playTime));
 }

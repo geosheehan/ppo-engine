@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { livePosition } from '@domain/playback.ts';
 import type { ReplayPosition } from '@domain/playback.ts';
-import type { Play } from '@domain/types.ts';
+import type { GameElapsed, Play } from '@domain/types.ts';
 import { SHOT_ANIMATION_MS } from '@components/useShotProgress.ts';
 
 const TICK_MS = 50;
@@ -13,7 +13,7 @@ export function useLivePlayback(
    speed: number,
    plays: Play[],
    position: ReplayPosition,
-   onChange: (index: number, time: number) => void,
+   onChange: (index: number, time: GameElapsed) => void,
 ) {
    const positionRef = useRef(position);
    useEffect(() => {

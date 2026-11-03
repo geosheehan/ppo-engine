@@ -3,12 +3,12 @@ import { useGame } from '@context/useGame.ts';
 import { secondsToClock } from '@domain/clock.ts';
 import { playPeriodLabel } from '@domain/labels.ts';
 import { periodTimeLeft } from '@domain/plays.ts';
-import type { Play, Side } from '@domain/types.ts';
+import type { GameElapsed, Play, Side } from '@domain/types.ts';
 import TeamChip from '@components/TeamChip.tsx';
 
 type ScoreboardProps = {
    play: Play;
-   time: number;
+   time: GameElapsed;
    score: { away: number; home: number };
    homeOnLeft: boolean;
    scoringSide?: Side;

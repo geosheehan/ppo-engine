@@ -7,7 +7,7 @@ import { periodLabel } from '@domain/labels.ts';
 import { penaltyDisplayName } from '@domain/penalties.ts';
 import { playerShortName } from '@domain/players.ts';
 import { runPenaltyEngine } from '@engine/penaltyEngine.ts';
-import type { Side } from '@domain/types.ts';
+import type { GameElapsed, Side } from '@domain/types.ts';
 import type { PenaltyClock } from '@engine/types.ts';
 
 const SIDES: Side[] = ['away', 'home'];
@@ -23,7 +23,7 @@ function PenaltyChart() {
 
    const moments = chartMoments(served);
    // Each moment is a column line, after the team label column.
-   const line = (time: number): number => moments.indexOf(time) + 2;
+   const line = (time: GameElapsed): number => moments.indexOf(time) + 2;
    const startsPeriod = (i: number): boolean => i === 0 || momentPeriod(moments[i - 1]) !== momentPeriod(moments[i]);
 
    return (

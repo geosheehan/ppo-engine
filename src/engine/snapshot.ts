@@ -1,4 +1,4 @@
-import type { PenaltyPlay } from '@domain/types';
+import type { GameElapsed, PenaltyPlay } from '@domain/types';
 import { playTime } from '@domain/plays';
 import type { PenaltyEngineResult, ServedPenalty, Strength } from '@engine/types';
 
@@ -19,7 +19,7 @@ export type Snapshot = {
    queued: QueuedPenalty[];
 };
 
-function remainingAt(served: ServedPenalty, play: PenaltyPlay, time: number): number {
+function remainingAt(served: ServedPenalty, play: PenaltyPlay, time: GameElapsed): number {
    if (served.doubleMinorHalf) {
       const halfLeft = served.start + 120 - time;
       return served.doubleMinorHalf === 1 ? halfLeft + 120 : halfLeft;
@@ -27,7 +27,7 @@ function remainingAt(served: ServedPenalty, play: PenaltyPlay, time: number): nu
    return served.start + play.details.duration * 60 - time;
 }
 
-export function snapshotAt(result: PenaltyEngineResult, penaltyPlays: Map<number, PenaltyPlay>, time: number): Snapshot {
+export function snapshotAt(result: PenaltyEngineResult, penaltyPlays: Map<number, PenaltyPlay>, time: GameElapsed): Snapshot {
    const strInterval = result.strengthIntervals.find((s) => s.start <= time && time < s.end);
    const strength = strInterval ? { away: strInterval.away, home: strInterval.home } : { away: 5, home: 5 };
 

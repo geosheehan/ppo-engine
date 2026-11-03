@@ -1,10 +1,10 @@
 import { playTime } from '@domain/plays';
 import { isGoal } from '@domain/types';
-import type { Play } from '@domain/types';
+import type { GameElapsed, Play } from '@domain/types';
 
 export type ReplayPosition = {
    index: number;
-   time: number;
+   time: GameElapsed;
    changedTeamId?: number;
 };
 

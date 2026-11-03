@@ -1,3 +1,5 @@
+import type { GameElapsed } from '@domain/types';
+
 export const PERIOD_SECONDS = 20 * 60;
 
 export const clockToSeconds = (clock: string): number => {
@@ -5,7 +7,7 @@ export const clockToSeconds = (clock: string): number => {
    return (mins * 60) + secs;
 };
 
-export const gameSeconds = (period: number, clock: string): number => {
+export const gameSeconds = (period: number, clock: string): GameElapsed => {
    return (period - 1) * PERIOD_SECONDS + clockToSeconds(clock);
 };
 

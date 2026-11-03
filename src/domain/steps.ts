@@ -1,7 +1,7 @@
 import type { ReplayPosition } from '@domain/playback';
 import type { TimedShift } from '@domain/onIce';
 import { playTime } from '@domain/plays';
-import type { Play } from '@domain/types';
+import type { GameElapsed, Play } from '@domain/types';
 
 export type ReplayStep = ReplayPosition;
 
@@ -17,7 +17,7 @@ export function replaySteps(plays: Play[], shifts: TimedShift[], teamOrder: numb
    }));
    const playTimes = new Set(playSteps.map(({ time }) => time));
 
-   const changedTeams = new Map<number, Set<number>>();
+   const changedTeams = new Map<GameElapsed, Set<number>>();
    for (const { teamId, start, end } of shifts) {
       for (const time of [start, end]) {
          if (playTimes.has(time)) continue;
@@ -48,7 +48,7 @@ export type LineChange = {
    on: number[];
 };
 
-export function lineChangeAt(shifts: TimedShift[], teamId: number, time: number): LineChange {
+export function lineChangeAt(shifts: TimedShift[], teamId: number, time: GameElapsed): LineChange {
    const team = shifts.filter((shift) => shift.teamId === teamId);
    const off = team.filter(({ end }) => end === time).map(({ playerId }) => playerId);
    const on = team.filter(({ start }) => start === time).map(({ playerId }) => playerId);

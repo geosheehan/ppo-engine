@@ -1,12 +1,12 @@
 import type { Sentence } from '@engine/assessment';
-import type { Side } from '@domain/types';
+import type { GameElapsed, Side } from '@domain/types';
 import type { PenaltyClock, PenaltyEndReason, ServedPenalty } from '@engine/types';
 
 type Serving = {
    sentence: Sentence;
    penaltyIndex: number;
-   penaltyStart: number;
-   expiresAt: number;
+   penaltyStart: GameElapsed;
+   expiresAt: GameElapsed;
 };
 
 
@@ -28,7 +28,7 @@ export class PenaltyBox {
    }
 
    // Moves the front of the queue onto each free penalty clock, left clock first.
-   private fillFreePenaltyClocks(time: number): void {
+   private fillFreePenaltyClocks(time: GameElapsed): void {
       for (const penaltyClock of [0, 1] as const) {
          if (this.penaltyClocks[penaltyClock] === null && this.queue.length > 0) {
             this.penaltyClocks[penaltyClock] = startPenalty(this.queue.shift()!, 0, time);
@@ -36,17 +36,17 @@ export class PenaltyBox {
       }
    }
 
-   nextExpiry(): number | undefined {
+   nextExpiry(): GameElapsed | undefined {
       const times = this.penaltyClocks.flatMap((serving) => (serving ? [serving.expiresAt] : []));
       return times.length > 0 ? Math.min(...times) : undefined;
    }
 
-   add(sentence: Sentence, time: number): void {
+   add(sentence: Sentence, time: GameElapsed): void {
       this.queue.push(sentence);
       this.fillFreePenaltyClocks(time);
    }
 
-   expireAt(time: number, reason: PenaltyEndReason = 'expired'): ServedPenalty[] {
+   expireAt(time: GameElapsed, reason: PenaltyEndReason = 'expired'): ServedPenalty[] {
       const closed: ServedPenalty[] = [];
       for (const penaltyClock of [0, 1] as const) {
          if (this.penaltyClocks[penaltyClock]?.expiresAt === time) closed.push(this.endPenalty(penaltyClock, time, reason));
@@ -55,7 +55,7 @@ export class PenaltyBox {
       return closed;
    }
 
-   releaseOnGoal(time: number, goalEventId: number): ServedPenalty | undefined {
+   releaseOnGoal(time: GameElapsed, goalEventId: number): ServedPenalty | undefined {
       let chosen: PenaltyClock | undefined;
       for (const penaltyClock of [0, 1] as const) {
          const serving = this.penaltyClocks[penaltyClock];
@@ -69,7 +69,7 @@ export class PenaltyBox {
       return released;
    }
 
-   closeAll(time: number, reason: PenaltyEndReason): ServedPenalty[] {
+   closeAll(time: GameElapsed, reason: PenaltyEndReason): ServedPenalty[] {
       const closed: ServedPenalty[] = [];
       for (const penaltyClock of [0, 1] as const) {
          const serving = this.penaltyClocks[penaltyClock];
@@ -80,7 +80,7 @@ export class PenaltyBox {
       return closed;
    }
 
-   private endPenalty(penaltyClock: PenaltyClock, time: number, reason: PenaltyEndReason, goalEventId?: number): ServedPenalty {
+   private endPenalty(penaltyClock: PenaltyClock, time: GameElapsed, reason: PenaltyEndReason, goalEventId?: number): ServedPenalty {
       const serving = this.penaltyClocks[penaltyClock]!;
       const served = toServedPenalty(serving, this.side, penaltyClock, time, reason, goalEventId);
       const nextIndex = serving.penaltyIndex + 1;
@@ -93,16 +93,16 @@ export class PenaltyBox {
 
 const currentPenalty = (serving: Serving) => serving.sentence.penalties[serving.penaltyIndex];
 
-function timeOnClock(serving: Serving, time: number): number {
+function timeOnClock(serving: Serving, time: GameElapsed): number {
    const later = serving.sentence.penalties.slice(serving.penaltyIndex + 1).reduce((sum, penalty) => sum + penalty.seconds, 0);
    return serving.expiresAt - time + later;
 }
 
-function startPenalty(sentence: Sentence, penaltyIndex: number, time: number): Serving {
+function startPenalty(sentence: Sentence, penaltyIndex: number, time: GameElapsed): Serving {
    return { sentence, penaltyIndex, penaltyStart: time, expiresAt: time + sentence.penalties[penaltyIndex].seconds };
 }
 
-function toServedPenalty(serving: Serving, side: Side, penaltyClock: PenaltyClock, end: number, endReason: PenaltyEndReason, releasedByGoalId?: number): ServedPenalty {
+function toServedPenalty(serving: Serving, side: Side, penaltyClock: PenaltyClock, end: GameElapsed, endReason: PenaltyEndReason, releasedByGoalId?: number): ServedPenalty {
    const penalty = currentPenalty(serving);
    return {
       penaltyEventId: penalty.eventId,

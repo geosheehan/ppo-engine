@@ -1,4 +1,4 @@
-import type { Game, Side } from '@domain/types';
+import type { Game, GameElapsed, Side } from '@domain/types';
 import { otherSide } from '@domain/types';
 import { PERIOD_SECONDS } from '@domain/clock';
 import type { Strength } from '@engine/types';
@@ -27,7 +27,7 @@ export function overtimeStrength(entitled: Strength): Strength {
    return advantage > 0 ? { away: leader, home: 3 } : { away: 3, home: leader };
 }
 
-export const isThreeOnThreeOvertime = (game: Game, time: number) =>
+export const isThreeOnThreeOvertime = (game: Game, time: GameElapsed) =>
    game.gameType === 2
    && game.season >= FIRST_THREE_ON_THREE_SEASON
    && Math.floor(time / PERIOD_SECONDS) + 1 > game.regPeriods;

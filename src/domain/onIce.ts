@@ -1,12 +1,12 @@
 import { gameSeconds } from '@domain/clock';
 import { playTime } from '@domain/plays';
-import type { Play, Shift } from '@domain/types';
+import type { GameElapsed, Play, Shift } from '@domain/types';
 
 export type TimedShift = {
    playerId: number;
    teamId: number;
-   start: number;
-   end: number;
+   start: GameElapsed;
+   end: GameElapsed;
 };
 
 const SHIFT_TYPE_CODE = 517;
@@ -24,7 +24,7 @@ export const timedShifts = (shifts: Shift[]): TimedShift[] =>
 
 // Changes happen in the same second as the whistle, so a play at the moment it happens shows the players who were
 // on when it happened, and a faceoff shows the players who came on for it.
-export function onIceAt(shifts: TimedShift[], play: Play, time: number, teamsYetToChange: number[] = []): TimedShift[] {
+export function onIceAt(shifts: TimedShift[], play: Play, time: GameElapsed, teamsYetToChange: number[] = []): TimedShift[] {
    const playAt = playTime(play);
    const atWhistle = time === playAt && !RESTARTS.includes(play.typeDescKey);
    const onIce = shifts.filter(({ teamId, start, end }) =>
