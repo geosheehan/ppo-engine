@@ -13,7 +13,7 @@ function TeamChip({ teamId }: TeamChipProps) {
 
    return (
       <span className="team-chip" style={{ '--chip-color': color, '--chip-text-color': textColorOn(color) } as CSSProperties}>
-         {teamById(teamId)?.abbrev.toUpperCase()}
+         {teamById(teamId)?.abbrev}
       </span>
    );
 };
