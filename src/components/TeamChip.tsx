@@ -1,7 +1,7 @@
 import '@components/TeamChip.css';
 import type { CSSProperties } from 'react';
-import { useGame } from '@context/useGame.ts';
-import { textColorOn } from '@domain/colors.ts';
+import { useGame } from '@context/useGame';
+import { textColorOn } from '@domain/colors';
 
 type TeamChipProps = {
    teamId: number;

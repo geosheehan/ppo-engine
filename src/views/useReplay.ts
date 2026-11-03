@@ -1,14 +1,14 @@
 import { useCallback, useMemo, useState } from 'react';
-import { useGame } from '@context/useGame.ts';
-import { DEFENDING_SIDES, PLAY_TYPES, SIDES } from '@domain/constants.ts';
-import { onIceAt } from '@domain/onIce.ts';
-import { delayedPenaltyCall, playTime, runningScores } from '@domain/plays.ts';
-import type { ReplayPosition } from '@domain/playback.ts';
-import { lineChangeAt, replaySteps, stepIndexAt, teamsYetToChange } from '@domain/steps.ts';
-import { isPenalty } from '@domain/types.ts';
-import { snapshotAt } from '@engine/snapshot.ts';
-import { totalsAt } from '@engine/powerPlayCounter.ts';
-import type { Side } from '@domain/types.ts';
+import { useGame } from '@context/useGame';
+import { DEFENDING_SIDES, PLAY_TYPES, SIDES } from '@domain/constants';
+import { onIceAt } from '@domain/onIce';
+import { delayedPenaltyCall, playTime, runningScores } from '@domain/plays';
+import type { ReplayPosition } from '@domain/playback';
+import { lineChangeAt, replaySteps, stepIndexAt, teamsYetToChange } from '@domain/steps';
+import { isPenalty } from '@domain/types';
+import { snapshotAt } from '@engine/snapshot';
+import { totalsAt } from '@engine/powerPlayCounter';
+import type { Side } from '@domain/types';
 
 // The state of the game at the play being replayed, and a way to move between plays.
 export function useReplay() {

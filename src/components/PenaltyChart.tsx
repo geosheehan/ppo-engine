@@ -1,14 +1,14 @@
 import '@components/PenaltyChart.css';
 import { useMemo } from 'react';
 import type { CSSProperties } from 'react';
-import { useGame } from '@context/useGame.ts';
-import { chartMoments, momentClock, momentPeriod } from '@layout/penaltyChart.ts';
-import { SIDES } from '@domain/constants.ts';
-import { periodLabel } from '@domain/labels.ts';
-import { penaltyDisplayName } from '@domain/penalties.ts';
-import { playerShortName } from '@domain/players.ts';
-import type { GameElapsed, Side } from '@domain/types.ts';
-import type { PenaltyClock } from '@engine/types.ts';
+import { useGame } from '@context/useGame';
+import { chartMoments, momentClock, momentPeriod } from '@layout/penaltyChart';
+import { SIDES } from '@domain/constants';
+import { periodLabel } from '@domain/labels';
+import { penaltyDisplayName } from '@domain/penalties';
+import { playerShortName } from '@domain/players';
+import type { GameElapsed, Side } from '@domain/types';
+import type { PenaltyClock } from '@engine/types';
 
 const TEAM_ROWS: Side[] = [SIDES.AWAY, SIDES.HOME];
 

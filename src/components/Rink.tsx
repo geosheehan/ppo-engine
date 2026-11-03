@@ -1,6 +1,6 @@
 import { useId } from 'react';
 import type { ReactNode } from 'react';
-import { END_ZONE_DOTS, NEUTRAL_DOTS } from '@layout/rink.ts';
+import { END_ZONE_DOTS, NEUTRAL_DOTS } from '@layout/rink';
 
 type RinkProps = {
    className?: string;

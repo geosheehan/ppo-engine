@@ -1,6 +1,6 @@
-import IconFrame from '@components/event-icons/IconFrame.tsx';
-import type { IconProps } from '@components/event-icons/IconFrame.tsx';
-import { filled } from '@components/event-icons/iconStyles.ts';
+import IconFrame from '@components/event-icons/IconFrame';
+import type { IconProps } from '@components/event-icons/IconFrame';
+import { filled } from '@components/event-icons/iconStyles';
 
 function ShotOnGoalIcon(props: IconProps) {
    return (

@@ -1,18 +1,18 @@
 import '@views/ReplayView.css';
 import type { CSSProperties } from 'react';
-import { useGame } from '@context/useGame.ts';
-import { isGoal } from '@domain/types.ts';
-import { useReplay } from '@views/useReplay.ts';
-import CurrentPlay from '@components/CurrentPlay.tsx';
-import OnIcePanel from '@components/OnIcePanel.tsx';
-import PenaltyClocks from '@components/PenaltyClocks.tsx';
-import PlayParticipants from '@components/PlayParticipants.tsx';
-import PlayMarker from '@components/PlayMarker.tsx';
-import ReplayControls from '@components/ReplayControls.tsx';
-import Rink from '@components/Rink.tsx';
-import Scoreboard from '@components/Scoreboard.tsx';
-import ShotLine from '@components/ShotLine.tsx';
-import StrengthTable from '@components/StrengthTable.tsx';
+import { useGame } from '@context/useGame';
+import { isGoal } from '@domain/types';
+import { useReplay } from '@views/useReplay';
+import CurrentPlay from '@components/CurrentPlay';
+import OnIcePanel from '@components/OnIcePanel';
+import PenaltyClocks from '@components/PenaltyClocks';
+import PlayParticipants from '@components/PlayParticipants';
+import PlayMarker from '@components/PlayMarker';
+import ReplayControls from '@components/ReplayControls';
+import Rink from '@components/Rink';
+import Scoreboard from '@components/Scoreboard';
+import ShotLine from '@components/ShotLine';
+import StrengthTable from '@components/StrengthTable';
 
 function ReplayView() {
    const { game, colors, sideOf } = useGame();

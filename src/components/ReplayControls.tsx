@@ -1,19 +1,19 @@
 import { useState, useEffect } from 'react';
 import type { CSSProperties } from 'react';
 import '@components/ReplayControls.css';
-import StartIcon from '@components/replay-icons/StartIcon.tsx';
-import PreviousIcon from '@components/replay-icons/PreviousIcon.tsx';
-import PlayIcon from '@components/replay-icons/PlayIcon.tsx';
-import PauseIcon from '@components/replay-icons/PauseIcon.tsx';
-import NextIcon from '@components/replay-icons/NextIcon.tsx';
-import EndIcon from '@components/replay-icons/EndIcon.tsx';
-import { useLivePlayback } from '@components/useLivePlayback.ts';
-import { SHOT_ANIMATION_MS } from '@components/useShotProgress.ts';
-import { PLAY_TYPES } from '@domain/constants.ts';
-import { STEP_TYPES, stepType, stepTypeLabel } from '@domain/steps.ts';
-import type { ReplayStep, StepType } from '@domain/steps.ts';
-import { isGoal } from '@domain/types.ts';
-import type { GameElapsed, Play } from '@domain/types.ts';
+import StartIcon from '@components/replay-icons/StartIcon';
+import PreviousIcon from '@components/replay-icons/PreviousIcon';
+import PlayIcon from '@components/replay-icons/PlayIcon';
+import PauseIcon from '@components/replay-icons/PauseIcon';
+import NextIcon from '@components/replay-icons/NextIcon';
+import EndIcon from '@components/replay-icons/EndIcon';
+import { useLivePlayback } from '@components/useLivePlayback';
+import { SHOT_ANIMATION_MS } from '@components/useShotProgress';
+import { PLAY_TYPES } from '@domain/constants';
+import { STEP_TYPES, stepType, stepTypeLabel } from '@domain/steps';
+import type { ReplayStep, StepType } from '@domain/steps';
+import { isGoal } from '@domain/types';
+import type { GameElapsed, Play } from '@domain/types';
 
 type ReplayControlsProps = {
    index: number;

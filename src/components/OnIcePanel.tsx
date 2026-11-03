@@ -1,12 +1,12 @@
 import '@components/OnIcePanel.css';
 import { useState } from 'react';
 import type { CSSProperties } from 'react';
-import { useGame } from '@context/useGame.ts';
-import { POSITION_CODES } from '@domain/constants.ts';
-import { byPosition, keepSlots } from '@domain/lineup.ts';
-import type { TimedShift } from '@domain/onIce.ts';
-import type { Player, Side } from '@domain/types.ts';
-import PlayerCard from '@components/PlayerCard.tsx';
+import { useGame } from '@context/useGame';
+import { POSITION_CODES } from '@domain/constants';
+import { byPosition, keepSlots } from '@domain/lineup';
+import type { TimedShift } from '@domain/onIce';
+import type { Player, Side } from '@domain/types';
+import PlayerCard from '@components/PlayerCard';
 
 type OnIcePanelProps = {
    side: Side;

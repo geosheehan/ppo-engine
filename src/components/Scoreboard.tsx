@@ -1,11 +1,11 @@
 import '@components/Scoreboard.css';
-import { useGame } from '@context/useGame.ts';
-import { secondsToClock } from '@domain/clock.ts';
-import { SIDES } from '@domain/constants.ts';
-import { playPeriodLabel } from '@domain/labels.ts';
-import { periodTimeLeft } from '@domain/plays.ts';
-import type { GameElapsed, Play, Side } from '@domain/types.ts';
-import TeamChip from '@components/TeamChip.tsx';
+import { useGame } from '@context/useGame';
+import { secondsToClock } from '@domain/clock';
+import { SIDES } from '@domain/constants';
+import { playPeriodLabel } from '@domain/labels';
+import { periodTimeLeft } from '@domain/plays';
+import type { GameElapsed, Play, Side } from '@domain/types';
+import TeamChip from '@components/TeamChip';
 
 type ScoreboardProps = {
    play: Play;

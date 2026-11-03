@@ -1,6 +1,6 @@
-import type { Player } from '@domain/types.ts';
-import { useGame } from '@context/useGame.ts';
-import { penaltyDisplayName } from '@domain/penalties.ts';
+import type { Player } from '@domain/types';
+import { useGame } from '@context/useGame';
+import { penaltyDisplayName } from '@domain/penalties';
 
 function PenaltyTable({team}: {team: "home" | "away"}) {
    const { penalties, teamById, playerById, teamByHomeOrAway } = useGame();

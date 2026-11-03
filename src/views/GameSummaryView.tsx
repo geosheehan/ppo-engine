@@ -1,7 +1,7 @@
-import { useGame } from '@context/useGame.ts';
-import type { Team } from '@domain/types.ts';
-import PenaltyTable from '@components/PenaltyTable.tsx';
-import PenaltyChart from '@components/PenaltyChart.tsx';
+import { useGame } from '@context/useGame';
+import type { Team } from '@domain/types';
+import PenaltyTable from '@components/PenaltyTable';
+import PenaltyChart from '@components/PenaltyChart';
 
 // The original App body. Its styles are still in App.css, which App imports.
 function GameSummaryView() {

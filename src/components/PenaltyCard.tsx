@@ -1,9 +1,9 @@
 import '@components/PenaltyCard.css';
-import { useGame } from '@context/useGame.ts';
-import { secondsToClock } from '@domain/clock.ts';
-import { penaltyDisplayName } from '@domain/penalties.ts';
-import type { ClockedPenalty } from '@engine/snapshot.ts';
-import PlayerCard from '@components/PlayerCard.tsx';
+import { useGame } from '@context/useGame';
+import { secondsToClock } from '@domain/clock';
+import { penaltyDisplayName } from '@domain/penalties';
+import type { ClockedPenalty } from '@engine/snapshot';
+import PlayerCard from '@components/PlayerCard';
 
 type PenaltyCardProps = {
    clocked: ClockedPenalty;

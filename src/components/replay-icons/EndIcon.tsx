@@ -1,5 +1,5 @@
-import ReplayIconFrame from '@components/replay-icons/ReplayIconFrame.tsx';
-import type { ReplayIconProps } from '@components/replay-icons/ReplayIconFrame.tsx';
+import ReplayIconFrame from '@components/replay-icons/ReplayIconFrame';
+import type { ReplayIconProps } from '@components/replay-icons/ReplayIconFrame';
 
 function EndIcon(props: ReplayIconProps) {
    return (

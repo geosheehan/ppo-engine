@@ -1,11 +1,11 @@
 import '@components/PlayParticipants.css';
-import { useGame } from '@context/useGame.ts';
-import { layoutParticipants } from '@layout/participantLayout.ts';
-import type { ParticipantLayout } from '@layout/participantLayout.ts';
-import { playParticipants } from '@domain/participants.ts';
-import type { LineChange } from '@domain/steps.ts';
-import type { Play, Player, Side, Team } from '@domain/types.ts';
-import PlayerCard from '@components/PlayerCard.tsx';
+import { useGame } from '@context/useGame';
+import { layoutParticipants } from '@layout/participantLayout';
+import type { ParticipantLayout } from '@layout/participantLayout';
+import { playParticipants } from '@domain/participants';
+import type { LineChange } from '@domain/steps';
+import type { Play, Player, Side, Team } from '@domain/types';
+import PlayerCard from '@components/PlayerCard';
 
 type PlayParticipantsProps = {
    play?: Play;

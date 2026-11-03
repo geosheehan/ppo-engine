@@ -1,14 +1,14 @@
 import '@components/CurrentPlay.css';
-import { useGame } from '@context/useGame.ts';
-import TeamChip from '@components/TeamChip.tsx';
-import { isGoal, isPenalty } from '@domain/types.ts';
-import type { Play } from '@domain/types.ts';
-import { penaltyDisplayName } from '@domain/penalties.ts';
-import { playerShortName } from '@domain/players.ts';
-import { LINE_CHANGE, stepTypeLabel } from '@domain/steps.ts';
-import { goalSituation } from '@engine/powerPlayCounter.ts';
-import type { GoalSituation } from '@engine/powerPlayCounter.ts';
-import type { GoalEffect } from '@engine/types.ts';
+import { useGame } from '@context/useGame';
+import TeamChip from '@components/TeamChip';
+import { isGoal, isPenalty } from '@domain/types';
+import type { Play } from '@domain/types';
+import { penaltyDisplayName } from '@domain/penalties';
+import { playerShortName } from '@domain/players';
+import { LINE_CHANGE, stepTypeLabel } from '@domain/steps';
+import { goalSituation } from '@engine/powerPlayCounter';
+import type { GoalSituation } from '@engine/powerPlayCounter';
+import type { GoalEffect } from '@engine/types';
 
 type CurrentPlayProps = {
    play: Play;

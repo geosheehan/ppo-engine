@@ -1,19 +1,19 @@
 import type { ComponentType } from 'react';
-import { useGame } from '@context/useGame.ts';
-import { boundToIce, CENTER_DOT, nearestFaceoffDot } from '@layout/rink.ts';
-import { PLAY_TYPES } from '@domain/constants.ts';
-import type { Play, PlayType } from '@domain/types.ts';
-import type { IconProps } from '@components/event-icons/IconFrame.tsx';
-import BlockedShotIcon from '@components/event-icons/BlockedShotIcon.tsx';
-import DelayedPenaltyIcon from '@components/event-icons/DelayedPenaltyIcon.tsx';
-import FaceoffIcon from '@components/event-icons/FaceoffIcon.tsx';
-import GiveawayIcon from '@components/event-icons/GiveawayIcon.tsx';
-import HitIcon from '@components/event-icons/HitIcon.tsx';
-import MissedShotIcon from '@components/event-icons/MissedShotIcon.tsx';
-import PenaltyIcon from '@components/event-icons/PenaltyIcon.tsx';
-import ShotOnGoalIcon from '@components/event-icons/ShotOnGoalIcon.tsx';
-import StoppageIcon from '@components/event-icons/StoppageIcon.tsx';
-import TakeawayIcon from '@components/event-icons/TakeawayIcon.tsx';
+import { useGame } from '@context/useGame';
+import { boundToIce, CENTER_DOT, nearestFaceoffDot } from '@layout/rink';
+import { PLAY_TYPES } from '@domain/constants';
+import type { Play, PlayType } from '@domain/types';
+import type { IconProps } from '@components/event-icons/IconFrame';
+import BlockedShotIcon from '@components/event-icons/BlockedShotIcon';
+import DelayedPenaltyIcon from '@components/event-icons/DelayedPenaltyIcon';
+import FaceoffIcon from '@components/event-icons/FaceoffIcon';
+import GiveawayIcon from '@components/event-icons/GiveawayIcon';
+import HitIcon from '@components/event-icons/HitIcon';
+import MissedShotIcon from '@components/event-icons/MissedShotIcon';
+import PenaltyIcon from '@components/event-icons/PenaltyIcon';
+import ShotOnGoalIcon from '@components/event-icons/ShotOnGoalIcon';
+import StoppageIcon from '@components/event-icons/StoppageIcon';
+import TakeawayIcon from '@components/event-icons/TakeawayIcon';
 
 const ICONS: Partial<Record<PlayType, ComponentType<IconProps>>> = {
    [PLAY_TYPES.STOPPAGE]: StoppageIcon,

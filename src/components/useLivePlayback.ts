@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
-import { livePosition } from '@domain/playback.ts';
-import type { ReplayPosition } from '@domain/playback.ts';
-import type { GameElapsed, Play } from '@domain/types.ts';
-import { SHOT_ANIMATION_MS } from '@components/useShotProgress.ts';
+import { livePosition } from '@domain/playback';
+import type { ReplayPosition } from '@domain/playback';
+import type { GameElapsed, Play } from '@domain/types';
+import { SHOT_ANIMATION_MS } from '@components/useShotProgress';
 
 const TICK_MS = 50;
 

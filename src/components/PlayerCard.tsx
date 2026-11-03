@@ -1,7 +1,7 @@
 import '@components/PlayerCard.css';
 import placeholderHeadshot from '@assets/placeholder-headshot.png';
-import { useGame } from '@context/useGame.ts';
-import type { Player, Team } from '@domain/types.ts';
+import { useGame } from '@context/useGame';
+import type { Player, Team } from '@domain/types';
 
 type PlayerCardProps = {
    player?: Player;

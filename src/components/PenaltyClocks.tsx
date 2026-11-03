@@ -1,7 +1,7 @@
 import '@components/PenaltyClocks.css';
-import type { ClockedPenalty } from '@engine/snapshot.ts';
-import type { Side } from '@domain/types.ts';
-import PenaltyCard from '@components/PenaltyCard.tsx';
+import type { ClockedPenalty } from '@engine/snapshot';
+import type { Side } from '@domain/types';
+import PenaltyCard from '@components/PenaltyCard';
 
 type PenaltyClocksProps = {
    side: Side;

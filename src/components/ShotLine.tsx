@@ -1,11 +1,11 @@
-import { useGame } from '@context/useGame.ts';
-import { attackedNet, boundToIce } from '@layout/rink.ts';
-import { SIDES } from '@domain/constants.ts';
-import { isGoal } from '@domain/types.ts';
-import type { Play } from '@domain/types.ts';
-import ShotOnGoalIcon from '@components/event-icons/ShotOnGoalIcon.tsx';
-import { MARKER_SIZE } from '@components/PlayMarker.tsx';
-import { useShotProgress } from '@components/useShotProgress.ts';
+import { useGame } from '@context/useGame';
+import { attackedNet, boundToIce } from '@layout/rink';
+import { SIDES } from '@domain/constants';
+import { isGoal } from '@domain/types';
+import type { Play } from '@domain/types';
+import ShotOnGoalIcon from '@components/event-icons/ShotOnGoalIcon';
+import { MARKER_SIZE } from '@components/PlayMarker';
+import { useShotProgress } from '@components/useShotProgress';
 
 type ShotLineProps = {
    play: Play;

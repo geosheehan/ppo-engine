@@ -1,13 +1,13 @@
 import '@components/StrengthTable.css';
 import type { CSSProperties } from 'react';
-import { useGame } from '@context/useGame.ts';
-import { secondsToClock } from '@domain/clock.ts';
-import { textColorOn } from '@domain/colors.ts';
-import TeamChip from '@components/TeamChip.tsx';
-import type { OpportunityTotal } from '@engine/powerPlayCounter.ts';
-import { strengthLabel } from '@engine/strength.ts';
-import type { Side } from '@domain/types.ts';
-import type { Strength } from '@engine/types.ts';
+import { useGame } from '@context/useGame';
+import { secondsToClock } from '@domain/clock';
+import { textColorOn } from '@domain/colors';
+import TeamChip from '@components/TeamChip';
+import type { OpportunityTotal } from '@engine/powerPlayCounter';
+import { strengthLabel } from '@engine/strength';
+import type { Side } from '@domain/types';
+import type { Strength } from '@engine/types';
 
 type StrengthTableProps = {
    side: Side;
