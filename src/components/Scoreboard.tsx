@@ -1,7 +1,8 @@
 import '@components/Scoreboard.css';
 import { useGame } from '@context/useGame.ts';
 import { secondsToClock } from '@domain/clock.ts';
-import { periodLabel, periodTimeLeft } from '@domain/plays.ts';
+import { playPeriodLabel } from '@domain/labels.ts';
+import { periodTimeLeft } from '@domain/plays.ts';
 import type { Play, Side } from '@domain/types.ts';
 import TeamChip from '@components/TeamChip.tsx';
 
@@ -29,7 +30,7 @@ function Scoreboard({ play, time, score, homeOnLeft, scoringSide }: ScoreboardPr
          <div className="scoreboard__score">
             <TeamChip teamId={left.teamId} />
             {number(left)}
-            <span className="scoreboard__clock">{periodLabel(play)} {secondsToClock(periodTimeLeft(play, time))}</span>
+            <span className="scoreboard__clock">{playPeriodLabel(play)} {secondsToClock(periodTimeLeft(play, time))}</span>
             {number(right)}
             <TeamChip teamId={right.teamId} />
          </div>

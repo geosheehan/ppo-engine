@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import type { CSSProperties } from 'react';
 import { useGame } from '@context/useGame.ts';
 import { chartMoments, momentClock, momentPeriod } from '@layout/penaltyChart.ts';
+import { periodLabel } from '@domain/labels.ts';
 import { penaltyDisplayName } from '@domain/penalties.ts';
 import { playerShortName } from '@domain/players.ts';
 import { runPenaltyEngine } from '@engine/penaltyEngine.ts';
@@ -10,8 +11,6 @@ import type { Side } from '@domain/types.ts';
 import type { PenaltyClock } from '@engine/types.ts';
 
 const SIDES: Side[] = ['away', 'home'];
-
-const periodName = (period: number): string => (period > 3 ? 'OT' : `P${period}`);
 
 // Rows 1 and 2 hold the period and time labels. Each team then gets a row per penalty clock, with a spacer
 // row between the teams.
@@ -44,7 +43,7 @@ function PenaltyChart() {
             ))}
             {moments.map((time, i) => startsPeriod(i) && (
                <span key={`period-${time}`} className="penalty-chart__period" style={{ gridColumn: line(time) }}>
-                  {periodName(momentPeriod(time))}
+                  {periodLabel(momentPeriod(time), game.regPeriods)}
                </span>
             ))}
             {moments.map((time) => (
