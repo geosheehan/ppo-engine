@@ -24,8 +24,30 @@ type ReplayControlsProps = {
    onChange: (index: number, time?: number, changedTeamId?: number) => void;
 };
 
-const LIVE_SPEEDS = [1, 3, 6];
-const REPLAY_MINUTES = [10, 7, 5];
+type Playback = { label: string } & (
+   { 
+      mode: 'live';
+      speed: number
+   } | { 
+      mode: 'length';
+      minutes: number
+   }
+);
+
+const PLAYBACKS: Record<string, Playback> = {
+   'live-1': { mode: 'live', speed: 1, label: 'x1' },
+   'live-3': { mode: 'live', speed: 3, label: 'x3' },
+   'live-6': { mode: 'live', speed: 6, label: 'x6' },
+   'length-10': { mode: 'length', minutes: 10, label: '10 min' },
+   'length-7': { mode: 'length', minutes: 7, label: '7 min' },
+   'length-5': { mode: 'length', minutes: 5, label: '5 min' },
+};
+
+const playbackOptions = (mode: Playback['mode']) =>
+   Object.entries(PLAYBACKS)
+      .filter(([, playback]) => playback.mode === mode)
+      .map(([value, { label }]) => <option key={value} value={value}>{label}</option>);
+
 const JUMP_TYPES = [...EVENT_TYPES, LINE_CHANGE].toSorted();
 
 const GOAL_HOLD = 3;
@@ -36,14 +58,14 @@ function ReplayControls({ index, time, plays, steps, stepIndex, onChange }: Repl
    const playing = autoPlay && stepIndex < lastStep;
    const goTo = (i: number) => onChange(steps[i].index, steps[i].time, steps[i].changedTeamId);
 
-   const [playback, setPlayback] = useState(`live-${LIVE_SPEEDS[0]}`);
-   const [mode, amount] = playback.split('-');
-   const live = mode === 'live';
+   const [playbackKey, setPlaybackKey] = useState('live-1');
+   const playback = PLAYBACKS[playbackKey];
+   const live = playback.mode === 'live';
 
    const isGoalStep = (step: ReplayStep): boolean => !step.changedTeamId && isGoal(plays[step.index]);
    const hold = (step: ReplayStep): number => (isGoalStep(step) ? GOAL_HOLD : 1);
    const totalHolds = steps.slice(0, lastStep).reduce((sum, step) => sum + hold(step), 0);
-   const scaledDelay = ((Number(amount) * 60 * 1000) / Math.max(totalHolds, 1)) * hold(steps[stepIndex]);
+   const scaledDelay = live ? 0 : ((playback.minutes * 60 * 1000) / Math.max(totalHolds, 1)) * hold(steps[stepIndex]);
    const delay = isGoalStep(steps[stepIndex]) ? Math.max(scaledDelay, SHOT_ANIMATION_MS) : scaledDelay;
 
    const goalSteps = steps.flatMap((step, i) => (isGoalStep(step) ? [i] : []));
@@ -60,7 +82,7 @@ function ReplayControls({ index, time, plays, steps, stepIndex, onChange }: Repl
       return () => clearTimeout(timer);
    }, [playing, live, steps, stepIndex, onChange, delay]);
 
-   useLivePlayback(playing && live, Number(amount), plays, { index, time }, onChange);
+   useLivePlayback(playing && live, live ? playback.speed : 1, plays, { index, time }, onChange);
 
    return (
       <div className="replay-controls">
@@ -86,17 +108,9 @@ function ReplayControls({ index, time, plays, steps, stepIndex, onChange }: Repl
          <div className="replay-controls__bar">
             <div className="replay-controls__group">
                <span className="replay-controls__position">Play {index + 1} / {plays.length}</span>
-               <select aria-label="Replay speed" value={playback} onChange={(event) => setPlayback(event.target.value)}>
-                  <optgroup label="Live clock">
-                     {LIVE_SPEEDS.map((speed) => (
-                        <option key={speed} value={`live-${speed}`}>x{speed}</option>
-                     ))}
-                  </optgroup>
-                  <optgroup label="Replay length">
-                     {REPLAY_MINUTES.map((minutes) => (
-                        <option key={minutes} value={`length-${minutes}`}>{minutes} min</option>
-                     ))}
-                  </optgroup>
+               <select aria-label="Replay speed" value={playbackKey} onChange={(event) => setPlaybackKey(event.target.value)}>
+                  <optgroup label="Live clock">{playbackOptions('live')}</optgroup>
+                  <optgroup label="Replay length">{playbackOptions('length')}</optgroup>
                </select>
             </div>
             <div className="replay-controls__group">
