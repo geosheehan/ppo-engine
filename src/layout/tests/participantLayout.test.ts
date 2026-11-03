@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { layoutParticipants } from '@domain/participantLayout';
-import type { ParticipantLayout, PlacedCard } from '@domain/participantLayout';
+import { layoutParticipants } from '@layout/participantLayout';
+import type { ParticipantLayout, PlacedCard } from '@layout/participantLayout';
 import type { Side } from '@domain/types';
 
 type TestCard = { name: string; field: string; side: Side };

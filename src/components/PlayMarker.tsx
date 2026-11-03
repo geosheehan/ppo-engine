@@ -1,6 +1,6 @@
 import type { ComponentType } from 'react';
 import { useGame } from '@context/useGame.ts';
-import { boundToIce, CENTER_DOT, nearestFaceoffDot } from '@domain/rink.ts';
+import { boundToIce, CENTER_DOT, nearestFaceoffDot } from '@layout/rink.ts';
 import type { Play } from '@domain/types.ts';
 import type { IconProps } from '@components/event-icons/IconFrame.tsx';
 import BlockedShotIcon from '@components/event-icons/BlockedShotIcon.tsx';

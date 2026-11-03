@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Game } from '@domain/types';
-import { attackedNet, boundToIce, CENTER_DOT, CORNER_RADIUS, FACEOFF_DOTS, NETS, nearestFaceoffDot } from '@domain/rink';
+import { attackedNet, boundToIce, CENTER_DOT, CORNER_RADIUS, FACEOFF_DOTS, NETS, nearestFaceoffDot } from '@layout/rink';
 
 const games = import.meta.glob<Game>('@data/games/*.json', { eager: true, import: 'default' });
 

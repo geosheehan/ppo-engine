@@ -1,5 +1,5 @@
 import { useGame } from '@context/useGame.ts';
-import { attackedNet, boundToIce } from '@domain/rink.ts';
+import { attackedNet, boundToIce } from '@layout/rink.ts';
 import { isGoal } from '@domain/types.ts';
 import type { Play } from '@domain/types.ts';
 import ShotOnGoalIcon from '@components/event-icons/ShotOnGoalIcon.tsx';

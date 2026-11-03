@@ -25,6 +25,7 @@
       "@data/*": ["./src/data/*"],
       "@domain/*": ["./src/domain/*"],
       "@engine/*": ["./src/engine/*"],
+      "@layout/*": ["./src/layout/*"],
       "@views/*": ["./src/views/*"],
     },
 

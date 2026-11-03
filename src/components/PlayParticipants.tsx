@@ -1,7 +1,7 @@
 import '@components/PlayParticipants.css';
 import { useGame } from '@context/useGame.ts';
-import { layoutParticipants } from '@domain/participantLayout.ts';
-import type { ParticipantLayout } from '@domain/participantLayout.ts';
+import { layoutParticipants } from '@layout/participantLayout.ts';
+import type { ParticipantLayout } from '@layout/participantLayout.ts';
 import { playParticipants } from '@domain/participants.ts';
 import type { LineChange } from '@domain/steps.ts';
 import type { Play, Player, Side, Team } from '@domain/types.ts';
