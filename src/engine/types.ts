@@ -8,17 +8,22 @@ export type PenaltyKind = 'minor' | 'major';
 
 export type PenaltyEndReason = 'expired' | 'goal' | 'gameEnd' | 'projected';
 
-export type ServedPenalty = {
+export type PenaltyStartReason = 'called' | 'dequeued' | 'nextInSentence';
+
+export type PenaltyOnClock = {
    penaltyEventId: number;
    side: Side;
    penaltyClock: PenaltyClock;
    kind: PenaltyKind;
    doubleMinorHalf?: 1 | 2;
+   coincidental: boolean;
+};
+
+export type ServedPenalty = PenaltyOnClock & {
    start: GameElapsed;
    end: GameElapsed;
    endReason: PenaltyEndReason;
    releasedByGoalId?: number;
-   coincidental: boolean;
 };
 
 export type StrengthInterval = Strength & {
@@ -35,7 +40,14 @@ export type GoalEffect = {
    washedPenaltyId?: number;
 };
 
+export type TimelineEntry =
+   | { kind: 'strength'; time: GameElapsed; strength: Strength }
+   | { kind: 'penaltyStart'; time: GameElapsed; penalty: PenaltyOnClock; reason: PenaltyStartReason }
+   | { kind: 'penaltyEnd'; time: GameElapsed; penalty: ServedPenalty }
+   | { kind: 'goal'; time: GameElapsed; goal: GoalEffect };
+
 export type PenaltyEngineResult = {
+   timeline: TimelineEntry[];
    servedPenalties: ServedPenalty[];
    strengthIntervals: StrengthInterval[];
    goals: GoalEffect[];

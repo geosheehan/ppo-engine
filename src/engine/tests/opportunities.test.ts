@@ -44,6 +44,7 @@ const goal = (overrides: Partial<GoalEffect>): GoalEffect => ({
 const interval = (away: number, home: number, start: number, end: number): StrengthInterval => ({ away, home, start, end });
 
 const result = (parts: Partial<PenaltyEngineResult>): PenaltyEngineResult => ({
+   timeline: [],
    servedPenalties: [],
    strengthIntervals: [],
    goals: [],

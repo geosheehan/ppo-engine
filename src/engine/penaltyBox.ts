@@ -1,6 +1,6 @@
 import type { Sentence } from '@engine/assessment';
 import type { GameElapsed, Side } from '@domain/types';
-import type { PenaltyClock, PenaltyEndReason, ServedPenalty } from '@engine/types';
+import type { PenaltyClock, PenaltyEndReason, PenaltyOnClock, PenaltyStartReason, ServedPenalty, TimelineEntry } from '@engine/types';
 
 type Serving = {
    sentence: Sentence;
@@ -13,10 +13,12 @@ type Serving = {
 export class PenaltyBox {
    private readonly penaltyClocks: [Serving | null, Serving | null] = [null, null];
    private readonly queue: Sentence[] = [];
+   private readonly record: (entry: TimelineEntry) => void;
    readonly side: Side;
 
-   constructor(side: Side) {
+   constructor(side: Side, record: (entry: TimelineEntry) => void = () => {}) {
       this.side = side;
+      this.record = record;
    }
 
    get runningClockCount(): number {
@@ -28,10 +30,10 @@ export class PenaltyBox {
    }
 
    // Moves the front of the queue onto each free penalty clock, left clock first.
-   private fillFreePenaltyClocks(time: GameElapsed): void {
+   private fillFreePenaltyClocks(time: GameElapsed, reason: PenaltyStartReason): void {
       for (const penaltyClock of [0, 1] as const) {
          if (this.penaltyClocks[penaltyClock] === null && this.queue.length > 0) {
-            this.penaltyClocks[penaltyClock] = startPenalty(this.queue.shift()!, 0, time);
+            this.startPenalty(penaltyClock, this.queue.shift()!, 0, time, reason);
          }
       }
    }
@@ -43,7 +45,7 @@ export class PenaltyBox {
 
    add(sentence: Sentence, time: GameElapsed): void {
       this.queue.push(sentence);
-      this.fillFreePenaltyClocks(time);
+      this.fillFreePenaltyClocks(time, 'called');
    }
 
    expireAt(time: GameElapsed, reason: PenaltyEndReason = 'expired'): ServedPenalty[] {
@@ -51,7 +53,7 @@ export class PenaltyBox {
       for (const penaltyClock of [0, 1] as const) {
          if (this.penaltyClocks[penaltyClock]?.expiresAt === time) closed.push(this.endPenalty(penaltyClock, time, reason));
       }
-      this.fillFreePenaltyClocks(time);
+      this.fillFreePenaltyClocks(time, 'dequeued');
       return closed;
    }
 
@@ -65,7 +67,7 @@ export class PenaltyBox {
       if (chosen === undefined) return undefined;
 
       const released = this.endPenalty(chosen, time, 'goal', goalEventId);
-      this.fillFreePenaltyClocks(time);
+      this.fillFreePenaltyClocks(time, 'dequeued');
       return released;
    }
 
@@ -73,20 +75,33 @@ export class PenaltyBox {
       const closed: ServedPenalty[] = [];
       for (const penaltyClock of [0, 1] as const) {
          const serving = this.penaltyClocks[penaltyClock];
-         if (serving) closed.push(toServedPenalty(serving, this.side, penaltyClock, time, reason));
+         if (serving) {
+            const served = toServedPenalty(serving, this.side, penaltyClock, time, reason);
+            this.record({ kind: 'penaltyEnd', time, penalty: served });
+            closed.push(served);
+         }
          this.penaltyClocks[penaltyClock] = null;
       }
       this.queue.length = 0;
       return closed;
    }
 
+   private startPenalty(penaltyClock: PenaltyClock, sentence: Sentence, penaltyIndex: number, time: GameElapsed, reason: PenaltyStartReason): void {
+      const serving = { sentence, penaltyIndex, penaltyStart: time, expiresAt: time + sentence.penalties[penaltyIndex].seconds };
+      this.penaltyClocks[penaltyClock] = serving;
+      this.record({ kind: 'penaltyStart', time, penalty: toPenaltyOnClock(serving, this.side, penaltyClock), reason });
+   }
+
    private endPenalty(penaltyClock: PenaltyClock, time: GameElapsed, reason: PenaltyEndReason, goalEventId?: number): ServedPenalty {
       const serving = this.penaltyClocks[penaltyClock]!;
       const served = toServedPenalty(serving, this.side, penaltyClock, time, reason, goalEventId);
+      this.record({ kind: 'penaltyEnd', time, penalty: served });
+      this.penaltyClocks[penaltyClock] = null;
+
       const nextIndex = serving.penaltyIndex + 1;
-      this.penaltyClocks[penaltyClock] = nextIndex < serving.sentence.penalties.length
-         ? startPenalty(serving.sentence, nextIndex, time)
-         : null;
+      if (nextIndex < serving.sentence.penalties.length) {
+         this.startPenalty(penaltyClock, serving.sentence, nextIndex, time, 'nextInSentence');
+      }
       return served;
    }
 }
@@ -98,11 +113,7 @@ function timeOnClock(serving: Serving, time: GameElapsed): number {
    return serving.expiresAt - time + later;
 }
 
-function startPenalty(sentence: Sentence, penaltyIndex: number, time: GameElapsed): Serving {
-   return { sentence, penaltyIndex, penaltyStart: time, expiresAt: time + sentence.penalties[penaltyIndex].seconds };
-}
-
-function toServedPenalty(serving: Serving, side: Side, penaltyClock: PenaltyClock, end: GameElapsed, endReason: PenaltyEndReason, releasedByGoalId?: number): ServedPenalty {
+function toPenaltyOnClock(serving: Serving, side: Side, penaltyClock: PenaltyClock): PenaltyOnClock {
    const penalty = currentPenalty(serving);
    return {
       penaltyEventId: penalty.eventId,
@@ -110,10 +121,16 @@ function toServedPenalty(serving: Serving, side: Side, penaltyClock: PenaltyCloc
       penaltyClock,
       kind: penalty.kind,
       ...(penalty.doubleMinorHalf ? { doubleMinorHalf: penalty.doubleMinorHalf } : {}),
+      coincidental: serving.sentence.coincidental,
+   };
+}
+
+function toServedPenalty(serving: Serving, side: Side, penaltyClock: PenaltyClock, end: GameElapsed, endReason: PenaltyEndReason, releasedByGoalId?: number): ServedPenalty {
+   return {
+      ...toPenaltyOnClock(serving, side, penaltyClock),
       start: serving.penaltyStart,
       end,
       endReason,
       ...(releasedByGoalId !== undefined ? { releasedByGoalId } : {}),
-      coincidental: serving.sentence.coincidental,
    };
 }

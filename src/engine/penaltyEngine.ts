@@ -7,7 +7,7 @@ import { STRENGTH_SEVERITIES, assessPenalties } from '@engine/assessment';
 import type { CalledPenalty } from '@engine/assessment';
 import { PlayGroup } from '@engine/playGroup';
 import { OnIceStrength, isSameStrength, isThreeOnThreeOvertime } from '@engine/strength';
-import type { GoalEffect, PenaltyEndReason, PenaltyEngineResult, ServedPenalty, Strength, StrengthInterval } from '@engine/types';
+import type { GoalEffect, PenaltyEndReason, PenaltyEngineResult, ServedPenalty, Strength, StrengthInterval, TimelineEntry } from '@engine/types';
 
 export function runPenaltyEngine(index: GameIndex): PenaltyEngineResult {
    return new PenaltyEngine(index).run();
@@ -17,7 +17,12 @@ class PenaltyEngine {
    private readonly game: Game;
    private readonly plays: Play[];
    private readonly sideOf: (teamId: number) => Side;
-   private readonly penaltyBoxes: Record<Side, PenaltyBox> = { away: new PenaltyBox('away'), home: new PenaltyBox('home') };
+   private readonly timeline: TimelineEntry[] = [];
+   private readonly record = (entry: TimelineEntry) => this.timeline.push(entry);
+   private readonly penaltyBoxes: Record<Side, PenaltyBox> = {
+      away: new PenaltyBox('away', this.record),
+      home: new PenaltyBox('home', this.record),
+   };
    private readonly onIce = new OnIceStrength();
    private readonly servedPenalties: ServedPenalty[] = [];
    private readonly strengthIntervals: StrengthInterval[] = [];
@@ -49,7 +54,7 @@ class PenaltyEngine {
       if (group) this.resolve(group);
 
       this.finish();
-      return { servedPenalties: this.servedPenalties, strengthIntervals: this.strengthIntervals, goals: this.goals };
+      return { timeline: this.timeline, servedPenalties: this.servedPenalties, strengthIntervals: this.strengthIntervals, goals: this.goals };
    }
 
    // Penalties run out between plays. Each expiry can start a queued penalty, which may itself
@@ -101,6 +106,7 @@ class PenaltyEngine {
       }
 
       this.goals.push(effect);
+      this.record({ kind: 'goal', time, goal: effect });
       this.updateStrength(time, true);
    }
 
@@ -145,6 +151,7 @@ class PenaltyEngine {
       const running: Strength = { away: this.penaltyBoxes.away.runningClockCount, home: this.penaltyBoxes.home.runningClockCount };
       const nextStrength = this.onIce.update(running, isThreeOnThreeOvertime(this.game, time), atStoppage);
       if (!isSameStrength(prevStrength, nextStrength)) {
+         this.record({ kind: 'strength', time, strength: nextStrength });
          this.closeStrengthInterval(time, prevStrength);
          this.strengthStart = time;
       }

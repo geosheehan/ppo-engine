@@ -29,6 +29,7 @@ const plays = (...list: PenaltyPlay[]) => new Map(list.map((play) => [play.event
 
 // A home minor called at 16:10 of the 1st (970 s) and released by a goal at 17:45 (1065 s).
 const releasedMinor: PenaltyEngineResult = {
+   timeline: [],
    servedPenalties: [served({})],
    strengthIntervals: [{ away: 5, home: 4, start: 970, end: 1065 }],
    goals: [],
@@ -53,6 +54,7 @@ describe('snapshotAt', () => {
    it('lists a called penalty as queued until a penalty clock frees up', () => {
       // Called at 16:10 but waits until 18:10 (1090 s) for a clock.
       const result: PenaltyEngineResult = {
+         timeline: [],
          servedPenalties: [served({ start: 1090, end: 1210, endReason: 'expired' })],
          strengthIntervals: [],
          goals: [],
@@ -65,6 +67,7 @@ describe('snapshotAt', () => {
 
    it('shows the whole double minor on the clock during its first half', () => {
       const result: PenaltyEngineResult = {
+         timeline: [],
          servedPenalties: [
             served({ doubleMinorHalf: 1, start: 970, end: 1090, endReason: 'expired' }),
             served({ doubleMinorHalf: 2, start: 1090, end: 1210, endReason: 'expired' }),
