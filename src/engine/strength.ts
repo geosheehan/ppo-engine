@@ -20,11 +20,8 @@ export const entitledStrength = (running: Strength): Strength => ({
 export function overtimeStrength(entitled: Strength): Strength {
    const advantage = entitled.away - entitled.home;
    if (advantage === 0) return { away: 3, home: 3 };
-   const [leader, trailer]: [Side, Side] = advantage > 0
-    ? ['away', 'home']
-    : ['home', 'away'];
-
-   return { [leader]: Math.abs(advantage) >= 2 ? 5 : 4, [trailer]: 3 } as Strength;
+   const leader = Math.abs(advantage) >= 2 ? 5 : 4;
+   return advantage > 0 ? { away: leader, home: 3 } : { away: 3, home: leader };
 }
 
 export const isThreeOnThreeOvertime = (game: Game, time: number) =>

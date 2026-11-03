@@ -37,6 +37,7 @@ export function useReplay() {
    const { changedTeamId } = steps[stepIndex];
    const lastGoal = plays.slice(0, index + 1).findLast(isGoal);
    const homeOnLeft = defendingSides.get(play.periodDescriptor.number) === 'left';
+   const sides: [Side, Side] = homeOnLeft ? ['home', 'away'] : ['away', 'home'];
 
    return {
       play,
@@ -55,7 +56,6 @@ export function useReplay() {
       totals: opportunityTotals(result, goalPlays, time),
       score: { away: lastGoal?.details.awayScore ?? 0, home: lastGoal?.details.homeScore ?? 0 },
       homeOnLeft,
-      // Left to right, matching the ends of the rink.
-      sides: (homeOnLeft ? ['home', 'away'] : ['away', 'home']) as [Side, Side],
+      sides,
    };
 };
