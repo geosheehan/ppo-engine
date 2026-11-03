@@ -6,7 +6,8 @@ import { chartMoments, momentClock, momentPeriod } from '@domain/penaltyChart.ts
 import { penaltyDisplayName } from '@domain/penalties.ts';
 import { playerShortName } from '@domain/players.ts';
 import { runPenaltyEngine } from '@engine/penaltyEngine.ts';
-import type { PenaltyClock, Side } from '@engine/types.ts';
+import type { Side } from '@domain/types.ts';
+import type { PenaltyClock } from '@engine/types.ts';
 
 const SIDES: Side[] = ['away', 'home'];
 

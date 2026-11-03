@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import type { Game, GoalPlay } from '@domain/types';
+import type { Game, GoalPlay, Side } from '@domain/types';
 import { isGoal } from '@domain/types';
 import { gameSeconds } from '@domain/clock';
 import { runPenaltyEngine } from '@engine/penaltyEngine';
 import { goalSituation, opportunityTotals, powerPlayOpportunities } from '@engine/opportunities';
-import type { GoalEffect, PenaltyEngineResult, ServedPenalty, Side, StrengthInterval } from '@engine/types';
+import type { GoalEffect, PenaltyEngineResult, ServedPenalty, StrengthInterval } from '@engine/types';
 
 const P2 = (clock: string) => gameSeconds(2, clock);
 

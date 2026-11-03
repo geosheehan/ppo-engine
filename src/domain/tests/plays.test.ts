@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Game, Play } from '@domain/types';
-import { delayedPenaltyCall } from '@domain/plays';
-import { byGameOrder } from '@engine/penaltyEngine';
+import { byGameOrder, delayedPenaltyCall } from '@domain/plays';
 
 const games = import.meta.glob<Game>('@data/games/*.json', { eager: true, import: 'default' });
 

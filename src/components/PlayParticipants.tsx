@@ -4,8 +4,7 @@ import { layoutParticipants } from '@domain/participantLayout.ts';
 import type { ParticipantLayout } from '@domain/participantLayout.ts';
 import { playParticipants } from '@domain/participants.ts';
 import type { LineChange } from '@domain/steps.ts';
-import type { Play, Player, Team } from '@domain/types.ts';
-import type { Side } from '@engine/types.ts';
+import type { Play, Player, Side, Team } from '@domain/types.ts';
 import PlayerCard from '@components/PlayerCard.tsx';
 
 type PlayParticipantsProps = {

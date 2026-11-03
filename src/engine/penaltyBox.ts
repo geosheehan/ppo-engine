@@ -1,5 +1,6 @@
 import type { Sentence } from '@engine/assessment';
-import type { PenaltyClock, PenaltyEndReason, ServedPenalty, Side } from '@engine/types';
+import type { Side } from '@domain/types';
+import type { PenaltyClock, PenaltyEndReason, ServedPenalty } from '@engine/types';
 
 type Serving = {
    sentence: Sentence;

@@ -1,5 +1,5 @@
-import type { PenaltySeverity } from '@domain/types';
-import type { PenaltyKind, Side } from '@engine/types';
+import type { PenaltySeverity, Side } from '@domain/types';
+import type { PenaltyKind } from '@engine/types';
 
 
 export type CalledPenalty = {

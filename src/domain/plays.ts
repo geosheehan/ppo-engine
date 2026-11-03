@@ -1,6 +1,11 @@
-import { clockToSeconds, PERIOD_SECONDS } from '@domain/clock';
+import { clockToSeconds, gameSeconds, PERIOD_SECONDS } from '@domain/clock';
 import { isPenalty } from '@domain/types';
 import type { PenaltyPlay, Play } from '@domain/types';
+
+export const playTime = (play: Play) => gameSeconds(play.periodDescriptor.number, play.timeInPeriod);
+
+// Game time first; sortOrder breaks ties between plays in the same second.
+export const byGameOrder = (a: Play, b: Play) => playTime(a) - playTime(b) || a.sortOrder - b.sortOrder;
 
 export const EVENT_TYPES: string[] = [
    'blocked-shot',

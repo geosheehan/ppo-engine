@@ -5,7 +5,8 @@ import { secondsToClock } from '@domain/clock.ts';
 import { textColorOn } from '@domain/colors.ts';
 import TeamChip from '@components/TeamChip.tsx';
 import type { OpportunityTotal } from '@engine/opportunities.ts';
-import type { Side, Strength } from '@engine/types.ts';
+import type { Side } from '@domain/types.ts';
+import type { Strength } from '@engine/types.ts';
 
 type StrengthTableProps = {
    side: Side;

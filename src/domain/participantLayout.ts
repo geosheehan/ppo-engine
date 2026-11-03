@@ -1,4 +1,4 @@
-import type { Side } from '@engine/types';
+import type { Side } from '@domain/types';
 
 export type Position = 'left' | 'right' | 'solo';
 export type LayoutCard = { field: string; side: Side };

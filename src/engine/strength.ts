@@ -1,6 +1,6 @@
-import type { Game } from '@domain/types';
+import type { Game, Side } from '@domain/types';
 import { PERIOD_SECONDS } from '@domain/clock';
-import type { Side, Strength } from '@engine/types';
+import type { Strength } from '@engine/types';
 
 const SIDES: Side[] = ['away', 'home'];
 const REGULATION_PERIODS = 3;

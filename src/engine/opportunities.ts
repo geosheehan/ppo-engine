@@ -1,7 +1,7 @@
-import type { GoalPlay } from '@domain/types';
-import { playTime } from '@engine/penaltyEngine';
+import type { GoalPlay, Side } from '@domain/types';
+import { playTime } from '@domain/plays';
 import { isSameStrength } from '@engine/strength';
-import type { GoalEffect, PenaltyEngineResult, Side, Strength } from '@engine/types';
+import type { GoalEffect, PenaltyEngineResult, Strength } from '@engine/types';
 
 export type Opportunity = {
    side: Side;

@@ -1,20 +1,15 @@
-import type { Game, GoalPlay, PenaltyPlay, Play } from '@domain/types';
+import type { Game, GoalPlay, PenaltyPlay, Play, Side } from '@domain/types';
 import { isGoal, isPenalty } from '@domain/types';
-import { gameSeconds } from '@domain/clock';
+import { byGameOrder, playTime } from '@domain/plays';
 import { PenaltyBox } from '@engine/penaltyBox';
 import { STRENGTH_SEVERITIES, assessPenalties } from '@engine/assessment';
 import type { CalledPenalty } from '@engine/assessment';
 import { OnIceStrength, isSameStrength, isThreeOnThreeOvertime } from '@engine/strength';
-import type { GoalEffect, PenaltyEndReason, PenaltyEngineResult, ServedPenalty, Side, Strength, StrengthInterval } from '@engine/types';
+import type { GoalEffect, PenaltyEndReason, PenaltyEngineResult, ServedPenalty, Strength, StrengthInterval } from '@engine/types';
 
 export function runPenaltyEngine(game: Game): PenaltyEngineResult {
    return new PenaltyEngine(game).run();
 }
-
-export const playTime = (play: Play) => gameSeconds(play.periodDescriptor.number, play.timeInPeriod);
-
-// Game time first; sortOrder breaks ties between plays in the same second.
-export const byGameOrder = (a: Play, b: Play) => playTime(a) - playTime(b) || a.sortOrder - b.sortOrder;
 
 class PenaltyEngine {
    private readonly game: Game;

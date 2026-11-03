@@ -1,4 +1,5 @@
-export type Side = 'away' | 'home';
+import type { Side } from '@domain/types';
+
 export type PenaltyClock = 0 | 1;
 
 export type Strength = Record<Side, number>;

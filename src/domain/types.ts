@@ -1,3 +1,5 @@
+export type Side = 'away' | 'home';
+
 export type PeriodType = 'REG' | 'OT' | 'SO';
 
 export type PeriodDescriptor = {

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { assessPenalties } from '@engine/assessment';
 import type { CalledPenalty } from '@engine/assessment';
-import type { Side } from '@engine/types';
+import type { Side } from '@domain/types';
 
 let nextId = 1;
 const called = (side: Side, severity: CalledPenalty['severity'], minutes: number, playerKey = nextId): CalledPenalty =>

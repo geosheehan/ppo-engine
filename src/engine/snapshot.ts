@@ -1,5 +1,5 @@
 import type { PenaltyPlay } from '@domain/types';
-import { playTime } from '@engine/penaltyEngine';
+import { playTime } from '@domain/plays';
 import type { PenaltyEngineResult, ServedPenalty, Strength } from '@engine/types';
 
 export type ClockedPenalty = {

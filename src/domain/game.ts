@@ -2,7 +2,7 @@ import { matchupColors } from '@domain/colors';
 import { TEAM_COLORS } from '@domain/teamColors';
 import { timedShifts } from '@domain/onIce';
 import type { TimedShift } from '@domain/onIce';
-import type { Game, PenaltyPlay, Player, Shift, Team } from '@domain/types';
+import type { Game, PenaltyPlay, Player, Shift, Side, Team } from '@domain/types';
 import { isPenalty } from '@domain/types';
 
 export type GameIndex = {
@@ -12,7 +12,7 @@ export type GameIndex = {
    colors: { home: string; away: string };
    teamById: (teamId: number) => Team | undefined;
    playerById: (playerId: number) => Player | undefined;
-   teamByHomeOrAway: (homeOrAway: 'home' | 'away') => Team;
+   teamByHomeOrAway: (side: Side) => Team;
    teamColor: (teamId: number) => string;
 };
 

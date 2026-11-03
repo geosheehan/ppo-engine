@@ -1,6 +1,6 @@
-import { gameSeconds } from '@domain/clock';
 import type { ReplayPosition } from '@domain/playback';
 import type { TimedShift } from '@domain/onIce';
+import { playTime } from '@domain/plays';
 import type { Play } from '@domain/types';
 
 export type ReplayStep = ReplayPosition;
@@ -13,7 +13,7 @@ export const stepType = (step: ReplayStep, plays: Play[]): string =>
 export function replaySteps(plays: Play[], shifts: TimedShift[], teamOrder: number[]): ReplayStep[] {
    const playSteps: ReplayStep[] = plays.map((play, index) => ({
       index,
-      time: gameSeconds(play.periodDescriptor.number, play.timeInPeriod),
+      time: playTime(play),
    }));
    const playTimes = new Set(playSteps.map(({ time }) => time));
 

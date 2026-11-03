@@ -4,8 +4,7 @@ import type { CSSProperties } from 'react';
 import { useGame } from '@context/useGame.ts';
 import { byPosition, keepSlots } from '@domain/lineup.ts';
 import type { TimedShift } from '@domain/onIce.ts';
-import type { Player } from '@domain/types.ts';
-import type { Side } from '@engine/types.ts';
+import type { Player, Side } from '@domain/types.ts';
 import PlayerCard from '@components/PlayerCard.tsx';
 
 type OnIcePanelProps = {

@@ -2,8 +2,7 @@ import '@components/Scoreboard.css';
 import { useGame } from '@context/useGame.ts';
 import { secondsToClock } from '@domain/clock.ts';
 import { periodLabel, periodTimeLeft } from '@domain/plays.ts';
-import type { Play } from '@domain/types.ts';
-import type { Side } from '@engine/types.ts';
+import type { Play, Side } from '@domain/types.ts';
 import TeamChip from '@components/TeamChip.tsx';
 
 type ScoreboardProps = {
