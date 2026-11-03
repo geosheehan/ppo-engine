@@ -16,13 +16,13 @@ type PlayParticipantsProps = {
 type Card = { field: string; role: string; player: Player; team: Team; side: Side };
 
 function PlayParticipants({ play, lineChange, sides }: PlayParticipantsProps) {
-   const { game, playerById, teamById } = useGame();
+   const { playerById, sideOf, teamById } = useGame();
 
    const cardsFor = (participants: { field: string; role: string; playerId: number }[]): Card[] =>
       participants.flatMap(({ field, role, playerId }) => {
          const player = playerById(playerId);
          const team = player && teamById(player.teamId);
-         return player && team ? [{ field, role, player, team, side: team.id === game.homeTeam.id ? 'home' : 'away' }] : [];
+         return player && team ? [{ field, role, player, team, side: sideOf(team.id) }] : [];
       });
 
    let layout: ParticipantLayout<Card>;

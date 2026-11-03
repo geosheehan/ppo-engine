@@ -1,5 +1,6 @@
 import type { Game, GoalPlay, PenaltyPlay, Play, Side } from '@domain/types';
-import { isGoal, isPenalty } from '@domain/types';
+import { isGoal, isPenalty, otherSide } from '@domain/types';
+import { indexGame } from '@domain/game';
 import { byGameOrder, playTime } from '@domain/plays';
 import { PenaltyBox } from '@engine/penaltyBox';
 import { STRENGTH_SEVERITIES, assessPenalties } from '@engine/assessment';
@@ -13,6 +14,7 @@ export function runPenaltyEngine(game: Game): PenaltyEngineResult {
 
 class PenaltyEngine {
    private readonly game: Game;
+   private readonly sideOf: (teamId: number) => Side;
    private readonly penaltyBoxes: Record<Side, PenaltyBox> = { away: new PenaltyBox('away'), home: new PenaltyBox('home') };
    private readonly onIce = new OnIceStrength();
    private readonly servedPenalties: ServedPenalty[] = [];
@@ -24,6 +26,7 @@ class PenaltyEngine {
 
    constructor(game: Game) {
       this.game = game;
+      this.sideOf = indexGame(game).sideOf;
    }
 
    run(): PenaltyEngineResult {
@@ -134,13 +137,7 @@ class PenaltyEngine {
    private closeStrengthInterval(time: number, strength: Strength = this.onIce.current): void {
       if (time > this.strengthStart) this.strengthIntervals.push({ ...strength, start: this.strengthStart, end: time });
    }
-
-   private sideOf(teamId: number): Side {
-      return teamId === this.game.homeTeam.id ? 'home' : 'away';
-   }
 }
-
-const otherSide = (side: Side): Side => (side === 'away' ? 'home' : 'away');
 
 const earliest = (...times: (number | undefined)[]) => {
    const defined = times.filter((time): time is number => time !== undefined);

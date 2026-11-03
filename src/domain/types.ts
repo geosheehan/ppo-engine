@@ -1,5 +1,7 @@
 export type Side = 'away' | 'home';
 
+export const otherSide = (side: Side): Side => (side === 'home' ? 'away' : 'home');
+
 export type PeriodType = 'REG' | 'OT' | 'SO';
 
 export type PeriodDescriptor = {

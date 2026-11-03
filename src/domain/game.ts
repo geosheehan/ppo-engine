@@ -13,6 +13,7 @@ export type GameIndex = {
    teamById: (teamId: number) => Team | undefined;
    playerById: (playerId: number) => Player | undefined;
    teamByHomeOrAway: (side: Side) => Team;
+   sideOf: (teamId: number) => Side;
    teamColor: (teamId: number) => string;
 };
 
@@ -23,6 +24,7 @@ export function indexGame(game: Game, shifts: Shift[] = []): GameIndex {
    const teamsById = new Map([game.homeTeam, game.awayTeam].map((team) => [team.id, team]));
    const playersById = new Map(game.rosterSpots.map((player) => [player.playerId, player]));
    const colors = matchupColors(teamColors(game.homeTeam), teamColors(game.awayTeam));
+   const sideOf = (teamId: number): Side => (teamId === game.homeTeam.id ? 'home' : 'away');
    return {
       game,
       penalties: game.plays.filter(isPenalty),
@@ -31,6 +33,7 @@ export function indexGame(game: Game, shifts: Shift[] = []): GameIndex {
       teamById: (teamId) => teamsById.get(teamId),
       playerById: (playerId) => playersById.get(playerId),
       teamByHomeOrAway: (homeOrAway) => (homeOrAway === 'home' ? game.homeTeam : game.awayTeam),
-      teamColor: (teamId) => (teamId === game.homeTeam.id ? colors.home : colors.away),
+      sideOf,
+      teamColor: (teamId) => colors[sideOf(teamId)],
    };
 }

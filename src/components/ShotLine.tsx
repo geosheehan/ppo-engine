@@ -15,7 +15,7 @@ type ShotLineProps = {
 // A goal's path from where the shot was taken to the net it went in, with the shot's icon travelling along it.
 // The line shrinks behind the icon, so only the part still ahead of the shot is drawn.
 function ShotLine({ play, homeOnLeft, className }: ShotLineProps) {
-   const { game, teamColor } = useGame();
+   const { sideOf, teamColor } = useGame();
    const progress = useShotProgress();
    if (!isGoal(play)) return null;
 
@@ -23,7 +23,7 @@ function ShotLine({ play, homeOnLeft, className }: ShotLineProps) {
    if (xCoord === undefined || yCoord === undefined) return null;
 
    const shot = boundToIce({ x: xCoord, y: yCoord });
-   const net = attackedNet(eventOwnerTeamId === game.homeTeam.id, homeOnLeft);
+   const net = attackedNet(sideOf(eventOwnerTeamId) === 'home', homeOnLeft);
    const puck = { x: shot.x + (net.x - shot.x) * progress, y: shot.y + (net.y - shot.y) * progress };
    const color = teamColor(eventOwnerTeamId);
 

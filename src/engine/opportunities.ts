@@ -1,4 +1,5 @@
 import type { GoalPlay, Side } from '@domain/types';
+import { otherSide } from '@domain/types';
 import { playTime } from '@domain/plays';
 import { isSameStrength } from '@engine/strength';
 import type { GoalEffect, PenaltyEngineResult, Strength } from '@engine/types';
@@ -15,8 +16,6 @@ export type OpportunityTotal = {
    goals: number;
    seconds: number;
 };
-
-const otherSide = (side: Side): Side => (side === 'away' ? 'home' : 'away');
 
 const advantagedSide = (strength: Strength): Side | null => {
    if (strength.away === strength.home) return null;

@@ -15,7 +15,7 @@ import ShotLine from '@components/ShotLine.tsx';
 import StrengthTable from '@components/StrengthTable.tsx';
 
 function ReplayView() {
-   const { game, colors } = useGame();
+   const { game, colors, sideOf } = useGame();
    const {
       play,
       index,
@@ -42,7 +42,7 @@ function ReplayView() {
    // A power-play goal ends the penalty in the same second, so the snapshot already shows the strength after the
    // goal. Show the strength it was scored at until the next play.
    const liveStrength = goalEffect?.strength ?? snapshot.strength;
-   const scoringSide = isGoal(play) && !isLineChange ? (play.details.eventOwnerTeamId === game.homeTeam.id ? 'home' : 'away') : undefined;
+   const scoringSide = isGoal(play) && !isLineChange ? sideOf(play.details.eventOwnerTeamId) : undefined;
    const shotLocated = isGoal(play) && play.details.xCoord !== undefined && play.details.yCoord !== undefined;
 
    return (
