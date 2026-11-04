@@ -2,14 +2,7 @@ import { gameSeconds } from '@domain/clock';
 import { PLAY_TYPES, SHIFT_TYPE_CODE } from '@domain/constants';
 import { playTime } from '@domain/plays';
 import { lastIndexWhere } from '@domain/search';
-import type { GameElapsed, Play, PlayType, Shift } from '@domain/types';
-
-export type TimedShift = {
-   playerId: number;
-   teamId: number;
-   start: GameElapsed;
-   end: GameElapsed;
-};
+import type { GameElapsed, OnIceIndex, Play, PlayType, Shift, TimedShift } from '@domain/types';
 
 const RESTARTS: PlayType[] = [PLAY_TYPES.FACEOFF, PLAY_TYPES.PERIOD_START];
 
@@ -22,13 +15,6 @@ export const timedShifts = (shifts: Shift[]): TimedShift[] =>
          start: gameSeconds(period, startTime),
          end: gameSeconds(period, endTime),
       }));
-
-export type OnIceIndex = {
-   changes: GameElapsed[];
-   onIce: TimedShift[][];
-   startingAt: Map<GameElapsed, TimedShift[]>;
-   endingAt: Map<GameElapsed, TimedShift[]>;
-};
 
 export function indexOnIce(shifts: TimedShift[]): OnIceIndex {
    const startingAt = new Map<GameElapsed, TimedShift[]>();

@@ -1,7 +1,6 @@
-import { clockToSeconds, gameSeconds, PERIOD_SECONDS } from '@domain/clock';
-import { PLAY_TYPES } from '@domain/constants';
-import { isGoal, isPenalty } from '@domain/types';
-import type { GameElapsed, PenaltyPlay, Play, Side } from '@domain/types';
+import { clockToSeconds, gameSeconds } from '@domain/clock';
+import { PERIOD_SECONDS, PLAY_TYPES } from '@domain/constants';
+import type { GameElapsed, GoalPlay, PenaltyPlay, Play, Side } from '@domain/types';
 
 export const playTime = (play: Play): GameElapsed =>
    gameSeconds(play.periodDescriptor.number, play.timeInPeriod);
@@ -37,3 +36,7 @@ export function runningScores(plays: Play[]): Score[] {
       return score;
    });
 }
+
+export const isPenalty = (play: Play): play is PenaltyPlay =>
+   play.typeDescKey === PLAY_TYPES.PENALTY;
+export const isGoal = (play: Play): play is GoalPlay => play.typeDescKey === PLAY_TYPES.GOAL;

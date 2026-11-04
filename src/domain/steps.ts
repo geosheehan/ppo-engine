@@ -1,16 +1,17 @@
-import { PLAY_TYPES } from '@domain/constants';
+import { LINE_CHANGE, PLAY_TYPES } from '@domain/constants';
 import { PLAY_TYPE_LABELS } from '@domain/labels';
-import type { OnIceIndex, TimedShift } from '@domain/onIce';
-import type { ReplayPosition } from '@domain/playback';
 import { playTime } from '@domain/plays';
 import { lastIndexWhere } from '@domain/search';
-import type { GameElapsed, Play, PlayType } from '@domain/types';
-
-export type ReplayStep = ReplayPosition;
-
-export const LINE_CHANGE = 'line-change';
-
-export type StepType = PlayType | typeof LINE_CHANGE;
+import type {
+   GameElapsed,
+   LineChange,
+   OnIceIndex,
+   Play,
+   ReplayPosition,
+   ReplayStep,
+   StepType,
+   TimedShift,
+} from '@domain/types';
 
 export const STEP_TYPES: StepType[] = [...Object.values(PLAY_TYPES), LINE_CHANGE];
 
@@ -76,11 +77,6 @@ export function stepIndexAt(
       (step) => step.time < time || (step.time === time && step.index <= index),
    );
 }
-
-export type LineChange = {
-   off: number[];
-   on: number[];
-};
 
 export function lineChangeAt(
    { startingAt, endingAt }: OnIceIndex,

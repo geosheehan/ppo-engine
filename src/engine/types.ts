@@ -1,4 +1,4 @@
-import type { GameElapsed, Side } from '@domain/types';
+import type { GameElapsed, PenaltyPlay, PenaltySeverity, Side } from '@domain/types';
 
 export type PenaltyClock = 0 | 1;
 
@@ -57,3 +57,60 @@ export type PenaltyEngineResult = {
    strengthIntervals: StrengthInterval[];
    goals: GoalEffect[];
 };
+
+export type CalledPenalty = {
+   eventId: number;
+   side: Side;
+   playerKey: number;
+   severity: PenaltySeverity;
+   minutes: number;
+   doubleMinorFirstHalfWashed: boolean;
+};
+
+export type TimedPenalty = {
+   eventId: number;
+   kind: PenaltyKind;
+   seconds: number;
+   doubleMinorHalf?: 1 | 2;
+};
+
+export type Sentence = {
+   side: Side;
+   penalties: TimedPenalty[];
+   coincidental: boolean;
+};
+
+export type ClockedPenalty = {
+   served: ServedPenalty;
+   play: PenaltyPlay;
+   remaining: number;
+};
+
+export type Opportunity = {
+   side: Side;
+   strength: Strength;
+   time: GameElapsed;
+};
+
+export type OpportunityTotal = {
+   label: string;
+   opportunities: number;
+   goals: number;
+   seconds: number;
+};
+
+export type PowerPlayTotals = Record<Side, OpportunityTotal[]>;
+
+export type Checkpoint = {
+   time: GameElapsed;
+   strength: Strength;
+   strengthStart: GameElapsed;
+   totals: PowerPlayTotals;
+};
+
+export type PowerPlayCount = {
+   opportunities: Opportunity[];
+   checkpoints: Checkpoint[];
+};
+
+export type GoalSituation = 'power-play' | 'shorthanded';

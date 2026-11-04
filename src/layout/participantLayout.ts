@@ -1,23 +1,6 @@
-import { otherSide } from '@domain/types';
+import type { LayoutCard, ParticipantLayout, PlacedCard } from '@layout/types';
+import { otherSide } from '@domain/game';
 import type { Side } from '@domain/types';
-
-export type Position = 'left' | 'right' | 'solo';
-export type LayoutCard = {
-   field: string;
-   side: Side;
-};
-export type PlacedCard<C extends LayoutCard> = C & {
-   mirrored: boolean;
-   apart: boolean;
-};
-export type ParticipantList<C extends LayoutCard> = {
-   position: Position;
-   cards: PlacedCard<C>[];
-};
-export type ParticipantLayout<C extends LayoutCard> = {
-   lists: ParticipantList<C>[];
-   closeAtCenter: boolean;
-};
 
 // A mirrored card faces right. The wide gap goes between two cards that face each other.
 const facing = (leftMirrored: boolean, rightMirrored: boolean): boolean =>

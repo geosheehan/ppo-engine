@@ -70,3 +70,7 @@ export const PENALTY_SHOT_SITUATIONS = {
 } as const;
 
 export const SHIFT_TYPE_CODE = 517;
+
+export const PERIOD_SECONDS = 20 * 60;
+
+export const LINE_CHANGE = 'line-change';

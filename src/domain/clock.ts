@@ -1,6 +1,5 @@
+import { PERIOD_SECONDS } from '@domain/constants';
 import type { GameElapsed } from '@domain/types';
-
-export const PERIOD_SECONDS = 20 * 60;
 
 export const clockToSeconds = (clock: string): number => {
    const [mins, secs] = clock.split(':').map(Number);

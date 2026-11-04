@@ -1,12 +1,5 @@
-import { playTime } from '@domain/plays';
-import { isGoal } from '@domain/types';
-import type { GameElapsed, Play } from '@domain/types';
-
-export type ReplayPosition = {
-   index: number;
-   time: GameElapsed;
-   changedTeamId?: number;
-};
+import { isGoal, playTime } from '@domain/plays';
+import type { Play, ReplayPosition } from '@domain/types';
 
 const SAME_SECOND_HOLD_MS = 3000;
 

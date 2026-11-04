@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { Sentence, TimedPenalty } from '@engine/assessment';
 import { PenaltyBox } from '@engine/penaltyBox';
+import type { Sentence, TimedPenalty } from '@engine/types';
 
 const minor = (eventId: number): TimedPenalty => ({ eventId, kind: 'minor', seconds: 120 });
 const major = (eventId: number): TimedPenalty => ({ eventId, kind: 'major', seconds: 300 });

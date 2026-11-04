@@ -1,13 +1,13 @@
-import type { PenaltyEngineResult, ServedPenalty, Strength, StrengthInterval } from '@engine/types';
+import type {
+   ClockedPenalty,
+   PenaltyEngineResult,
+   ServedPenalty,
+   Strength,
+   StrengthInterval,
+} from '@engine/types';
 import { playTime } from '@domain/plays';
 import { lastIndexWhere } from '@domain/search';
 import type { GameElapsed, PenaltyPlay } from '@domain/types';
-
-export type ClockedPenalty = {
-   served: ServedPenalty;
-   play: PenaltyPlay;
-   remaining: number;
-};
 
 export type QueuedPenalty = {
    served: ServedPenalty;

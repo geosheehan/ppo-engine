@@ -1,10 +1,12 @@
-import { PLAY_TYPES, SIDES } from '@domain/constants';
 import type {
    DEFENDING_SIDES,
    GAME_TYPES,
+   LINE_CHANGE,
    PENALTY_SEVERITIES,
    PERIOD_TYPES,
+   PLAY_TYPES,
    POSITION_CODES,
+   SIDES,
    ZONE_CODES,
 } from '@domain/constants';
 
@@ -13,8 +15,6 @@ type ValueOf<T> = T[keyof T];
 export type GameElapsed = number;
 
 export type Side = ValueOf<typeof SIDES>;
-
-export const otherSide = (side: Side): Side => (side === SIDES.HOME ? SIDES.AWAY : SIDES.HOME);
 
 export type GameType = ValueOf<typeof GAME_TYPES>;
 export type PlayType = ValueOf<typeof PLAY_TYPES>;
@@ -181,6 +181,46 @@ export type Game = {
    rosterSpots: Player[];
 };
 
-export const isPenalty = (play: Play): play is PenaltyPlay =>
-   play.typeDescKey === PLAY_TYPES.PENALTY;
-export const isGoal = (play: Play): play is GoalPlay => play.typeDescKey === PLAY_TYPES.GOAL;
+export type TimedShift = {
+   playerId: number;
+   teamId: number;
+   start: GameElapsed;
+   end: GameElapsed;
+};
+
+export type OnIceIndex = {
+   changes: GameElapsed[];
+   onIce: TimedShift[][];
+   startingAt: Map<GameElapsed, TimedShift[]>;
+   endingAt: Map<GameElapsed, TimedShift[]>;
+};
+
+export type ReplayPosition = {
+   index: number;
+   time: GameElapsed;
+   changedTeamId?: number;
+};
+
+export type ReplayStep = ReplayPosition;
+
+export type StepType = PlayType | typeof LINE_CHANGE;
+
+export type LineChange = {
+   off: number[];
+   on: number[];
+};
+
+export type GameIndex = {
+   game: Game;
+   // In game order; game.plays keeps the order the feed sent them in.
+   plays: Play[];
+   penalties: PenaltyPlay[];
+   shifts: TimedShift[];
+   onIceIndex: OnIceIndex;
+   colors: { home: string; away: string };
+   teamById: (teamId: number) => Team | undefined;
+   playerById: (playerId: number) => Player | undefined;
+   teamByHomeOrAway: (side: Side) => Team;
+   sideOf: (teamId: number) => Side;
+   teamColor: (teamId: number) => string;
+};

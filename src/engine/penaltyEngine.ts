@@ -1,9 +1,10 @@
-import { assessPenalties, STRENGTH_SEVERITIES } from '@engine/assessment';
-import type { CalledPenalty } from '@engine/assessment';
+import { assessPenalties } from '@engine/assessment';
+import { STRENGTH_SEVERITIES } from '@engine/constants';
 import { PenaltyBox } from '@engine/penaltyBox';
 import { PlayGroup } from '@engine/playGroup';
 import { isSameStrength, isThreeOnThreeOvertime, OnIceStrength } from '@engine/strength';
 import type {
+   CalledPenalty,
    GoalEffect,
    PenaltyEndReason,
    PenaltyEngineResult,
@@ -13,10 +14,17 @@ import type {
    TimelineEntry,
 } from '@engine/types';
 import { PENALTY_SEVERITIES, PERIOD_TYPES, PLAY_TYPES, SIDES } from '@domain/constants';
-import type { GameIndex } from '@domain/game';
+import { otherSide } from '@domain/game';
 import { playTime } from '@domain/plays';
-import type { Game, GameElapsed, GoalPlay, PenaltyPlay, Play, Side } from '@domain/types';
-import { otherSide } from '@domain/types';
+import type {
+   Game,
+   GameElapsed,
+   GameIndex,
+   GoalPlay,
+   PenaltyPlay,
+   Play,
+   Side,
+} from '@domain/types';
 
 export function runPenaltyEngine(index: GameIndex): PenaltyEngineResult {
    return new PenaltyEngine(index).run();

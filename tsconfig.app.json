@@ -23,6 +23,7 @@
       "@context/*": ["./src/context/*"],
       "@data/*": ["./src/data/*"],
       "@domain/*": ["./src/domain/*"],
+      "@hooks/*": ["./src/hooks/*"],
       "@engine/*": ["./src/engine/*"],
       "@layout/*": ["./src/layout/*"],
       "@views/*": ["./src/views/*"]

@@ -1,35 +1,6 @@
-import type { PenaltyKind } from '@engine/types';
+import type { CalledPenalty, PenaltyKind, Sentence, TimedPenalty } from '@engine/types';
 import { PENALTY_SEVERITIES, SIDES } from '@domain/constants';
-import type { PenaltySeverity, Side } from '@domain/types';
-
-export type CalledPenalty = {
-   eventId: number;
-   side: Side;
-   playerKey: number;
-   severity: PenaltySeverity;
-   minutes: number;
-   doubleMinorFirstHalfWashed: boolean;
-};
-
-export type TimedPenalty = {
-   eventId: number;
-   kind: PenaltyKind;
-   seconds: number;
-   doubleMinorHalf?: 1 | 2;
-};
-
-export type Sentence = {
-   side: Side;
-   penalties: TimedPenalty[];
-   coincidental: boolean;
-};
-
-export const STRENGTH_SEVERITIES = new Set<PenaltySeverity>([
-   PENALTY_SEVERITIES.MINOR,
-   PENALTY_SEVERITIES.BENCH_MINOR,
-   PENALTY_SEVERITIES.MAJOR,
-   PENALTY_SEVERITIES.MATCH,
-]);
+import type { Side } from '@domain/types';
 
 export function toTimedPenalties(called: CalledPenalty): TimedPenalty[] {
    if (

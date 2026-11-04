@@ -1,7 +1,7 @@
-import { STRENGTH_SEVERITIES } from '@engine/assessment';
+import { STRENGTH_SEVERITIES } from '@engine/constants';
 import { PENALTY_SEVERITIES, PENALTY_SHOT_SITUATIONS, PLAY_TYPES } from '@domain/constants';
+import { isGoal, isPenalty } from '@domain/plays';
 import type { GameElapsed, GoalPlay, PenaltyPlay, Play } from '@domain/types';
-import { isGoal, isPenalty } from '@domain/types';
 
 const PENALTY_SHOT_CODES = new Set<string>(Object.values(PENALTY_SHOT_SITUATIONS));
 

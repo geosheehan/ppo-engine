@@ -1,9 +1,9 @@
-import type { Sentence } from '@engine/assessment';
 import type {
    PenaltyClock,
    PenaltyEndReason,
    PenaltyOnClock,
    PenaltyStartReason,
+   Sentence,
    ServedPenalty,
    TimelineEntry,
 } from '@engine/types';

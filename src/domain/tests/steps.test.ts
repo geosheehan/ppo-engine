@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { indexOnIce, onIceAt } from '@domain/onIce';
-import type { TimedShift } from '@domain/onIce';
 import { lineChangeAt, replaySteps, stepIndexAt, stepType, teamsYetToChange } from '@domain/steps';
-import type { Play } from '@domain/types';
+import type { Play, TimedShift } from '@domain/types';
 
 const SEA = 55;
 const TOR = 10;

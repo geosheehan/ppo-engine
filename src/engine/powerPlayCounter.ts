@@ -1,36 +1,19 @@
 import { isSameStrength, strengthLabel } from '@engine/strength';
-import type { GoalEffect, Strength, TimelineEntry } from '@engine/types';
+import type {
+   Checkpoint,
+   GoalEffect,
+   GoalSituation,
+   Opportunity,
+   OpportunityTotal,
+   PowerPlayCount,
+   PowerPlayTotals,
+   Strength,
+   TimelineEntry,
+} from '@engine/types';
 import { SIDES } from '@domain/constants';
+import { otherSide } from '@domain/game';
 import { lastIndexWhere } from '@domain/search';
 import type { GameElapsed, Side } from '@domain/types';
-import { otherSide } from '@domain/types';
-
-export type Opportunity = {
-   side: Side;
-   strength: Strength;
-   time: GameElapsed;
-};
-
-export type OpportunityTotal = {
-   label: string;
-   opportunities: number;
-   goals: number;
-   seconds: number;
-};
-
-export type PowerPlayTotals = Record<Side, OpportunityTotal[]>;
-
-export type Checkpoint = {
-   time: GameElapsed;
-   strength: Strength;
-   strengthStart: GameElapsed;
-   totals: PowerPlayTotals;
-};
-
-export type PowerPlayCount = {
-   opportunities: Opportunity[];
-   checkpoints: Checkpoint[];
-};
 
 const advantagedSide = (strength: Strength): Side | null => {
    if (strength.away === strength.home) return null;
@@ -39,8 +22,6 @@ const advantagedSide = (strength: Strength): Side | null => {
 
 const advantageOf = (strength: Strength, side: Side): number =>
    Math.max(0, strength[side] - strength[otherSide(side)]);
-
-export type GoalSituation = 'power-play' | 'shorthanded';
 
 export function goalSituation(goal: GoalEffect): GoalSituation | null {
    const advantaged = advantagedSide(goal.strength);

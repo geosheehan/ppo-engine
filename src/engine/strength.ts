@@ -1,8 +1,7 @@
 import type { Strength } from '@engine/types';
-import { PERIOD_SECONDS } from '@domain/clock';
-import { GAME_TYPES, SIDES } from '@domain/constants';
+import { GAME_TYPES, PERIOD_SECONDS, SIDES } from '@domain/constants';
+import { otherSide } from '@domain/game';
 import type { Game, GameElapsed, Side } from '@domain/types';
-import { otherSide } from '@domain/types';
 
 const TEAMS: Side[] = [SIDES.AWAY, SIDES.HOME];
 // 3-on-3 overtime was introduced in the 2015-16 regular season.

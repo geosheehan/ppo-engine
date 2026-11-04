@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { assessPenalties } from '@engine/assessment';
-import type { CalledPenalty } from '@engine/assessment';
+import type { CalledPenalty } from '@engine/types';
 import type { Side } from '@domain/types';
 
 let nextId = 1;

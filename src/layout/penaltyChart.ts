@@ -1,5 +1,6 @@
 import type { ServedPenalty } from '@engine/types';
-import { PERIOD_SECONDS, secondsToClock } from '@domain/clock';
+import { secondsToClock } from '@domain/clock';
+import { PERIOD_SECONDS } from '@domain/constants';
 import type { GameElapsed } from '@domain/types';
 
 // The moments a penalty starts or ends, in game order. The chart spaces them evenly rather than by time.

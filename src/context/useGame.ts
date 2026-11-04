@@ -1,6 +1,6 @@
 import { use } from 'react';
 import { GameContext } from '@context/GameContext';
-import type { GameContextValue } from '@context/GameContext';
+import type { GameContextValue } from '@context/types';
 
 export function useGame(): GameContextValue {
    const context = use(GameContext);
