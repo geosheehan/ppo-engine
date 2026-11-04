@@ -1,17 +1,14 @@
-import { matchupColors } from '@domain/colors';
+import { gameColors } from '@domain/colors';
 import { SIDES } from '@domain/constants';
 import { indexOnIce, timedShifts } from '@domain/onIce';
 import { byGameOrder, isPenalty } from '@domain/plays';
 import { TEAM_COLORS } from '@domain/teamColors';
-import type { Game, GameIndex, Shift, Side, Team } from '@domain/types';
-
-// Gray for tri-codes not in the color map yet.
-const teamColors = (team: Team): string[] => TEAM_COLORS[team.abbrev] ?? ['#6b6b6b'];
+import type { Game, GameIndex, Shift, Side } from '@domain/types';
 
 export function indexGame(game: Game, shifts: Shift[] = []): GameIndex {
    const teamsById = new Map([game.homeTeam, game.awayTeam].map((team) => [team.id, team]));
    const playersById = new Map(game.rosterSpots.map((player) => [player.playerId, player]));
-   const colors = matchupColors(teamColors(game.homeTeam), teamColors(game.awayTeam));
+   const colors = gameColors(TEAM_COLORS[game.homeTeam.abbrev], TEAM_COLORS[game.awayTeam.abbrev]);
    const sideOf = (teamId: number): Side => (teamId === game.homeTeam.id ? SIDES.HOME : SIDES.AWAY);
    const plays = game.plays.toSorted(byGameOrder);
    const timed = timedShifts(shifts);

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { areSimilar, matchupColors, textColorOn } from '@domain/colors';
+import { areSimilar, gameColors, matchupColors, textColorOn } from '@domain/colors';
+import { DEFAULT_TEAM_COLORS } from '@domain/constants';
 
 const RED = '#C8102E';
 const NAVY = '#00205B';
@@ -8,6 +9,7 @@ const BLACK = '#000000';
 const GOLD = '#FFB81C';
 const ORANGE = '#FC4C02';
 const GREEN = '#046A38';
+const BLUE = '#006AC6';
 
 describe('areSimilar', () => {
    it('treats a color as similar to itself', () => {
@@ -46,6 +48,28 @@ describe('matchupColors', () => {
 
    it('keeps both firsts when neither team has a second', () => {
       expect(matchupColors([NAVY], [ROYAL])).toEqual({ home: NAVY, away: ROYAL });
+   });
+});
+
+describe('gameColors', () => {
+   const { HOME: DEFAULT_HOME, AWAY: DEFAULT_AWAY } = DEFAULT_TEAM_COLORS;
+
+   it('uses red away and blue home when neither team is known', () => {
+      expect(gameColors(undefined, undefined)).toEqual({ home: DEFAULT_HOME, away: DEFAULT_AWAY });
+   });
+
+   it("gives an unknown team its side's default", () => {
+      expect(gameColors([GREEN, GOLD], undefined)).toEqual({ home: GREEN, away: DEFAULT_AWAY });
+      expect(gameColors(undefined, [GREEN, GOLD])).toEqual({ home: DEFAULT_HOME, away: GREEN });
+   });
+
+   it("switches an unknown team to the other default when its own looks like the known team's", () => {
+      expect(gameColors([RED, BLACK], undefined)).toEqual({ home: RED, away: DEFAULT_HOME });
+      expect(gameColors(undefined, [BLUE, GOLD])).toEqual({ home: DEFAULT_AWAY, away: BLUE });
+   });
+
+   it('leaves two known teams to matchupColors', () => {
+      expect(gameColors([NAVY, GREEN], [ROYAL, GOLD])).toEqual({ home: GREEN, away: GOLD });
    });
 });
 

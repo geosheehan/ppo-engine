@@ -1,3 +1,5 @@
+import { DEFAULT_TEAM_COLORS } from '@domain/constants';
+
 export const SIMILAR_DISTANCE = 0.15;
 
 const linear = (channel: number): number => {
@@ -32,6 +34,23 @@ export function matchupColors(home: string[], away: string[]): { home: string; a
    if (home2 && away2 && !areSimilar(home2, away2)) return { home: home2, away: away2 };
    if (away2) return { home: home1, away: away2 };
    return { home: home2 ?? home1, away: away1 };
+}
+
+const unlike = (known: string, preferred: string, other: string): string =>
+   areSimilar(known, preferred) ? other : preferred;
+
+// An unknown team takes its side's default, or the other default if that looks too much like the known team.
+export function gameColors(
+   home: string[] | undefined,
+   away: string[] | undefined,
+): { home: string; away: string } {
+   const { HOME, AWAY } = DEFAULT_TEAM_COLORS;
+   if (home === undefined) {
+      if (away === undefined) return { home: HOME, away: AWAY };
+      return { home: unlike(away[0], HOME, AWAY), away: away[0] };
+   }
+   if (away === undefined) return { home: home[0], away: unlike(home[0], AWAY, HOME) };
+   return matchupColors(home, away);
 }
 
 export const textColorOn = (background: string): string =>

@@ -1,4 +1,4 @@
-export const TEAM_COLORS: Record<string, string[]> = {
+export const TEAM_COLORS: Partial<Record<string, string[]>> = {
    ANA: ['#CF4520', '#89734C', '#010101'],
    BOS: ['#010101', '#FFB81C'],
    BUF: ['#003087', '#FFB81C'],
