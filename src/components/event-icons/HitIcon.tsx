@@ -17,6 +17,6 @@ function HitIcon(props: IconProps) {
          </g>
       </IconFrame>
    );
-};
+}
 
 export default HitIcon;

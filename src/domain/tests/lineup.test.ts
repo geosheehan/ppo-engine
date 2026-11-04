@@ -25,10 +25,12 @@ describe('keepSlots', () => {
 
    it('keeps an earlier arrival in its slot when the next change sorts lower', () => {
       const afterFirst = keepSlots(lineup, [L24, C34, R88, D43, D44]);
-      expect(numbers(keepSlots(afterFirst, [L24, C34, R88, D43, D22]))).toEqual([24, 34, 88, 43, 22]);
+      expect(numbers(keepSlots(afterFirst, [L24, C34, R88, D43, D22]))).toEqual([
+         24, 34, 88, 43, 22,
+      ]);
    });
 
-   it('matches a forward to a forward\'s slot when a forward and a defenseman change together', () => {
+   it("matches a forward to a forward's slot when a forward and a defenseman change together", () => {
       expect(numbers(keepSlots(lineup, [L92, C34, R88, D43, D44]))).toEqual([92, 34, 88, 43, 44]);
    });
 
@@ -42,7 +44,9 @@ describe('keepSlots', () => {
 
    it('adds an extra forward after the other forwards and an extra defenseman after the defense', () => {
       const shortHanded = [C34, R88, D28, D44];
-      expect(numbers(keepSlots(shortHanded, [C34, R88, L92, D28, D44]))).toEqual([34, 88, 92, 28, 44]);
+      expect(numbers(keepSlots(shortHanded, [C34, R88, L92, D28, D44]))).toEqual([
+         34, 88, 92, 28, 44,
+      ]);
       expect(numbers(keepSlots([C34, R88, D28], [C34, R88, D28, D44]))).toEqual([34, 88, 28, 44]);
    });
 });

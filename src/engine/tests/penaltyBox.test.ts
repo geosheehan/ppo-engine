@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import type { Sentence, TimedPenalty } from '@engine/assessment';
 import { PenaltyBox } from '@engine/penaltyBox';
-import type { TimedPenalty, Sentence } from '@engine/assessment';
 
 const minor = (eventId: number): TimedPenalty => ({ eventId, kind: 'minor', seconds: 120 });
 const major = (eventId: number): TimedPenalty => ({ eventId, kind: 'major', seconds: 300 });
@@ -8,7 +8,11 @@ const doubleMinor = (eventId: number): TimedPenalty[] => [
    { eventId, kind: 'minor', seconds: 120, doubleMinorHalf: 1 },
    { eventId, kind: 'minor', seconds: 120, doubleMinorHalf: 2 },
 ];
-const sentence = (penalties: TimedPenalty[], coincidental = false): Sentence => ({ side: 'home', penalties, coincidental });
+const sentence = (penalties: TimedPenalty[], coincidental = false): Sentence => ({
+   side: 'home',
+   penalties,
+   coincidental,
+});
 
 describe('PenaltyBox penalty clocks and queue', () => {
    it('fills the left penalty clock first, then the right', () => {
@@ -16,7 +20,9 @@ describe('PenaltyBox penalty clocks and queue', () => {
       box.add(sentence([minor(1)]), 0);
       box.add(sentence([minor(2)]), 30);
       expect(box.runningClockCount).toBe(2);
-      expect(box.expireAt(120)).toMatchObject([{ penaltyEventId: 1, penaltyClock: 0, start: 0, end: 120 }]);
+      expect(box.expireAt(120)).toMatchObject([
+         { penaltyEventId: 1, penaltyClock: 0, start: 0, end: 120 },
+      ]);
    });
 
    it('starts a queued penalty on the first penalty clock to free up', () => {
@@ -27,7 +33,9 @@ describe('PenaltyBox penalty clocks and queue', () => {
       box.expireAt(120);
       expect(box.runningClockCount).toBe(2);
       expect(box.expireAt(150)).toMatchObject([{ penaltyEventId: 2, penaltyClock: 1 }]);
-      expect(box.expireAt(240)).toMatchObject([{ penaltyEventId: 3, penaltyClock: 0, start: 120, end: 240 }]);
+      expect(box.expireAt(240)).toMatchObject([
+         { penaltyEventId: 3, penaltyClock: 0, start: 120, end: 240 },
+      ]);
    });
 
    it('gives a queued penalty the left penalty clock when both free up together', () => {
@@ -46,7 +54,12 @@ describe('PenaltyBox release on a goal (Rule 16.2, Table 12)', () => {
       const box = new PenaltyBox('home');
       box.add(sentence([minor(1)]), 0);
       box.add(sentence([minor(2)]), 30);
-      expect(box.releaseOnGoal(60, 99)).toMatchObject({ penaltyEventId: 1, end: 60, endReason: 'goal', releasedByGoalId: 99 });
+      expect(box.releaseOnGoal(60, 99)).toMatchObject({
+         penaltyEventId: 1,
+         end: 60,
+         endReason: 'goal',
+         releasedByGoalId: 99,
+      });
    });
 
    it('never releases a major', () => {
@@ -71,16 +84,27 @@ describe('PenaltyBox release on a goal (Rule 16.2, Table 12)', () => {
    it('A1: a goal in the first half of a double minor ends that half and starts the second', () => {
       const box = new PenaltyBox('home');
       box.add(sentence(doubleMinor(1)), 180);
-      expect(box.releaseOnGoal(270, 99)).toMatchObject({ doubleMinorHalf: 1, start: 180, end: 270, endReason: 'goal' });
+      expect(box.releaseOnGoal(270, 99)).toMatchObject({
+         doubleMinorHalf: 1,
+         start: 180,
+         end: 270,
+         endReason: 'goal',
+      });
       expect(box.runningClockCount).toBe(1);
-      expect(box.expireAt(390)).toMatchObject([{ doubleMinorHalf: 2, start: 270, end: 390, endReason: 'expired' }]);
+      expect(box.expireAt(390)).toMatchObject([
+         { doubleMinorHalf: 2, start: 270, end: 390, endReason: 'expired' },
+      ]);
    });
 
    it('A2: a goal in the second half of a double minor ends it', () => {
       const box = new PenaltyBox('home');
       box.add(sentence(doubleMinor(1)), 180);
       box.expireAt(300);
-      expect(box.releaseOnGoal(330, 99)).toMatchObject({ doubleMinorHalf: 2, start: 300, end: 330 });
+      expect(box.releaseOnGoal(330, 99)).toMatchObject({
+         doubleMinorHalf: 2,
+         start: 300,
+         end: 330,
+      });
       expect(box.isEmpty).toBe(true);
    });
 

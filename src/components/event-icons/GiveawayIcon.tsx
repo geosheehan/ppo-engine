@@ -9,6 +9,6 @@ function GiveawayIcon(props: IconProps) {
          <polyline points="3,5 8,11 13,5" {...team(2.5)} {...round} />
       </IconFrame>
    );
-};
+}
 
 export default GiveawayIcon;

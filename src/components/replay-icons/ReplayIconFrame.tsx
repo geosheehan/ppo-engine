@@ -14,6 +14,6 @@ function ReplayIconFrame({ size = 18, children }: ReplayIconFrameProps) {
          {children}
       </svg>
    );
-};
+}
 
 export default ReplayIconFrame;

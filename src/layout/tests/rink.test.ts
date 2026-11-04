@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest';
+import {
+   attackedNet,
+   boundToIce,
+   CENTER_DOT,
+   CORNER_RADIUS,
+   FACEOFF_DOTS,
+   nearestFaceoffDot,
+   NETS,
+} from '@layout/rink';
 import type { Game } from '@domain/types';
-import { attackedNet, boundToIce, CENTER_DOT, CORNER_RADIUS, FACEOFF_DOTS, NETS, nearestFaceoffDot } from '@layout/rink';
 
 const games = import.meta.glob<Game>('@data/games/*.json', { eager: true, import: 'default' });
 
@@ -58,7 +66,7 @@ describe('boundToIce', () => {
       expect(boundToIce({ x: -30, y: -45 })).toEqual({ x: -30, y: -42.5 });
    });
 
-   it('pulls a corner point back toward the center of that corner\'s curve', () => {
+   it("pulls a corner point back toward the center of that corner's curve", () => {
       const bounded = boundToIce({ x: 94, y: -38 });
       expect(fromInner(bounded)).toBeCloseTo(CORNER_RADIUS);
       // Same direction from the corner center (72, -14.5) as the recorded point.

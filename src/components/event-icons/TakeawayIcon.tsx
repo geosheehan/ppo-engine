@@ -9,6 +9,6 @@ function TakeawayIcon(props: IconProps) {
          <polyline points="3,11 8,5 13,11" {...team(2.5)} {...round} />
       </IconFrame>
    );
-};
+}
 
 export default TakeawayIcon;

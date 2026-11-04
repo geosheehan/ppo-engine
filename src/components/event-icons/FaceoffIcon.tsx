@@ -11,6 +11,6 @@ function FaceoffIcon(props: IconProps) {
          <polyline points="12.5,2 5,12.5 2.5,12.5" {...team(2.25)} {...round} />
       </IconFrame>
    );
-};
+}
 
 export default FaceoffIcon;

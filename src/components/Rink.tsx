@@ -37,7 +37,7 @@ function FaceoffCircle({ x, y }: { x: number; y: number }) {
          <circle r={1} fill={RED} stroke="none" />
       </g>
    );
-};
+}
 
 function Crease({ fill }: { fill: string }) {
    return (
@@ -47,17 +47,31 @@ function Crease({ fill }: { fill: string }) {
          <line x1={4} y1={4} x2={4} y2={3.583} />
       </g>
    );
-};
+}
 
 function Net() {
-   return <path d="M0,-3 H-2.33 A1,1 0 0 0 -3.33,-2 V2 A1,1 0 0 0 -2.33,3 H0" fill="#ffffff" stroke={RED} strokeWidth={1 / 3} />;
-};
+   return (
+      <path
+         d="M0,-3 H-2.33 A1,1 0 0 0 -3.33,-2 V2 A1,1 0 0 0 -2.33,3 H0"
+         fill="#ffffff"
+         stroke={RED}
+         strokeWidth={1 / 3}
+      />
+   );
+}
 
 function Rink({ className, children }: RinkProps) {
    const iceId = useId();
 
    return (
-      <svg className={className} viewBox="-101 -43.5 202 87" width={808} height={348} role="img" aria-label="Rink">
+      <svg
+         className={className}
+         viewBox="-101 -43.5 202 87"
+         width={808}
+         height={348}
+         role="img"
+         aria-label="Rink"
+      >
          <defs>
             <clipPath id={iceId}>
                <rect x={-100} y={-42.5} width={200} height={85} rx={28} ry={28} />
@@ -93,8 +107,12 @@ function Rink({ className, children }: RinkProps) {
             <rect x={24} y={-42.5} width={1} height={85} fill={BLUE} />
 
             {/* Goal creases (under the goal lines), colored to match their end */}
-            <g transform="translate(-89 0)"><Crease fill={LEFT_END} /></g>
-            <g transform="translate(89 0) scale(-1 1)"><Crease fill={RIGHT_END} /></g>
+            <g transform="translate(-89 0)">
+               <Crease fill={LEFT_END} />
+            </g>
+            <g transform="translate(89 0) scale(-1 1)">
+               <Crease fill={RIGHT_END} />
+            </g>
 
             <g fill="none" stroke={RED} strokeWidth={MARKING}>
                {/* Goal lines, 11 ft from the end boards */}
@@ -117,20 +135,28 @@ function Rink({ className, children }: RinkProps) {
 
             {/* Neutral-zone faceoff spots (2 ft), 5 ft from the blue lines, 44 ft apart */}
             <g fill={RED}>
-               {NEUTRAL_DOTS.map(({ x, y }) => <circle key={`${x},${y}`} cx={x} cy={y} r={1} />)}
+               {NEUTRAL_DOTS.map(({ x, y }) => (
+                  <circle key={`${x},${y}`} cx={x} cy={y} r={1} />
+               ))}
             </g>
 
             {/* End-zone faceoff circles: spots 20 ft from the goal line, 44 ft apart */}
-            {END_ZONE_DOTS.map(({ x, y }) => <FaceoffCircle key={`${x},${y}`} x={x} y={y} />)}
+            {END_ZONE_DOTS.map(({ x, y }) => (
+               <FaceoffCircle key={`${x},${y}`} x={x} y={y} />
+            ))}
 
             {/* Goal nets */}
-            <g transform="translate(-89 0)"><Net /></g>
-            <g transform="translate(89 0) scale(-1 1)"><Net /></g>
+            <g transform="translate(-89 0)">
+               <Net />
+            </g>
+            <g transform="translate(89 0) scale(-1 1)">
+               <Net />
+            </g>
          </g>
 
          {children}
       </svg>
    );
-};
+}
 
 export default Rink;

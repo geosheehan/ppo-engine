@@ -12,10 +12,13 @@ function TeamChip({ teamId }: TeamChipProps) {
    const color = teamColor(teamId);
 
    return (
-      <span className="team-chip" style={{ '--chip-color': color, '--chip-text-color': textColorOn(color) } as CSSProperties}>
+      <span
+         className="team-chip"
+         style={{ '--chip-color': color, '--chip-text-color': textColorOn(color) } as CSSProperties}
+      >
          {teamById(teamId)?.abbrev}
       </span>
    );
-};
+}
 
 export default TeamChip;

@@ -11,9 +11,19 @@ const TEAM_ORDER = [TOR, SEA];
 const play = (typeDescKey: string, clock: string, period = 1) =>
    ({ typeDescKey, timeInPeriod: clock, periodDescriptor: { number: period } }) as unknown as Play;
 
-const shift = (teamId: number, start: number, end: number, playerId = 1): TimedShift => ({ playerId, teamId, start, end });
+const shift = (teamId: number, start: number, end: number, playerId = 1): TimedShift => ({
+   playerId,
+   teamId,
+   start,
+   end,
+});
 
-const plays = [play('faceoff', '00:00'), play('hit', '00:40'), play('stoppage', '01:00'), play('faceoff', '01:00')];
+const plays = [
+   play('faceoff', '00:00'),
+   play('hit', '00:40'),
+   play('stoppage', '01:00'),
+   play('faceoff', '01:00'),
+];
 
 describe('replaySteps', () => {
    it('gives every play a step', () => {
@@ -31,7 +41,9 @@ describe('replaySteps', () => {
    });
 
    it('leaves changes in the same second as a play to that play', () => {
-      expect(replaySteps(plays, [shift(SEA, 0, 60), shift(TOR, 40, 60)], TEAM_ORDER)).toHaveLength(4);
+      expect(replaySteps(plays, [shift(SEA, 0, 60), shift(TOR, 40, 60)], TEAM_ORDER)).toHaveLength(
+         4,
+      );
    });
 
    it('gives each team its own step when both change in the same second, away team first', () => {
@@ -49,13 +61,17 @@ describe('replaySteps', () => {
 });
 
 describe('stepIndexAt', () => {
-   const steps = replaySteps(plays, [shift(SEA, 0, 25), shift(SEA, 25, 60), shift(TOR, 0, 25)], TEAM_ORDER);
+   const steps = replaySteps(
+      plays,
+      [shift(SEA, 0, 25), shift(SEA, 25, 60), shift(TOR, 0, 25)],
+      TEAM_ORDER,
+   );
 
    it('finds a play step', () => {
       expect(stepIndexAt(steps, { index: 1, time: 40 })).toBe(3);
    });
 
-   it('finds each team\'s change step in a shared second', () => {
+   it("finds each team's change step in a shared second", () => {
       expect(stepIndexAt(steps, { index: 0, time: 25, changedTeamId: TOR })).toBe(1);
       expect(stepIndexAt(steps, { index: 0, time: 25, changedTeamId: SEA })).toBe(2);
    });
@@ -71,25 +87,43 @@ describe('stepIndexAt', () => {
 });
 
 describe('teamsYetToChange', () => {
-   const shifts = [shift(TOR, 0, 25, 1), shift(TOR, 25, 60, 2), shift(SEA, 0, 25, 3), shift(SEA, 25, 60, 4)];
+   const shifts = [
+      shift(TOR, 0, 25, 1),
+      shift(TOR, 25, 60, 2),
+      shift(SEA, 0, 25, 3),
+      shift(SEA, 25, 60, 4),
+   ];
    const steps = replaySteps(plays, shifts, TEAM_ORDER);
 
-   it('holds the home team\'s old line on the away team\'s change step', () => {
+   it("holds the home team's old line on the away team's change step", () => {
       const awayStep = stepIndexAt(steps, { index: 0, time: 25, changedTeamId: TOR });
       expect(teamsYetToChange(steps, awayStep)).toEqual([SEA]);
-      expect(onIceAt(indexOnIce(shifts), plays[0], 25, teamsYetToChange(steps, awayStep)).map(({ playerId }) => playerId).sort()).toEqual([2, 3]);
+      expect(
+         onIceAt(indexOnIce(shifts), plays[0], 25, teamsYetToChange(steps, awayStep))
+            .map(({ playerId }) => playerId)
+            .sort(),
+      ).toEqual([2, 3]);
    });
 
    it('shows both new lines once the home team has changed too', () => {
       const homeStep = stepIndexAt(steps, { index: 0, time: 25, changedTeamId: SEA });
       expect(teamsYetToChange(steps, homeStep)).toEqual([]);
-      expect(onIceAt(indexOnIce(shifts), plays[0], 25, []).map(({ playerId }) => playerId).sort()).toEqual([2, 4]);
+      expect(
+         onIceAt(indexOnIce(shifts), plays[0], 25, [])
+            .map(({ playerId }) => playerId)
+            .sort(),
+      ).toEqual([2, 4]);
    });
 });
 
 describe('lineChangeAt', () => {
    it('lists who came off and who went on for one team', () => {
-      const shifts = [shift(SEA, 0, 25, 1), shift(SEA, 0, 25, 2), shift(SEA, 25, 60, 3), shift(TOR, 25, 60, 4)];
+      const shifts = [
+         shift(SEA, 0, 25, 1),
+         shift(SEA, 0, 25, 2),
+         shift(SEA, 25, 60, 3),
+         shift(TOR, 25, 60, 4),
+      ];
       expect(lineChangeAt(indexOnIce(shifts), SEA, 25)).toEqual({ off: [1, 2], on: [3] });
    });
 
@@ -101,7 +135,9 @@ describe('lineChangeAt', () => {
 
 describe('stepType', () => {
    it('names a change step as a line change and a play step by its play', () => {
-      expect(stepType({ index: 0, time: 25, changedTeamId: SEA }, [play('faceoff', '00:00')])).toBe('line-change');
+      expect(stepType({ index: 0, time: 25, changedTeamId: SEA }, [play('faceoff', '00:00')])).toBe(
+         'line-change',
+      );
       expect(stepType({ index: 0, time: 0 }, [play('faceoff', '00:00')])).toBe('faceoff');
    });
 });

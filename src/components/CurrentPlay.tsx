@@ -1,14 +1,14 @@
 import '@components/CurrentPlay.css';
-import { useGame } from '@context/useGame';
 import TeamChip from '@components/TeamChip';
-import { isGoal, isPenalty } from '@domain/types';
-import type { Play } from '@domain/types';
-import { penaltyDisplayName } from '@domain/penalties';
-import { playerShortName } from '@domain/players';
-import { LINE_CHANGE, stepTypeLabel } from '@domain/steps';
+import { useGame } from '@context/useGame';
 import { goalSituation } from '@engine/powerPlayCounter';
 import type { GoalSituation } from '@engine/powerPlayCounter';
 import type { GoalEffect } from '@engine/types';
+import { penaltyDisplayName } from '@domain/penalties';
+import { playerShortName } from '@domain/players';
+import { LINE_CHANGE, stepTypeLabel } from '@domain/steps';
+import { isGoal, isPenalty } from '@domain/types';
+import type { Play } from '@domain/types';
 
 type CurrentPlayProps = {
    play: Play;
@@ -58,6 +58,6 @@ function CurrentPlay({ play, goalEffect, changedTeamId }: CurrentPlayProps) {
          <div className="current-play__detail">{detail}</div>
       </div>
    );
-};
+}
 
 export default CurrentPlay;

@@ -1,9 +1,9 @@
-import type { GameElapsed, Side } from '@domain/types';
-import { otherSide } from '@domain/types';
-import { SIDES } from '@domain/constants';
-import { lastIndexWhere } from '@domain/search';
 import { isSameStrength, strengthLabel } from '@engine/strength';
 import type { GoalEffect, Strength, TimelineEntry } from '@engine/types';
+import { SIDES } from '@domain/constants';
+import { lastIndexWhere } from '@domain/search';
+import type { GameElapsed, Side } from '@domain/types';
+import { otherSide } from '@domain/types';
 
 export type Opportunity = {
    side: Side;
@@ -74,8 +74,12 @@ export function countPowerPlays(timeline: TimelineEntry[]): PowerPlayCount {
 }
 
 // Opportunities, power-play goals and power-play time per team and strength, up to `time`.
-export function totalsAt({ checkpoints }: PowerPlayCount, time: GameElapsed = Infinity): PowerPlayTotals {
-   const checkpoint = checkpoints[lastIndexWhere(checkpoints, (checkpoint) => checkpoint.time <= time)];
+export function totalsAt(
+   { checkpoints }: PowerPlayCount,
+   time: GameElapsed = Infinity,
+): PowerPlayTotals {
+   const checkpoint =
+      checkpoints[lastIndexWhere(checkpoints, (checkpoint) => checkpoint.time <= time)];
    if (!checkpoint) return { away: [], home: [] };
 
    const side = advantagedSide(checkpoint.strength);
@@ -85,7 +89,9 @@ export function totalsAt({ checkpoints }: PowerPlayCount, time: GameElapsed = In
    const label = strengthLabel(checkpoint.strength, side);
    const totals = checkpoint.totals[side];
    const running = totals.some((total) => total.label === label)
-      ? totals.map((total) => (total.label === label ? { ...total, seconds: total.seconds + seconds } : total))
+      ? totals.map((total) =>
+           total.label === label ? { ...total, seconds: total.seconds + seconds } : total,
+        )
       : [...totals, { label, opportunities: 0, goals: 0, seconds }];
    return { ...checkpoint.totals, [side]: running };
 }
@@ -93,7 +99,10 @@ export function totalsAt({ checkpoints }: PowerPlayCount, time: GameElapsed = In
 class PowerPlayCounter {
    readonly opportunities: Opportunity[] = [];
    readonly checkpoints: Checkpoint[] = [];
-   private readonly totals: Record<Side, Map<string, OpportunityTotal>> = { away: new Map(), home: new Map() };
+   private readonly totals: Record<Side, Map<string, OpportunityTotal>> = {
+      away: new Map(),
+      home: new Map(),
+   };
    private strength: Strength = { away: 5, home: 5 };
    private strengthStart: GameElapsed = 0;
 
@@ -132,17 +141,26 @@ class PowerPlayCounter {
       if (side) {
          const shortHanded = otherSide(side);
          const unchanged = isSameStrength(before, after);
-         const awarded = advantageOf(after, side) > advantageOf(before, side)
+         const awarded =
+            advantageOf(after, side) > advantageOf(before, side)
             || secondHalves.includes(shortHanded)
             || (unchanged && handoffs.includes(shortHanded))
-            || (unchanged && powerPlayGoals.some((goal) => goal.side === side && isSameStrength(goal.strength, after)));
+            || (unchanged
+               && powerPlayGoals.some(
+                  (goal) => goal.side === side && isSameStrength(goal.strength, after),
+               ));
          if (awarded) {
             this.opportunities.push({ side, strength: after, time });
             this.totalFor(side, after).opportunities += 1;
          }
       }
 
-      this.checkpoints.push({ time, strength: after, strengthStart: this.strengthStart, totals: this.copyTotals() });
+      this.checkpoints.push({
+         time,
+         strength: after,
+         strengthStart: this.strengthStart,
+         totals: this.copyTotals(),
+      });
    }
 
    private addPowerPlayTime(time: GameElapsed): void {

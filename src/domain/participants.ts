@@ -8,7 +8,10 @@ export type Participant = {
 };
 
 // The named players in a play's details, in the order given. Field names are checked against that play type's details.
-function named<D extends object>(details: D, ...roles: [field: keyof D & string, role: string][]): Participant[] {
+function named<D extends object>(
+   details: D,
+   ...roles: [field: keyof D & string, role: string][]
+): Participant[] {
    return roles.flatMap(([field, role]) => {
       const playerId = details[field];
       return typeof playerId === 'number' ? [{ field, role, playerId }] : [];
@@ -39,7 +42,12 @@ export function playParticipants(play: Play): Participant[] {
       case PLAY_TYPES.TAKEAWAY:
          return named(play.details, ['playerId', 'Takeaway']);
       case PLAY_TYPES.PENALTY:
-         return named(play.details, ['committedByPlayerId', 'Penalty'], ['drawnByPlayerId', 'Drawn by'], ['servedByPlayerId', 'Served by']);
+         return named(
+            play.details,
+            ['committedByPlayerId', 'Penalty'],
+            ['drawnByPlayerId', 'Drawn by'],
+            ['servedByPlayerId', 'Served by'],
+         );
       default:
          return [];
    }

@@ -1,7 +1,7 @@
-import type { GameElapsed, PenaltyPlay } from '@domain/types';
+import type { PenaltyEngineResult, ServedPenalty, Strength, StrengthInterval } from '@engine/types';
 import { playTime } from '@domain/plays';
 import { lastIndexWhere } from '@domain/search';
-import type { PenaltyEngineResult, ServedPenalty, Strength, StrengthInterval } from '@engine/types';
+import type { GameElapsed, PenaltyPlay } from '@domain/types';
 
 export type ClockedPenalty = {
    served: ServedPenalty;
@@ -28,12 +28,19 @@ function remainingAt(served: ServedPenalty, play: PenaltyPlay, time: GameElapsed
    return served.start + play.details.duration * 60 - time;
 }
 
-function intervalAt(intervals: StrengthInterval[], time: GameElapsed): StrengthInterval | undefined {
+function intervalAt(
+   intervals: StrengthInterval[],
+   time: GameElapsed,
+): StrengthInterval | undefined {
    const interval = intervals[lastIndexWhere(intervals, ({ start }) => start <= time)];
    return interval && time < interval.end ? interval : undefined;
 }
 
-export function snapshotAt(result: PenaltyEngineResult, penaltyPlays: Map<number, PenaltyPlay>, time: GameElapsed): Snapshot {
+export function snapshotAt(
+   result: PenaltyEngineResult,
+   penaltyPlays: Map<number, PenaltyPlay>,
+   time: GameElapsed,
+): Snapshot {
    const interval = intervalAt(result.strengthIntervals, time);
    const strength = interval ? { away: interval.away, home: interval.home } : { away: 5, home: 5 };
 

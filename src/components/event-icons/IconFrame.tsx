@@ -27,6 +27,6 @@ function IconFrame({ className, x = 0, y = 0, size = 16, color, children }: Icon
          {children}
       </svg>
    );
-};
+}
 
 export default IconFrame;

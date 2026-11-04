@@ -1,12 +1,13 @@
 import { useEffect, useRef } from 'react';
+import { SHOT_ANIMATION_MS } from '@components/useShotProgress';
 import { livePosition } from '@domain/playback';
 import type { ReplayPosition } from '@domain/playback';
 import type { GameElapsed, Play } from '@domain/types';
-import { SHOT_ANIMATION_MS } from '@components/useShotProgress';
 
 const TICK_MS = 50;
 
-const samePosition = (a: ReplayPosition, b: ReplayPosition): boolean => a.index === b.index && a.time === b.time;
+const samePosition = (a: ReplayPosition, b: ReplayPosition): boolean =>
+   a.index === b.index && a.time === b.time;
 
 export function useLivePlayback(
    active: boolean,
@@ -33,7 +34,13 @@ export function useLivePlayback(
             startedAt = performance.now();
             emitted = start;
          }
-         const next = livePosition(plays, start, performance.now() - startedAt, speed, SHOT_ANIMATION_MS);
+         const next = livePosition(
+            plays,
+            start,
+            performance.now() - startedAt,
+            speed,
+            SHOT_ANIMATION_MS,
+         );
          if (samePosition(next, emitted)) return;
          emitted = next;
          positionRef.current = next;

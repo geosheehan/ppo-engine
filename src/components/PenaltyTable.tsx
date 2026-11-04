@@ -1,8 +1,8 @@
-import type { Player } from '@domain/types';
 import { useGame } from '@context/useGame';
 import { penaltyDisplayName } from '@domain/penalties';
+import type { Player } from '@domain/types';
 
-function PenaltyTable({team}: {team: "home" | "away"}) {
+function PenaltyTable({ team }: { team: 'home' | 'away' }) {
    const { penalties, teamById, playerById, teamByHomeOrAway } = useGame();
 
    const penaltyTeam = teamByHomeOrAway(team);
@@ -16,9 +16,10 @@ function PenaltyTable({team}: {team: "home" | "away"}) {
          return `${player.sweaterNumber} ${player.firstName.default[0]}.${player.lastName.default.toUpperCase()}`;
       }
       return 'UNK Unknown Player';
-   }
+   };
 
-   const tableCaption = `${penaltyTeam.placeName.default} ${penaltyTeam.commonName.default}`.toUpperCase();
+   const tableCaption =
+      `${penaltyTeam.placeName.default} ${penaltyTeam.commonName.default}`.toUpperCase();
 
    return (
       <table>
@@ -34,26 +35,26 @@ function PenaltyTable({team}: {team: "home" | "away"}) {
             </tr>
          </thead>
          <tbody>
-            {
-               teamPenalties.map((penalty) => {
-                  const details = penalty.details;
-                  const team = teamById(details.eventOwnerTeamId);
-                  const player = details.committedByPlayerId ? playerById(details.committedByPlayerId) : undefined;
-                  return (
-                     <tr key={penalty.eventId}>
-                        <td>{penalty.periodDescriptor.number}</td>
-                        <td>{penalty.timeInPeriod}</td>
-                        <td>{team?.abbrev ?? 'UNK'}</td>
-                        <td>{playerDisplayName(player)}</td>
-                        <td>{details.duration}</td>
-                        <td>{penaltyDisplayName(details.descKey)}</td>
-                     </tr>
-                  )
-               }
-            )}
+            {teamPenalties.map((penalty) => {
+               const details = penalty.details;
+               const team = teamById(details.eventOwnerTeamId);
+               const player = details.committedByPlayerId
+                  ? playerById(details.committedByPlayerId)
+                  : undefined;
+               return (
+                  <tr key={penalty.eventId}>
+                     <td>{penalty.periodDescriptor.number}</td>
+                     <td>{penalty.timeInPeriod}</td>
+                     <td>{team?.abbrev ?? 'UNK'}</td>
+                     <td>{playerDisplayName(player)}</td>
+                     <td>{details.duration}</td>
+                     <td>{penaltyDisplayName(details.descKey)}</td>
+                  </tr>
+               );
+            })}
          </tbody>
       </table>
-   )
-};
+   );
+}
 
 export default PenaltyTable;

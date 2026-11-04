@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
+import { isThreeOnThreeOvertime, OnIceStrength, overtimeStrength } from '@engine/strength';
 import type { Game } from '@domain/types';
-import { OnIceStrength, isThreeOnThreeOvertime, overtimeStrength } from '@engine/strength';
 
 describe('isThreeOnThreeOvertime', () => {
-   const game = (gameType: number, season = 20262027) => ({ gameType, season, regPeriods: 3 }) as Game;
+   const game = (gameType: number, season = 20262027) =>
+      ({ gameType, season, regPeriods: 3 }) as Game;
    const overtime = 3 * 20 * 60 + 30;
 
    it.each([
@@ -25,12 +26,30 @@ describe('isThreeOnThreeOvertime', () => {
 
 describe('overtimeStrength (Rule 84.3)', () => {
    it.each([
-      [{ away: 5, home: 5 }, { away: 3, home: 3 }],
-      [{ away: 4, home: 4 }, { away: 3, home: 3 }],
-      [{ away: 5, home: 4 }, { away: 4, home: 3 }],
-      [{ away: 4, home: 5 }, { away: 3, home: 4 }],
-      [{ away: 5, home: 3 }, { away: 5, home: 3 }],
-      [{ away: 4, home: 3 }, { away: 4, home: 3 }],
+      [
+         { away: 5, home: 5 },
+         { away: 3, home: 3 },
+      ],
+      [
+         { away: 4, home: 4 },
+         { away: 3, home: 3 },
+      ],
+      [
+         { away: 5, home: 4 },
+         { away: 4, home: 3 },
+      ],
+      [
+         { away: 4, home: 5 },
+         { away: 3, home: 4 },
+      ],
+      [
+         { away: 5, home: 3 },
+         { away: 5, home: 3 },
+      ],
+      [
+         { away: 4, home: 3 },
+         { away: 4, home: 3 },
+      ],
    ])('maps regulation %o to %o', (entitled, expected) => {
       expect(overtimeStrength(entitled)).toEqual(expected);
    });

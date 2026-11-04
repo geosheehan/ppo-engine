@@ -1,15 +1,14 @@
+import type { Strength } from '@engine/types';
+import { PERIOD_SECONDS } from '@domain/clock';
 import { GAME_TYPES, SIDES } from '@domain/constants';
 import type { Game, GameElapsed, Side } from '@domain/types';
 import { otherSide } from '@domain/types';
-import { PERIOD_SECONDS } from '@domain/clock';
-import type { Strength } from '@engine/types';
 
-const TEAMS: Side[] = [SIDES.AWAY, SIDES.HOME]
+const TEAMS: Side[] = [SIDES.AWAY, SIDES.HOME];
 // 3-on-3 overtime was introduced in the 2015-16 regular season.
 const FIRST_THREE_ON_THREE_SEASON = 20152016;
 
-export const isSameStrength = (a: Strength, b: Strength) =>
-   a.away === b.away && a.home === b.home;
+export const isSameStrength = (a: Strength, b: Strength) => a.away === b.away && a.home === b.home;
 
 export const strengthLabel = (strength: Strength, side: Side): string =>
    `${strength[side]}v${strength[otherSide(side)]}`;

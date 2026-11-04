@@ -11,6 +11,6 @@ function BlockedShotIcon(props: IconProps) {
          <line x1={4.46} y1={11.54} x2={11.54} y2={4.46} {...team(2)} />
       </IconFrame>
    );
-};
+}
 
 export default BlockedShotIcon;

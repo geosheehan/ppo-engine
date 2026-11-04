@@ -2,12 +2,12 @@ import '@components/OnIcePanel.css';
 import { useState } from 'react';
 import type { CSSProperties } from 'react';
 import { clsx } from 'clsx';
+import PlayerCard from '@components/PlayerCard';
 import { useGame } from '@context/useGame';
 import { POSITION_CODES } from '@domain/constants';
 import { byPosition, keepSlots } from '@domain/lineup';
 import type { TimedShift } from '@domain/onIce';
 import type { Player, Side } from '@domain/types';
-import PlayerCard from '@components/PlayerCard';
 
 type OnIcePanelProps = {
    side: Side;
@@ -17,7 +17,11 @@ type OnIcePanelProps = {
 
 const isGoalie = (player: Player): boolean => player.positionCode === POSITION_CODES.GOALIE;
 
-const idsOf = (players: Player[]): string => players.map(({ playerId }) => playerId).toSorted().join();
+const idsOf = (players: Player[]): string =>
+   players
+      .map(({ playerId }) => playerId)
+      .toSorted()
+      .join();
 
 function OnIcePanel({ side, onIce, position }: OnIcePanelProps) {
    const { playerById, teamByHomeOrAway, teamColor } = useGame();
@@ -35,11 +39,16 @@ function OnIcePanel({ side, onIce, position }: OnIcePanelProps) {
    if (idsOf(players) !== idsOf(shown)) {
       setSkaters(keepSlots(skaters, onIceSkaters));
       setShown(players);
-      setArrivals(players.filter((player) => !shown.includes(player)).map(({ playerId }) => playerId));
+      setArrivals(
+         players.filter((player) => !shown.includes(player)).map(({ playerId }) => playerId),
+      );
    }
 
    const card = (player: Player) => (
-      <li key={player.playerId} className={clsx(arrivals.includes(player.playerId) && 'on-ice__arrival')}>
+      <li
+         key={player.playerId}
+         className={clsx(arrivals.includes(player.playerId) && 'on-ice__arrival')}
+      >
          <PlayerCard player={player} team={team} mirrored={position === 'left'} />
       </li>
    );
@@ -57,6 +66,6 @@ function OnIcePanel({ side, onIce, position }: OnIcePanelProps) {
          </ol>
       </div>
    );
-};
+}
 
 export default OnIcePanel;

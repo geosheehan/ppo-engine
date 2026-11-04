@@ -1,9 +1,9 @@
 import { matchupColors } from '@domain/colors';
 import { SIDES } from '@domain/constants';
-import { TEAM_COLORS } from '@domain/teamColors';
 import { indexOnIce, timedShifts } from '@domain/onIce';
 import type { OnIceIndex, TimedShift } from '@domain/onIce';
 import { byGameOrder } from '@domain/plays';
+import { TEAM_COLORS } from '@domain/teamColors';
 import type { Game, PenaltyPlay, Play, Player, Shift, Side, Team } from '@domain/types';
 import { isPenalty } from '@domain/types';
 

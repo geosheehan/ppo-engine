@@ -32,4 +32,6 @@ export const periodLabel = (period: number, regPeriods: number): string => {
 };
 
 export const playPeriodLabel = ({ periodDescriptor }: Play): string =>
-   periodDescriptor.periodType === PERIOD_TYPES.SHOOTOUT ? PERIOD_TYPES.SHOOTOUT : periodLabel(periodDescriptor.number, periodDescriptor.maxRegulationPeriods);
+   periodDescriptor.periodType === PERIOD_TYPES.SHOOTOUT
+      ? PERIOD_TYPES.SHOOTOUT
+      : periodLabel(periodDescriptor.number, periodDescriptor.maxRegulationPeriods);

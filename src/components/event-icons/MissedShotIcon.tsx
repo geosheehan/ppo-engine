@@ -9,6 +9,6 @@ function MissedShotIcon(props: IconProps) {
          <circle cx={8} cy={8} r={6} {...team(2)} />
       </IconFrame>
    );
-};
+}
 
 export default MissedShotIcon;

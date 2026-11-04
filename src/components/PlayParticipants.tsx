@@ -1,12 +1,12 @@
 import '@components/PlayParticipants.css';
 import { clsx } from 'clsx';
+import PlayerCard from '@components/PlayerCard';
 import { useGame } from '@context/useGame';
 import { layoutParticipants } from '@layout/participantLayout';
 import type { ParticipantLayout } from '@layout/participantLayout';
 import { playParticipants } from '@domain/participants';
 import type { LineChange } from '@domain/steps';
 import type { Play, Player, Side, Team } from '@domain/types';
-import PlayerCard from '@components/PlayerCard';
 
 type PlayParticipantsProps = {
    play?: Play;
@@ -29,7 +29,11 @@ function PlayParticipants({ play, lineChange, sides }: PlayParticipantsProps) {
    let layout: ParticipantLayout<Card>;
    if (lineChange) {
       const changeCards = (ids: number[], role: string, mirrored: boolean) =>
-         cardsFor(ids.map((playerId) => ({ field: role, role, playerId }))).map((card) => ({ ...card, mirrored, apart: false }));
+         cardsFor(ids.map((playerId) => ({ field: role, role, playerId }))).map((card) => ({
+            ...card,
+            mirrored,
+            apart: false,
+         }));
       layout = {
          lists: [
             { position: 'left', cards: changeCards(lineChange.off, 'Off', true) },
@@ -45,7 +49,10 @@ function PlayParticipants({ play, lineChange, sides }: PlayParticipantsProps) {
    return (
       <div className={clsx('play-participants', closeAtCenter && 'play-participants--close')}>
          {lists.map(({ position, cards }) => (
-            <ol key={position} className={`play-participants__side play-participants__side--${position}`}>
+            <ol
+               key={position}
+               className={`play-participants__side play-participants__side--${position}`}
+            >
                {cards.map(({ role, player, team, mirrored, apart }) => (
                   <li
                      key={`${role}-${player.playerId}`}
@@ -63,6 +70,6 @@ function PlayParticipants({ play, lineChange, sides }: PlayParticipantsProps) {
          ))}
       </div>
    );
-};
+}
 
 export default PlayParticipants;

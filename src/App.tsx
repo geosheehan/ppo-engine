@@ -6,4 +6,4 @@ function App() {
    return <ReplayView />;
 }
 
-export default App
+export default App;

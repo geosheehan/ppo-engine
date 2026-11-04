@@ -12,6 +12,7 @@
   "bracketSameLine": false,
   "objectWrap": "preserve",
   "arrowParens": "always",
+  "experimentalOperatorPosition": "start",
   "singleAttributePerLine": false,
   "endOfLine": "lf",
   "plugins": ["@ianvs/prettier-plugin-sort-imports"],

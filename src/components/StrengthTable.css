@@ -60,17 +60,25 @@
 }
 
 .strength-table .strength-table__live {
-   box-shadow: inset 1px 0 var(--text-h), inset -1px 0 var(--text-h);
+   box-shadow:
+      inset 1px 0 var(--text-h),
+      inset -1px 0 var(--text-h);
    background: var(--team-color);
    color: var(--team-text-color);
 }
 
 .strength-table thead .strength-table__live {
-   box-shadow: inset 1px 0 var(--text-h), inset -1px 0 var(--text-h), inset 0 1px var(--text-h);
+   box-shadow:
+      inset 1px 0 var(--text-h),
+      inset -1px 0 var(--text-h),
+      inset 0 1px var(--text-h);
 }
 
 .strength-table tbody tr:last-child .strength-table__live {
-   box-shadow: inset 1px 0 var(--text-h), inset -1px 0 var(--text-h), inset 0 -1px var(--text-h);
+   box-shadow:
+      inset 1px 0 var(--text-h),
+      inset -1px 0 var(--text-h),
+      inset 0 -1px var(--text-h);
 }
 
 .strength-table__time {
@@ -94,7 +102,9 @@
 }
 
 @keyframes strength-table-tick {
-   50% { opacity: 0.2; }
+   50% {
+      opacity: 0.2;
+   }
 }
 
 @media (prefers-reduced-motion: reduce) {

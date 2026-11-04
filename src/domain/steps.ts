@@ -1,7 +1,7 @@
 import { PLAY_TYPES } from '@domain/constants';
 import { PLAY_TYPE_LABELS } from '@domain/labels';
-import type { ReplayPosition } from '@domain/playback';
 import type { OnIceIndex, TimedShift } from '@domain/onIce';
+import type { ReplayPosition } from '@domain/playback';
 import { playTime } from '@domain/plays';
 import { lastIndexWhere } from '@domain/search';
 import type { GameElapsed, Play, PlayType } from '@domain/types';
@@ -14,12 +14,17 @@ export type StepType = PlayType | typeof LINE_CHANGE;
 
 export const STEP_TYPES: StepType[] = [...Object.values(PLAY_TYPES), LINE_CHANGE];
 
-export const stepTypeLabel = (type: StepType): string => (type === LINE_CHANGE ? 'Line change' : PLAY_TYPE_LABELS[type]);
+export const stepTypeLabel = (type: StepType): string =>
+   type === LINE_CHANGE ? 'Line change' : PLAY_TYPE_LABELS[type];
 
 export const stepType = (step: ReplayStep, plays: Play[]): StepType =>
    step.changedTeamId ? LINE_CHANGE : plays[step.index].typeDescKey;
 
-export function replaySteps(plays: Play[], shifts: TimedShift[], teamOrder: number[]): ReplayStep[] {
+export function replaySteps(
+   plays: Play[],
+   shifts: TimedShift[],
+   teamOrder: number[],
+): ReplayStep[] {
    const playSteps: ReplayStep[] = plays.map((play, index) => ({
       index,
       time: playTime(play),
@@ -38,23 +43,38 @@ export function replaySteps(plays: Play[], shifts: TimedShift[], teamOrder: numb
    for (const [time, teamIds] of changedTeams) {
       const index = lastIndexWhere(playSteps, (step) => step.time < time);
       if (index === -1) continue;
-      for (const changedTeamId of [...teamIds].toSorted((a, b) => teamOrder.indexOf(a) - teamOrder.indexOf(b))) {
+      for (const changedTeamId of [...teamIds].toSorted(
+         (a, b) => teamOrder.indexOf(a) - teamOrder.indexOf(b),
+      )) {
          changeSteps.push({ index, time, changedTeamId });
       }
    }
 
-   const order = (step: ReplayStep): number => (step.changedTeamId ? teamOrder.indexOf(step.changedTeamId) : -1);
-   return [...playSteps, ...changeSteps].toSorted((a, b) => a.time - b.time || a.index - b.index || order(a) - order(b));
+   const order = (step: ReplayStep): number =>
+      step.changedTeamId ? teamOrder.indexOf(step.changedTeamId) : -1;
+   return [...playSteps, ...changeSteps].toSorted(
+      (a, b) => a.time - b.time || a.index - b.index || order(a) - order(b),
+   );
 }
 
-export function stepIndexAt(steps: ReplayStep[], { index, time, changedTeamId }: ReplayPosition): number {
+export function stepIndexAt(
+   steps: ReplayStep[],
+   { index, time, changedTeamId }: ReplayPosition,
+): number {
    if (changedTeamId) {
-      for (let i = lastIndexWhere(steps, (step) => step.time < time) + 1; steps[i]?.time === time; i++) {
+      for (
+         let i = lastIndexWhere(steps, (step) => step.time < time) + 1;
+         steps[i]?.time === time;
+         i++
+      ) {
          if (steps[i].changedTeamId === changedTeamId) return i;
       }
       return -1;
    }
-   return lastIndexWhere(steps, (step) => step.time < time || (step.time === time && step.index <= index));
+   return lastIndexWhere(
+      steps,
+      (step) => step.time < time || (step.time === time && step.index <= index),
+   );
 }
 
 export type LineChange = {
@@ -62,8 +82,13 @@ export type LineChange = {
    on: number[];
 };
 
-export function lineChangeAt({ startingAt, endingAt }: OnIceIndex, teamId: number, time: GameElapsed): LineChange {
-   const playersOf = (shifts: TimedShift[] = []) => shifts.filter((shift) => shift.teamId === teamId).map(({ playerId }) => playerId);
+export function lineChangeAt(
+   { startingAt, endingAt }: OnIceIndex,
+   teamId: number,
+   time: GameElapsed,
+): LineChange {
+   const playersOf = (shifts: TimedShift[] = []) =>
+      shifts.filter((shift) => shift.teamId === teamId).map(({ playerId }) => playerId);
    const off = playersOf(endingAt.get(time));
    const on = playersOf(startingAt.get(time));
    return { off: off.filter((id) => !on.includes(id)), on: on.filter((id) => !off.includes(id)) };

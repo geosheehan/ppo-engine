@@ -1,7 +1,6 @@
+import type { PenaltyKind } from '@engine/types';
 import { PENALTY_SEVERITIES, SIDES } from '@domain/constants';
 import type { PenaltySeverity, Side } from '@domain/types';
-import type { PenaltyKind } from '@engine/types';
-
 
 export type CalledPenalty = {
    eventId: number;
@@ -33,7 +32,10 @@ export const STRENGTH_SEVERITIES = new Set<PenaltySeverity>([
 ]);
 
 export function toTimedPenalties(called: CalledPenalty): TimedPenalty[] {
-   if (called.severity === PENALTY_SEVERITIES.MAJOR || called.severity === PENALTY_SEVERITIES.MATCH) {
+   if (
+      called.severity === PENALTY_SEVERITIES.MAJOR
+      || called.severity === PENALTY_SEVERITIES.MATCH
+   ) {
       return [{ eventId: called.eventId, kind: 'major', seconds: called.minutes * 60 }];
    }
    if (called.minutes === 4) {
@@ -56,18 +58,34 @@ export function assessPenalties(called: CalledPenalty[], penaltiesInEffect: bool
       const timed = toTimedPenalties(calledPenalty);
       return timed.length === 1 && timed[0].kind === 'minor';
    };
-   if (!penaltiesInEffect && away.length === 1 && home.length === 1 && isSingleMinor(away[0]) && isSingleMinor(home[0])) {
-      return [away[0], home[0]].map((calledPenalty) => ({ side: calledPenalty.side, penalties: toTimedPenalties(calledPenalty), coincidental: true }));
+   if (
+      !penaltiesInEffect
+      && away.length === 1
+      && home.length === 1
+      && isSingleMinor(away[0])
+      && isSingleMinor(home[0])
+   ) {
+      return [away[0], home[0]].map((calledPenalty) => ({
+         side: calledPenalty.side,
+         penalties: toTimedPenalties(calledPenalty),
+         coincidental: true,
+      }));
    }
 
    const toOwned = (calledPenalty: CalledPenalty): OwnedPenalty[] =>
-      toTimedPenalties(calledPenalty).map((penalty) => ({ penalty, playerKey: calledPenalty.playerKey }));
+      toTimedPenalties(calledPenalty).map((penalty) => ({
+         penalty,
+         playerKey: calledPenalty.playerKey,
+      }));
    const awayPenalties = away.flatMap(toOwned);
    const homePenalties = home.flatMap(toOwned);
 
    let majorsCancelled = false;
    for (const kind of ['major', 'minor'] as const) {
-      const cancelled = Math.min(countOfPenaltyKind(awayPenalties, kind), countOfPenaltyKind(homePenalties, kind));
+      const cancelled = Math.min(
+         countOfPenaltyKind(awayPenalties, kind),
+         countOfPenaltyKind(homePenalties, kind),
+      );
       cancelPenalties(awayPenalties, kind, cancelled);
       cancelPenalties(homePenalties, kind, cancelled);
       if (kind === 'major' && cancelled > 0) majorsCancelled = true;
@@ -110,5 +128,7 @@ function toSentences(side: Side, penalties: OwnedPenalty[], majorsCancelled: boo
       ],
       coincidental: false,
    }));
-   return sentences.sort((a, b) => Number(a.penalties[0].kind === 'major') - Number(b.penalties[0].kind === 'major'));
+   return sentences.sort(
+      (a, b) => Number(a.penalties[0].kind === 'major') - Number(b.penalties[0].kind === 'major'),
+   );
 }

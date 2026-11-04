@@ -8,6 +8,6 @@ function ShotOnGoalIcon(props: IconProps) {
          <circle cx={8} cy={8} r={6} {...filled} />
       </IconFrame>
    );
-};
+}
 
 export default ShotOnGoalIcon;

@@ -2,19 +2,43 @@ import { otherSide } from '@domain/types';
 import type { Side } from '@domain/types';
 
 export type Position = 'left' | 'right' | 'solo';
-export type LayoutCard = { field: string; side: Side };
-export type PlacedCard<C extends LayoutCard> = C & { mirrored: boolean; apart: boolean };
-export type ParticipantList<C extends LayoutCard> = { position: Position; cards: PlacedCard<C>[] };
-export type ParticipantLayout<C extends LayoutCard> = { lists: ParticipantList<C>[]; closeAtCenter: boolean };
+export type LayoutCard = {
+   field: string;
+   side: Side;
+};
+export type PlacedCard<C extends LayoutCard> = C & {
+   mirrored: boolean;
+   apart: boolean;
+};
+export type ParticipantList<C extends LayoutCard> = {
+   position: Position;
+   cards: PlacedCard<C>[];
+};
+export type ParticipantLayout<C extends LayoutCard> = {
+   lists: ParticipantList<C>[];
+   closeAtCenter: boolean;
+};
 
 // A mirrored card faces right. The wide gap goes between two cards that face each other.
-const facing = (leftMirrored: boolean, rightMirrored: boolean): boolean => leftMirrored && !rightMirrored;
+const facing = (leftMirrored: boolean, rightMirrored: boolean): boolean =>
+   leftMirrored && !rightMirrored;
 
 // Places a play's participant cards either side of the center line. Each half lists its cards from the center
 // line outward.
-export function layoutParticipants<C extends LayoutCard>(cards: C[], [leftSide, rightSide]: [Side, Side]): ParticipantLayout<C> {
+export function layoutParticipants<C extends LayoutCard>(
+   cards: C[],
+   [leftSide, rightSide]: [Side, Side],
+): ParticipantLayout<C> {
    if (cards.length === 1) {
-      return { lists: [{ position: 'solo', cards: [{ ...cards[0], mirrored: false, apart: false }] }], closeAtCenter: false };
+      return {
+         lists: [
+            {
+               position: 'solo',
+               cards: [{ ...cards[0], mirrored: false, apart: false }],
+            },
+         ],
+         closeAtCenter: false,
+      };
    }
 
    const cardsBySide: Record<Side, C[]> = { away: [], home: [] };
@@ -37,18 +61,28 @@ export function layoutParticipants<C extends LayoutCard>(cards: C[], [leftSide, 
    // goal with two assists reads as three on one. When only one team is involved, the halves face each other.
    const place = (position: 'left' | 'right', side: Side): PlacedCard<C>[] => {
       const half = cardsBySide[side];
-      const mirrored = half.map((card) => (bothTeams ? card.side === leftSide : position === 'left'));
+      const mirrored = half.map((card) =>
+         bothTeams ? card.side === leftSide : position === 'left',
+      );
       return half.map((card, i) => ({
          ...card,
          mirrored: mirrored[i],
-         apart: i > 0 && (position === 'left' ? facing(mirrored[i], mirrored[i - 1]) : facing(mirrored[i - 1], mirrored[i])),
+         apart:
+            i > 0
+            && (position === 'left'
+               ? facing(mirrored[i], mirrored[i - 1])
+               : facing(mirrored[i - 1], mirrored[i])),
       }));
    };
    const left = place('left', leftSide);
    const right = place('right', rightSide);
 
    return {
-      lists: [{ position: 'left', cards: left }, { position: 'right', cards: right }],
-      closeAtCenter: left.length > 0 && right.length > 0 && !facing(left[0].mirrored, right[0].mirrored),
+      lists: [
+         { position: 'left', cards: left },
+         { position: 'right', cards: right },
+      ],
+      closeAtCenter:
+         left.length > 0 && right.length > 0 && !facing(left[0].mirrored, right[0].mirrored),
    };
 }

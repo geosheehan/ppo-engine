@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { Play } from '@domain/types';
 import { livePosition } from '@domain/playback';
+import type { Play } from '@domain/types';
 
 const GOAL_HOLD = 7000;
 
@@ -13,7 +13,13 @@ const play = (typeDescKey: string, clock: string, period = 1) =>
    }) as unknown as Play;
 
 const at = (plays: Play[], index: number, elapsedMs: number, speed = 1) =>
-   livePosition(plays, { index, time: livePositionStart(plays, index) }, elapsedMs, speed, GOAL_HOLD);
+   livePosition(
+      plays,
+      { index, time: livePositionStart(plays, index) },
+      elapsedMs,
+      speed,
+      GOAL_HOLD,
+   );
 
 const livePositionStart = (plays: Play[], index: number): number => {
    const [mins, secs] = plays[index].timeInPeriod.split(':').map(Number);
@@ -40,7 +46,10 @@ describe('livePosition', () => {
    });
 
    it('resumes from partway between two plays', () => {
-      expect(livePosition(plays, { index: 0, time: 8 }, 2000, 1, GOAL_HOLD)).toEqual({ index: 1, time: 10 });
+      expect(livePosition(plays, { index: 0, time: 8 }, 2000, 1, GOAL_HOLD)).toEqual({
+         index: 1,
+         time: 10,
+      });
    });
 
    describe('plays in the same second', () => {
@@ -70,7 +79,11 @@ describe('livePosition', () => {
    });
 
    it('carries the clock across periods', () => {
-      const periods = [play('period-end', '20:00'), play('period-start', '00:00', 2), play('faceoff', '00:00', 2)];
+      const periods = [
+         play('period-end', '20:00'),
+         play('period-start', '00:00', 2),
+         play('faceoff', '00:00', 2),
+      ];
       expect(at(periods, 0, 3000)).toEqual({ index: 1, time: 1200 });
    });
 });

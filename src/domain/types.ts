@@ -1,5 +1,12 @@
 import { PLAY_TYPES, SIDES } from '@domain/constants';
-import type { DEFENDING_SIDES, GAME_TYPES, PENALTY_SEVERITIES, PERIOD_TYPES, POSITION_CODES, ZONE_CODES } from '@domain/constants';
+import type {
+   DEFENDING_SIDES,
+   GAME_TYPES,
+   PENALTY_SEVERITIES,
+   PERIOD_TYPES,
+   POSITION_CODES,
+   ZONE_CODES,
+} from '@domain/constants';
 
 type ValueOf<T> = T[keyof T];
 
@@ -43,8 +50,8 @@ type BaseDetails = {
 
 type TeamOwnedDetails = BaseDetails & { eventOwnerTeamId: number };
 
-export type ShotType = 'backhand' | 'bat' | 'deflected' | 'slap'
-   | 'snap' | 'tip-in' | 'wrap-around' | 'wrist';
+export type ShotType =
+   'backhand' | 'bat' | 'deflected' | 'slap' | 'snap' | 'tip-in' | 'wrap-around' | 'wrist';
 
 export type FaceoffDetails = TeamOwnedDetails & {
    winningPlayerId: number;
@@ -127,16 +134,18 @@ export type Play =
    | PlayWith<typeof PLAY_TYPES.SHOT_ON_GOAL, ShotOnGoalDetails>
    | PlayWith<typeof PLAY_TYPES.STOPPAGE, StoppageDetails>
    | PlayWith<typeof PLAY_TYPES.TAKEAWAY, TurnoverDetails>
-   | PlayWithout<typeof PLAY_TYPES.GAME_END | typeof PLAY_TYPES.PERIOD_END | typeof PLAY_TYPES.PERIOD_START>;
+   | PlayWithout<
+        typeof PLAY_TYPES.GAME_END | typeof PLAY_TYPES.PERIOD_END | typeof PLAY_TYPES.PERIOD_START
+     >;
 
 export type Team = {
    id: number;
-   commonName: { default: string; };
+   commonName: { default: string };
    abbrev: string;
    sog: number;
    logo: string;
    darkLogo: string;
-   placeName: { default: string; };
+   placeName: { default: string };
 };
 
 export type Player = {
@@ -172,5 +181,6 @@ export type Game = {
    rosterSpots: Player[];
 };
 
-export const isPenalty = (play: Play): play is PenaltyPlay => play.typeDescKey === PLAY_TYPES.PENALTY;
+export const isPenalty = (play: Play): play is PenaltyPlay =>
+   play.typeDescKey === PLAY_TYPES.PENALTY;
 export const isGoal = (play: Play): play is GoalPlay => play.typeDescKey === PLAY_TYPES.GOAL;

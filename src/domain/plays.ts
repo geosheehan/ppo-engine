@@ -3,10 +3,12 @@ import { PLAY_TYPES } from '@domain/constants';
 import { isGoal, isPenalty } from '@domain/types';
 import type { GameElapsed, PenaltyPlay, Play, Side } from '@domain/types';
 
-export const playTime = (play: Play): GameElapsed => gameSeconds(play.periodDescriptor.number, play.timeInPeriod);
+export const playTime = (play: Play): GameElapsed =>
+   gameSeconds(play.periodDescriptor.number, play.timeInPeriod);
 
 // Game time first; sortOrder breaks ties between plays in the same second.
-export const byGameOrder = (a: Play, b: Play) => playTime(a) - playTime(b) || a.sortOrder - b.sortOrder;
+export const byGameOrder = (a: Play, b: Play) =>
+   playTime(a) - playTime(b) || a.sortOrder - b.sortOrder;
 
 export const periodTimeLeft = (play: Play, time: GameElapsed): number => {
    const periodStart = (play.periodDescriptor.number - 1) * PERIOD_SECONDS;

@@ -7,6 +7,6 @@ function PlayIcon(props: ReplayIconProps) {
          <path d="M8 5v14l11-7z" />
       </ReplayIconFrame>
    );
-};
+}
 
 export default PlayIcon;

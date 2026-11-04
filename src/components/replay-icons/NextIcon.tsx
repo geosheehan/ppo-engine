@@ -7,6 +7,6 @@ function NextIcon(props: ReplayIconProps) {
          <path d="M8 6v12l8.5-6z" />
       </ReplayIconFrame>
    );
-};
+}
 
 export default NextIcon;

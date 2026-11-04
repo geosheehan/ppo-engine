@@ -7,6 +7,6 @@ function StartIcon(props: ReplayIconProps) {
          <path d="M6 6h2v12H6zM9.5 12 18 6v12z" />
       </ReplayIconFrame>
    );
-};
+}
 
 export default StartIcon;

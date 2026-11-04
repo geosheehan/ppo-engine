@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { AWAY, HOME, engineFor, goal, penalty } from '@engine/tests/fixtures';
+import { AWAY, engineFor, goal, HOME, penalty } from '@engine/tests/fixtures';
 
 describe('PlayGroup: a goal on a delayed penalty', () => {
    it('washes out a delayed minor', () => {
@@ -32,7 +32,9 @@ describe('PlayGroup: a goal on a delayed penalty', () => {
       const called = penalty(HOME, '05:00', 4);
       const result = engineFor(goal(AWAY, '05:00'), called);
       expect(result.goals[0].washedPenaltyId).toBe(called.eventId);
-      expect(result.servedPenalties).toMatchObject([{ penaltyEventId: called.eventId, doubleMinorHalf: 2, start: 300, end: 420 }]);
+      expect(result.servedPenalties).toMatchObject([
+         { penaltyEventId: called.eventId, doubleMinorHalf: 2, start: 300, end: 420 },
+      ]);
    });
 
    it('serves a delayed double minor in full when the goal releases a running minor', () => {
@@ -51,11 +53,17 @@ describe('PlayGroup: a goal on a delayed penalty', () => {
       const result = engineFor(goal(AWAY, '05:00'), called);
       expect(result.goals[0]).toMatchObject({ strength: { away: 5, home: 5 } });
       expect(result.goals[0].washedPenaltyId).toBeUndefined();
-      expect(result.servedPenalties).toMatchObject([{ penaltyEventId: called.eventId, kind: 'major', start: 300, end: 600 }]);
+      expect(result.servedPenalties).toMatchObject([
+         { penaltyEventId: called.eventId, kind: 'major', start: 300, end: 600 },
+      ]);
    });
 
-   it('washes nothing when both teams are penalized in the goal\'s second', () => {
-      const result = engineFor(goal(AWAY, '05:00'), penalty(HOME, '05:00', 2), penalty(AWAY, '05:00', 2));
+   it("washes nothing when both teams are penalized in the goal's second", () => {
+      const result = engineFor(
+         goal(AWAY, '05:00'),
+         penalty(HOME, '05:00', 2),
+         penalty(AWAY, '05:00', 2),
+      );
       expect(result.goals[0].washedPenaltyId).toBeUndefined();
       expect(result.servedPenalties).toHaveLength(2);
       expect(result.servedPenalties.every((served) => served.coincidental)).toBe(true);
@@ -77,10 +85,12 @@ describe('PlayGroup: penalty-shot goals', () => {
       expect(result.servedPenalties).toMatchObject([{ penaltyEventId: running.eventId, end: 240 }]);
    });
 
-   it('is not fooled by a regular goal\'s situation code', () => {
+   it("is not fooled by a regular goal's situation code", () => {
       const running = penalty(HOME, '02:00', 2);
       const result = engineFor(running, goal(AWAY, '03:00', '1451'));
       expect(result.goals[0].penaltyShot).toBe(false);
-      expect(result.servedPenalties).toMatchObject([{ penaltyEventId: running.eventId, end: 180, endReason: 'goal' }]);
+      expect(result.servedPenalties).toMatchObject([
+         { penaltyEventId: running.eventId, end: 180, endReason: 'goal' },
+      ]);
    });
 });

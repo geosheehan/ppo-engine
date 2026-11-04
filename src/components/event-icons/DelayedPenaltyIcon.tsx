@@ -10,6 +10,6 @@ function DelayedPenaltyIcon(props: IconProps) {
          <rect x={3} y={3} width={10} height={10} {...team(2)} />
       </IconFrame>
    );
-};
+}
 
 export default DelayedPenaltyIcon;

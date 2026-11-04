@@ -1,14 +1,22 @@
-import type { Game, GameElapsed, GoalPlay, PenaltyPlay, Play, Side } from '@domain/types';
-import { otherSide } from '@domain/types';
+import { assessPenalties, STRENGTH_SEVERITIES } from '@engine/assessment';
+import type { CalledPenalty } from '@engine/assessment';
+import { PenaltyBox } from '@engine/penaltyBox';
+import { PlayGroup } from '@engine/playGroup';
+import { isSameStrength, isThreeOnThreeOvertime, OnIceStrength } from '@engine/strength';
+import type {
+   GoalEffect,
+   PenaltyEndReason,
+   PenaltyEngineResult,
+   ServedPenalty,
+   Strength,
+   StrengthInterval,
+   TimelineEntry,
+} from '@engine/types';
 import { PENALTY_SEVERITIES, PERIOD_TYPES, PLAY_TYPES, SIDES } from '@domain/constants';
 import type { GameIndex } from '@domain/game';
 import { playTime } from '@domain/plays';
-import { PenaltyBox } from '@engine/penaltyBox';
-import { STRENGTH_SEVERITIES, assessPenalties } from '@engine/assessment';
-import type { CalledPenalty } from '@engine/assessment';
-import { PlayGroup } from '@engine/playGroup';
-import { OnIceStrength, isSameStrength, isThreeOnThreeOvertime } from '@engine/strength';
-import type { GoalEffect, PenaltyEndReason, PenaltyEngineResult, ServedPenalty, Strength, StrengthInterval, TimelineEntry } from '@engine/types';
+import type { Game, GameElapsed, GoalPlay, PenaltyPlay, Play, Side } from '@domain/types';
+import { otherSide } from '@domain/types';
 
 export function runPenaltyEngine(index: GameIndex): PenaltyEngineResult {
    return new PenaltyEngine(index).run();
@@ -55,16 +63,27 @@ class PenaltyEngine {
       if (group) this.resolve(group);
 
       this.finish();
-      return { timeline: this.timeline, servedPenalties: this.servedPenalties, strengthIntervals: this.strengthIntervals, goals: this.goals };
+      return {
+         timeline: this.timeline,
+         servedPenalties: this.servedPenalties,
+         strengthIntervals: this.strengthIntervals,
+         goals: this.goals,
+      };
    }
 
    // Penalties run out between plays. Each expiry can start a queued penalty, which may itself
    // run out before `time`, so keep going until nothing expires before it.
    private advanceTo(time: GameElapsed, reason: PenaltyEndReason = 'expired'): void {
       for (;;) {
-         const next = earliest(this.penaltyBoxes.away.nextExpiry(), this.penaltyBoxes.home.nextExpiry());
+         const next = earliest(
+            this.penaltyBoxes.away.nextExpiry(),
+            this.penaltyBoxes.home.nextExpiry(),
+         );
          if (next === undefined || next > time) break;
-         this.servedPenalties.push(...this.penaltyBoxes.away.expireAt(next, reason), ...this.penaltyBoxes.home.expireAt(next, reason));
+         this.servedPenalties.push(
+            ...this.penaltyBoxes.away.expireAt(next, reason),
+            ...this.penaltyBoxes.home.expireAt(next, reason),
+         );
          this.updateStrength(next, false);
       }
       this.currentTime = Math.max(this.currentTime, time);
@@ -86,7 +105,12 @@ class PenaltyEngine {
       const against = otherSide(side);
       const strengthAtGoal = this.onIce.current;
       const penaltyShot = group.isPenaltyShot(goal);
-      const effect: GoalEffect = { goalEventId: goal.eventId, side, strength: strengthAtGoal, penaltyShot };
+      const effect: GoalEffect = {
+         goalEventId: goal.eventId,
+         side,
+         strength: strengthAtGoal,
+         penaltyShot,
+      };
 
       // Rule 16.2: only a team that is short-handed when the goal is scored has a minor released.
       let released: ServedPenalty | undefined;
@@ -115,11 +139,18 @@ class PenaltyEngine {
       const penalties: CalledPenalty[] = [];
       for (const penalty of group.penalties) {
          const isWashed = washed.has(penalty.eventId);
-         if (!STRENGTH_SEVERITIES.has(penalty.details.typeCode) || (isWashed && !isDoubleMinor(penalty))) continue;
+         if (
+            !STRENGTH_SEVERITIES.has(penalty.details.typeCode)
+            || (isWashed && !isDoubleMinor(penalty))
+         )
+            continue;
          penalties.push({
             eventId: penalty.eventId,
             side: this.sideOf(penalty.details.eventOwnerTeamId),
-            playerKey: penalty.details.committedByPlayerId ?? penalty.details.servedByPlayerId ?? -penalty.eventId,
+            playerKey:
+               penalty.details.committedByPlayerId
+               ?? penalty.details.servedByPlayerId
+               ?? -penalty.eventId,
             severity: penalty.details.typeCode,
             minutes: penalty.details.duration,
             doubleMinorFirstHalfWashed: isWashed,
@@ -139,7 +170,10 @@ class PenaltyEngine {
       const { gameEnd } = this;
       if (gameEnd !== undefined) {
          this.advanceTo(gameEnd);
-         this.servedPenalties.push(...this.penaltyBoxes.away.closeAll(gameEnd, 'gameEnd'), ...this.penaltyBoxes.home.closeAll(gameEnd, 'gameEnd'));
+         this.servedPenalties.push(
+            ...this.penaltyBoxes.away.closeAll(gameEnd, 'gameEnd'),
+            ...this.penaltyBoxes.home.closeAll(gameEnd, 'gameEnd'),
+         );
          this.updateStrength(gameEnd, true);
          this.closeStrengthInterval(gameEnd);
       } else {
@@ -150,8 +184,15 @@ class PenaltyEngine {
 
    private updateStrength(time: GameElapsed, atStoppage: boolean): void {
       const prevStrength = this.onIce.current;
-      const running: Strength = { away: this.penaltyBoxes.away.runningClockCount, home: this.penaltyBoxes.home.runningClockCount };
-      const nextStrength = this.onIce.update(running, isThreeOnThreeOvertime(this.game, time), atStoppage);
+      const running: Strength = {
+         away: this.penaltyBoxes.away.runningClockCount,
+         home: this.penaltyBoxes.home.runningClockCount,
+      };
+      const nextStrength = this.onIce.update(
+         running,
+         isThreeOnThreeOvertime(this.game, time),
+         atStoppage,
+      );
       if (!isSameStrength(prevStrength, nextStrength)) {
          this.record({ kind: 'strength', time, strength: nextStrength });
          this.closeStrengthInterval(time, prevStrength);
@@ -161,7 +202,8 @@ class PenaltyEngine {
    }
 
    private closeStrengthInterval(time: GameElapsed, strength: Strength = this.onIce.current): void {
-      if (time > this.strengthStart) this.strengthIntervals.push({ ...strength, start: this.strengthStart, end: time });
+      if (time > this.strengthStart)
+         this.strengthIntervals.push({ ...strength, start: this.strengthStart, end: time });
    }
 }
 
@@ -170,7 +212,8 @@ const earliest = (...times: (GameElapsed | undefined)[]) => {
    return defined.length > 0 ? Math.min(...defined) : undefined;
 };
 
-const isMinor = (penalty: PenaltyPlay) => penalty.details.typeCode === PENALTY_SEVERITIES.MINOR
+const isMinor = (penalty: PenaltyPlay) =>
+   penalty.details.typeCode === PENALTY_SEVERITIES.MINOR
    || penalty.details.typeCode === PENALTY_SEVERITIES.BENCH_MINOR;
 
 const isDoubleMinor = (penalty: PenaltyPlay) => isMinor(penalty) && penalty.details.duration === 4;

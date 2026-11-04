@@ -39,7 +39,9 @@ export function indexOnIce(shifts: TimedShift[]): OnIceIndex {
       endingAt.set(shift.end, [...(endingAt.get(shift.end) ?? []), shift]);
    }
 
-   const changes = [...new Set([...startingAt.keys(), ...endingAt.keys()])].toSorted((a, b) => a - b);
+   const changes = [...new Set([...startingAt.keys(), ...endingAt.keys()])].toSorted(
+      (a, b) => a - b,
+   );
    const running = new Set<TimedShift>();
    const onIce = changes.map((time) => {
       for (const shift of endingAt.get(time) ?? []) running.delete(shift);
@@ -51,7 +53,12 @@ export function indexOnIce(shifts: TimedShift[]): OnIceIndex {
 
 // Changes happen in the same second as the whistle, so a play at the moment it happens shows the players who were
 // on when it happened, and a faceoff shows the players who came on for it.
-export function onIceAt({ changes, onIce }: OnIceIndex, play: Play, time: GameElapsed, teamsYetToChange: number[] = []): TimedShift[] {
+export function onIceAt(
+   { changes, onIce }: OnIceIndex,
+   play: Play,
+   time: GameElapsed,
+   teamsYetToChange: number[] = [],
+): TimedShift[] {
    const playAt = playTime(play);
    const atWhistle = time === playAt && !RESTARTS.includes(play.typeDescKey);
    const showsBefore = (teamId: number) => atWhistle || teamsYetToChange.includes(teamId);
@@ -63,5 +70,7 @@ export function onIceAt({ changes, onIce }: OnIceIndex, play: Play, time: GameEl
       ...before.filter(({ teamId }) => showsBefore(teamId)),
       ...after.filter(({ teamId }) => !showsBefore(teamId)),
    ];
-   return shifts.filter((shift, j) => shifts.findIndex(({ playerId }) => playerId === shift.playerId) === j);
+   return shifts.filter(
+      (shift, j) => shifts.findIndex(({ playerId }) => playerId === shift.playerId) === j,
+   );
 }

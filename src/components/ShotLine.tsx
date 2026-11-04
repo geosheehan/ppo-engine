@@ -1,11 +1,11 @@
+import ShotOnGoalIcon from '@components/event-icons/ShotOnGoalIcon';
+import { MARKER_SIZE } from '@components/PlayMarker';
+import { useShotProgress } from '@components/useShotProgress';
 import { useGame } from '@context/useGame';
 import { attackedNet, boundToIce } from '@layout/rink';
 import { SIDES } from '@domain/constants';
 import { isGoal } from '@domain/types';
 import type { Play } from '@domain/types';
-import ShotOnGoalIcon from '@components/event-icons/ShotOnGoalIcon';
-import { MARKER_SIZE } from '@components/PlayMarker';
-import { useShotProgress } from '@components/useShotProgress';
 
 type ShotLineProps = {
    play: Play;
@@ -25,7 +25,10 @@ function ShotLine({ play, homeOnLeft, className }: ShotLineProps) {
 
    const shot = boundToIce({ x: xCoord, y: yCoord });
    const net = attackedNet(sideOf(eventOwnerTeamId) === SIDES.HOME, homeOnLeft);
-   const puck = { x: shot.x + (net.x - shot.x) * progress, y: shot.y + (net.y - shot.y) * progress };
+   const puck = {
+      x: shot.x + (net.x - shot.x) * progress,
+      y: shot.y + (net.y - shot.y) * progress,
+   };
    const color = teamColor(eventOwnerTeamId);
 
    return (
@@ -43,9 +46,15 @@ function ShotLine({ play, homeOnLeft, className }: ShotLineProps) {
                strokeLinecap="round"
             />
          )}
-         <ShotOnGoalIcon className={className} x={puck.x} y={puck.y} size={MARKER_SIZE} color={color} />
+         <ShotOnGoalIcon
+            className={className}
+            x={puck.x}
+            y={puck.y}
+            size={MARKER_SIZE}
+            color={color}
+         />
       </>
    );
-};
+}
 
 export default ShotLine;

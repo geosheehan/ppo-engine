@@ -42,7 +42,12 @@ export type GoalEffect = {
 
 export type TimelineEntry =
    | { kind: 'strength'; time: GameElapsed; strength: Strength }
-   | { kind: 'penaltyStart'; time: GameElapsed; penalty: PenaltyOnClock; reason: PenaltyStartReason }
+   | {
+        kind: 'penaltyStart';
+        time: GameElapsed;
+        penalty: PenaltyOnClock;
+        reason: PenaltyStartReason;
+     }
    | { kind: 'penaltyEnd'; time: GameElapsed; penalty: ServedPenalty }
    | { kind: 'goal'; time: GameElapsed; goal: GoalEffect };
 

@@ -13,7 +13,10 @@ const picture = ({ lists, closeAtCenter }: ParticipantLayout<TestCard>): string 
    const gap = (wide: boolean) => (wide ? ' | ' : ' ');
    const [first, second] = lists;
    if (first.position === 'solo') return `(${first.cards[0].name})`;
-   const left = first.cards.map((c, i) => (i > 0 ? name(c) + gap(c.apart) : name(c))).reverse().join('');
+   const left = first.cards
+      .map((c, i) => (i > 0 ? name(c) + gap(c.apart) : name(c)))
+      .reverse()
+      .join('');
    const right = second.cards.map((c, i) => (i > 0 ? gap(c.apart) + name(c) : name(c))).join('');
    return left + gap(!closeAtCenter) + right;
 };
@@ -26,7 +29,9 @@ describe('layoutParticipants', () => {
    });
 
    it('faces two opponents across the center line', () => {
-      expect(picture(layoutParticipants([card('Won', 'home'), card('Lost', 'away')], homeOnLeft))).toBe('Won> | <Lost');
+      expect(
+         picture(layoutParticipants([card('Won', 'home'), card('Lost', 'away')], homeOnLeft)),
+      ).toBe('Won> | <Lost');
    });
 
    it('keeps a goal with one assist on the scoring side', () => {
@@ -35,12 +40,22 @@ describe('layoutParticipants', () => {
    });
 
    it('shows a goal with two assists as three on one when the scoring team is on the right', () => {
-      const cards = [card('Goal', 'away'), card('1st', 'away'), card('2nd', 'away'), card('Goalie', 'home')];
+      const cards = [
+         card('Goal', 'away'),
+         card('1st', 'away'),
+         card('2nd', 'away'),
+         card('Goalie', 'home'),
+      ];
       expect(picture(layoutParticipants(cards, homeOnLeft))).toBe('Goalie> | <Goal <1st <2nd');
    });
 
    it('shows a goal with two assists as three on one when the scoring team is on the left', () => {
-      const cards = [card('Goal', 'home'), card('1st', 'home'), card('2nd', 'home'), card('Goalie', 'away')];
+      const cards = [
+         card('Goal', 'home'),
+         card('1st', 'home'),
+         card('2nd', 'home'),
+         card('Goalie', 'away'),
+      ];
       expect(picture(layoutParticipants(cards, homeOnLeft))).toBe('2nd> 1st> Goal> | <Goalie');
    });
 
@@ -55,7 +70,14 @@ describe('layoutParticipants', () => {
    });
 
    it('mirrors by team, not by half, when the away team is on the left', () => {
-      const cards = [card('Goal', 'home'), card('1st', 'home'), card('2nd', 'home'), card('Goalie', 'away')];
-      expect(picture(layoutParticipants(cards, ['away', 'home']))).toBe('Goalie> | <Goal <1st <2nd');
+      const cards = [
+         card('Goal', 'home'),
+         card('1st', 'home'),
+         card('2nd', 'home'),
+         card('Goalie', 'away'),
+      ];
+      expect(picture(layoutParticipants(cards, ['away', 'home']))).toBe(
+         'Goalie> | <Goal <1st <2nd',
+      );
    });
 });

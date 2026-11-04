@@ -8,6 +8,6 @@ function PenaltyIcon(props: IconProps) {
          <rect x={2} y={2} width={12} height={12} {...filled} />
       </IconFrame>
    );
-};
+}
 
 export default PenaltyIcon;

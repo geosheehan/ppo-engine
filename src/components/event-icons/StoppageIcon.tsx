@@ -10,6 +10,6 @@ function StoppageIcon(props: IconProps) {
          <rect x={10.5} y={3} width={2.5} height={10} {...filled} />
       </IconFrame>
    );
-};
+}
 
 export default StoppageIcon;

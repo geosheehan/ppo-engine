@@ -4,7 +4,7 @@ export const PERIOD_SECONDS = 20 * 60;
 
 export const clockToSeconds = (clock: string): number => {
    const [mins, secs] = clock.split(':').map(Number);
-   return (mins * 60) + secs;
+   return mins * 60 + secs;
 };
 
 export const gameSeconds = (period: number, clock: string): GameElapsed => {

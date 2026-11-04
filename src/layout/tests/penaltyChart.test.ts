@@ -6,8 +6,14 @@ const served = (start: number, end: number) => ({ start, end }) as ServedPenalty
 
 describe('chartMoments', () => {
    it('lists each start and end once, in game order', () => {
-      expect(chartMoments([served(1520, 1640), served(1056, 1176), served(1440, 1560), served(1440, 1560)]))
-         .toEqual([1056, 1176, 1440, 1520, 1560, 1640]);
+      expect(
+         chartMoments([
+            served(1520, 1640),
+            served(1056, 1176),
+            served(1440, 1560),
+            served(1440, 1560),
+         ]),
+      ).toEqual([1056, 1176, 1440, 1520, 1560, 1640]);
    });
 });
 

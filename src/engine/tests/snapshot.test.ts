@@ -1,17 +1,18 @@
 import { describe, expect, it } from 'vitest';
-import type { PenaltyPlay } from '@domain/types';
 import { snapshotAt } from '@engine/snapshot';
 import type { PenaltyEngineResult, ServedPenalty } from '@engine/types';
+import type { PenaltyPlay } from '@domain/types';
 
-const penaltyPlay = (eventId: number, timeInPeriod: string, duration: number) => ({
-   eventId,
-   typeCode: 509,
-   typeDescKey: 'penalty',
-   sortOrder: eventId,
-   periodDescriptor: { number: 1, periodType: 'REG', maxRegulationPeriods: 3 },
-   timeInPeriod,
-   details: { typeCode: duration === 5 ? 'MAJ' : 'MIN', duration },
-}) as unknown as PenaltyPlay;
+const penaltyPlay = (eventId: number, timeInPeriod: string, duration: number) =>
+   ({
+      eventId,
+      typeCode: 509,
+      typeDescKey: 'penalty',
+      sortOrder: eventId,
+      periodDescriptor: { number: 1, periodType: 'REG', maxRegulationPeriods: 3 },
+      timeInPeriod,
+      details: { typeCode: duration === 5 ? 'MAJ' : 'MIN', duration },
+   }) as unknown as PenaltyPlay;
 
 const served = (overrides: Partial<ServedPenalty>): ServedPenalty => ({
    penaltyEventId: 1,
@@ -42,7 +43,9 @@ describe('snapshotAt', () => {
    });
 
    it('takes a penalty off the clock at the moment it ended', () => {
-      expect(snapshotAt(releasedMinor, plays(penaltyPlay(1, '16:10', 2)), 1065).onClock).toEqual([]);
+      expect(snapshotAt(releasedMinor, plays(penaltyPlay(1, '16:10', 2)), 1065).onClock).toEqual(
+         [],
+      );
    });
 
    it('reads strength from the interval and falls back to 5v5', () => {
@@ -64,8 +67,11 @@ describe('snapshotAt', () => {
          goals: [],
       };
       const strengthAt = (time: number) => snapshotAt(result, plays(), time).strength;
-      expect([0, 59, 60, 119, 120, 149, 150, 239, 240].map(strengthAt).map(({ away, home }) => `${away}v${home}`))
-         .toEqual(['5v5', '5v5', '5v4', '5v4', '5v3', '5v3', '5v4', '5v4', '5v5']);
+      expect(
+         [0, 59, 60, 119, 120, 149, 150, 239, 240]
+            .map(strengthAt)
+            .map(({ away, home }) => `${away}v${home}`),
+      ).toEqual(['5v5', '5v5', '5v4', '5v4', '5v3', '5v3', '5v4', '5v4', '5v5']);
    });
 
    it('lists a called penalty as queued until a penalty clock frees up', () => {
@@ -78,8 +84,13 @@ describe('snapshotAt', () => {
       };
       const penaltyPlays = plays(penaltyPlay(1, '16:10', 2));
       expect(snapshotAt(result, penaltyPlays, 960).queued).toEqual([]);
-      expect(snapshotAt(result, penaltyPlays, 1000).queued).toMatchObject([{ served: { penaltyEventId: 1 } }]);
-      expect(snapshotAt(result, penaltyPlays, 1090)).toMatchObject({ queued: [], onClock: [{ remaining: 120 }] });
+      expect(snapshotAt(result, penaltyPlays, 1000).queued).toMatchObject([
+         { served: { penaltyEventId: 1 } },
+      ]);
+      expect(snapshotAt(result, penaltyPlays, 1090)).toMatchObject({
+         queued: [],
+         onClock: [{ remaining: 120 }],
+      });
    });
 
    it('shows the whole double minor on the clock during its first half', () => {
@@ -93,7 +104,13 @@ describe('snapshotAt', () => {
          goals: [],
       };
       const penaltyPlays = plays(penaltyPlay(1, '16:10', 4));
-      expect(snapshotAt(result, penaltyPlays, 1000)).toMatchObject({ onClock: [{ remaining: 210 }], queued: [] });
-      expect(snapshotAt(result, penaltyPlays, 1150)).toMatchObject({ onClock: [{ remaining: 60 }], queued: [] });
+      expect(snapshotAt(result, penaltyPlays, 1000)).toMatchObject({
+         onClock: [{ remaining: 210 }],
+         queued: [],
+      });
+      expect(snapshotAt(result, penaltyPlays, 1150)).toMatchObject({
+         onClock: [{ remaining: 60 }],
+         queued: [],
+      });
    });
 });

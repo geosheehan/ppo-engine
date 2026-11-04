@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { PeriodType, Play } from '@domain/types';
 import { descKeyToLabel, periodLabel, playPeriodLabel } from '@domain/labels';
+import type { PeriodType, Play } from '@domain/types';
 
 const playIn = (number: number, periodType: PeriodType) =>
    ({ periodDescriptor: { number, periodType, maxRegulationPeriods: 3 } }) as Play;
@@ -23,11 +23,18 @@ describe('periodLabel', () => {
 
 describe('playPeriodLabel', () => {
    it('labels a regular-season game P1 to P3, OT, then SO', () => {
-      expect([playIn(1, 'REG'), playIn(3, 'REG'), playIn(4, 'OT'), playIn(5, 'SO')].map(playPeriodLabel))
-         .toEqual(['P1', 'P3', 'OT', 'SO']);
+      expect(
+         [playIn(1, 'REG'), playIn(3, 'REG'), playIn(4, 'OT'), playIn(5, 'SO')].map(
+            playPeriodLabel,
+         ),
+      ).toEqual(['P1', 'P3', 'OT', 'SO']);
    });
 
    it('numbers playoff overtimes', () => {
-      expect([playIn(4, 'OT'), playIn(5, 'OT'), playIn(7, 'OT')].map(playPeriodLabel)).toEqual(['OT', '2OT', '4OT']);
+      expect([playIn(4, 'OT'), playIn(5, 'OT'), playIn(7, 'OT')].map(playPeriodLabel)).toEqual([
+         'OT',
+         '2OT',
+         '4OT',
+      ]);
    });
 });
