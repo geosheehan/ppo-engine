@@ -9,5 +9,133 @@
     "react/only-export-components": ["warn", { "allowConstantExport": true }],
     "typescript/consistent-type-definitions": ["error", "type"],
     "typescript/strict-boolean-expressions": "error"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["src/domain/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@engine/*",
+                  "@layout/*",
+                  "@context/*",
+                  "@hooks/*",
+                  "@components/*",
+                  "@views/*",
+                  "react",
+                  "react/*",
+                  "react-dom",
+                  "react-dom/*"
+                ],
+                "message": "Layering: domain is the base layer and imports only @domain."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/engine/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@layout/*",
+                  "@context/*",
+                  "@hooks/*",
+                  "@components/*",
+                  "@views/*",
+                  "react",
+                  "react/*",
+                  "react-dom",
+                  "react-dom/*"
+                ],
+                "message": "Layering: engine imports only @engine and @domain."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/layout/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@context/*",
+                  "@hooks/*",
+                  "@components/*",
+                  "@views/*",
+                  "react",
+                  "react/*",
+                  "react-dom",
+                  "react-dom/*"
+                ],
+                "message": "Layering: layout is plain TypeScript and imports only @layout, @engine and @domain."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/context/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@hooks/*", "@components/*", "@views/*"],
+                "message": "Layering: context sits below hooks, components and views."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/hooks/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@components/*", "@views/*"],
+                "message": "Layering: hooks sit below components and views."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/components/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@views/*"],
+                "message": "Layering: components sit below views."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
 }
