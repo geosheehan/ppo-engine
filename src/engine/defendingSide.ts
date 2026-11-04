@@ -10,8 +10,8 @@ function sideFromLocation(play: Play, homeTeamId: number): HomeTeamDefendingSide
    if (play.typeDescKey === PLAY_TYPES.BLOCKED_SHOT || !play.details) return null;
    const { xCoord, zoneCode, eventOwnerTeamId } = play.details;
    if (
-      !xCoord
-      || !eventOwnerTeamId
+      xCoord === undefined
+      || eventOwnerTeamId === undefined
       || (zoneCode !== ZONE_CODES.OFFENSIVE && zoneCode !== ZONE_CODES.DEFENSIVE)
    )
       return null;

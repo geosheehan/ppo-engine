@@ -44,7 +44,7 @@ describe.each(Object.entries(games).map(([path, game]) => [path.split('/').pop()
          (play) =>
             IN_PLAY.has(play.typeDescKey)
             && play.periodDescriptor.periodType !== 'SO'
-            && play.situationCode
+            && play.situationCode !== undefined
             && !play.situationCode.slice(1, 3).includes('0'),
       );
 

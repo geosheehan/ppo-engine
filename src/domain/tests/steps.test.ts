@@ -47,7 +47,7 @@ describe('replaySteps', () => {
 
    it('gives each team its own step when both change in the same second, away team first', () => {
       const steps = replaySteps(plays, [shift(SEA, 0, 30), shift(TOR, 0, 30)], TEAM_ORDER);
-      expect(steps.filter((step) => step.changedTeamId)).toEqual([
+      expect(steps.filter((step) => step.changedTeamId !== undefined)).toEqual([
          { index: 0, time: 30, changedTeamId: TOR },
          { index: 0, time: 30, changedTeamId: SEA },
       ]);
@@ -55,7 +55,9 @@ describe('replaySteps', () => {
 
    it('keeps changes a second apart as separate steps', () => {
       const steps = replaySteps(plays, [shift(SEA, 0, 30), shift(SEA, 0, 31)], TEAM_ORDER);
-      expect(steps.filter((step) => step.changedTeamId).map(({ time }) => time)).toEqual([30, 31]);
+      expect(
+         steps.filter((step) => step.changedTeamId !== undefined).map(({ time }) => time),
+      ).toEqual([30, 31]);
    });
 });
 
@@ -100,7 +102,7 @@ describe('teamsYetToChange', () => {
       expect(
          onIceAt(indexOnIce(shifts), plays[0], 25, teamsYetToChange(steps, awayStep))
             .map(({ playerId }) => playerId)
-            .sort(),
+            .sort((a, b) => a - b),
       ).toEqual([2, 3]);
    });
 
@@ -110,7 +112,7 @@ describe('teamsYetToChange', () => {
       expect(
          onIceAt(indexOnIce(shifts), plays[0], 25, [])
             .map(({ playerId }) => playerId)
-            .sort(),
+            .sort((a, b) => a - b),
       ).toEqual([2, 4]);
    });
 });

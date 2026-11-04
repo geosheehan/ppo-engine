@@ -52,7 +52,7 @@ function PlayMarker({ play, locatedBy, className }: PlayMarkerProps) {
    const color =
       play.typeDescKey === PLAY_TYPES.STOPPAGE
          ? STOPPAGE_COLOR
-         : eventOwnerTeamId
+         : eventOwnerTeamId !== undefined
            ? teamColor(eventOwnerTeamId)
            : undefined;
 

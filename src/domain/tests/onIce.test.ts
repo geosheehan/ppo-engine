@@ -13,7 +13,8 @@ const shift = (
    typeCode = 517,
 ): Shift => ({ playerId, teamId: 1, period, startTime: start, endTime: end, typeCode });
 
-const ids = (shifts: { playerId: number }[]) => shifts.map(({ playerId }) => playerId).sort();
+const ids = (shifts: { playerId: number }[]) =>
+   shifts.map(({ playerId }) => playerId).sort((a, b) => a - b);
 
 describe('timedShifts', () => {
    it('converts shift times to game seconds', () => {

@@ -32,8 +32,10 @@ function intervalAt(
    intervals: StrengthInterval[],
    time: GameElapsed,
 ): StrengthInterval | undefined {
-   const interval = intervals[lastIndexWhere(intervals, ({ start }) => start <= time)];
-   return interval && time < interval.end ? interval : undefined;
+   const i = lastIndexWhere(intervals, ({ start }) => start <= time);
+   if (i === -1) return undefined;
+   const interval = intervals[i];
+   return time < interval.end ? interval : undefined;
 }
 
 export function snapshotAt(

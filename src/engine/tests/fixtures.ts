@@ -46,7 +46,7 @@ export const playerPenalty = (
 
 export const goal = (teamId: number, clock: string, situationCode?: string): GoalPlay => ({
    ...base(clock),
-   ...(situationCode ? { situationCode } : {}),
+   ...(situationCode !== undefined ? { situationCode } : {}),
    typeDescKey: PLAY_TYPES.GOAL,
    details: {
       eventOwnerTeamId: teamId,

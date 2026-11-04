@@ -23,7 +23,7 @@ export class PlayGroup {
 
    // Plays from before situationCode was recorded fall back to a PS penalty to the other team in the same second.
    isPenaltyShot(goal: GoalPlay): boolean {
-      if (goal.situationCode) return PENALTY_SHOT_CODES.has(goal.situationCode);
+      if (goal.situationCode !== undefined) return PENALTY_SHOT_CODES.has(goal.situationCode);
       return this.penalties.some(
          (penalty) =>
             penalty.details.typeCode === PENALTY_SEVERITIES.PENALTY_SHOT

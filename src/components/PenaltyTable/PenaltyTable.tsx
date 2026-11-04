@@ -38,9 +38,10 @@ function PenaltyTable({ team }: { team: 'home' | 'away' }) {
             {teamPenalties.map((penalty) => {
                const details = penalty.details;
                const team = teamById(details.eventOwnerTeamId);
-               const player = details.committedByPlayerId
-                  ? playerById(details.committedByPlayerId)
-                  : undefined;
+               const player =
+                  details.committedByPlayerId !== undefined
+                     ? playerById(details.committedByPlayerId)
+                     : undefined;
                return (
                   <tr key={penalty.eventId}>
                      <td>{penalty.periodDescriptor.number}</td>

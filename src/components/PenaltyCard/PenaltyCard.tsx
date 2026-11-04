@@ -18,7 +18,7 @@ function PenaltyCard({ clocked }: PenaltyCardProps) {
    return (
       <div className="penalty-card">
          <PlayerCard
-            player={playerId ? playerById(playerId) : undefined}
+            player={playerId !== undefined ? playerById(playerId) : undefined}
             team={teamByHomeOrAway(clocked.served.side)}
          />
          <div className="penalty-card__penalty">

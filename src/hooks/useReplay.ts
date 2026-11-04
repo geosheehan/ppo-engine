@@ -50,9 +50,10 @@ export function useReplay() {
       steps,
       stepIndex,
       changedTeamId,
-      lineChange: changedTeamId
-         ? lineChangeAt(onIceIndex, changedTeamId, steps[stepIndex].time)
-         : undefined,
+      lineChange:
+         changedTeamId !== undefined
+            ? lineChangeAt(onIceIndex, changedTeamId, steps[stepIndex].time)
+            : undefined,
       calledPenalty:
          play.typeDescKey === PLAY_TYPES.DELAYED_PENALTY
             ? delayedPenaltyCall(plays, index)

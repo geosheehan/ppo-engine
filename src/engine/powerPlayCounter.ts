@@ -59,9 +59,9 @@ export function totalsAt(
    { checkpoints }: PowerPlayCount,
    time: GameElapsed = Infinity,
 ): PowerPlayTotals {
-   const checkpoint =
-      checkpoints[lastIndexWhere(checkpoints, (checkpoint) => checkpoint.time <= time)];
-   if (!checkpoint) return { away: [], home: [] };
+   const i = lastIndexWhere(checkpoints, (checkpoint) => checkpoint.time <= time);
+   if (i === -1) return { away: [], home: [] };
+   const checkpoint = checkpoints[i];
 
    const side = advantagedSide(checkpoint.strength);
    const seconds = time - checkpoint.strengthStart;

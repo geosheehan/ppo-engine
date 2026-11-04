@@ -19,10 +19,10 @@ export const stepTypeLabel = (type: StepType): string =>
    type === LINE_CHANGE ? 'Line change' : PLAY_TYPE_LABELS[type];
 
 export const isGoalStep = (step: ReplayStep, plays: Play[]): boolean =>
-   !step.changedTeamId && isGoal(plays[step.index]);
+   step.changedTeamId === undefined && isGoal(plays[step.index]);
 
 export const stepType = (step: ReplayStep, plays: Play[]): StepType =>
-   step.changedTeamId ? LINE_CHANGE : plays[step.index].typeDescKey;
+   step.changedTeamId !== undefined ? LINE_CHANGE : plays[step.index].typeDescKey;
 
 export function replaySteps(
    plays: Play[],
@@ -55,7 +55,7 @@ export function replaySteps(
    }
 
    const order = (step: ReplayStep): number =>
-      step.changedTeamId ? teamOrder.indexOf(step.changedTeamId) : -1;
+      step.changedTeamId !== undefined ? teamOrder.indexOf(step.changedTeamId) : -1;
    return [...playSteps, ...changeSteps].toSorted(
       (a, b) => a.time - b.time || a.index - b.index || order(a) - order(b),
    );
@@ -65,7 +65,7 @@ export function stepIndexAt(
    steps: ReplayStep[],
    { index, time, changedTeamId }: ReplayPosition,
 ): number {
-   if (changedTeamId) {
+   if (changedTeamId !== undefined) {
       for (
          let i = lastIndexWhere(steps, (step) => step.time < time) + 1;
          steps[i]?.time === time;
@@ -97,7 +97,7 @@ export function teamsYetToChange(steps: ReplayStep[], stepIndex: number): number
    const teams: number[] = [];
    for (let i = stepIndex + 1; steps[i]?.time === steps[stepIndex].time; i++) {
       const { changedTeamId } = steps[i];
-      if (changedTeamId) teams.push(changedTeamId);
+      if (changedTeamId !== undefined) teams.push(changedTeamId);
    }
    return teams;
 }

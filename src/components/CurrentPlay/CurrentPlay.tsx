@@ -25,7 +25,7 @@ const SITUATION_LABELS: Record<GoalSituation, string> = {
 function CurrentPlay({ play, goalEffect, changedTeamId }: CurrentPlayProps) {
    const { playerById } = useGame();
 
-   if (changedTeamId) {
+   if (changedTeamId !== undefined) {
       return (
          <div className="current-play">
             <div className="current-play__what">
@@ -43,7 +43,7 @@ function CurrentPlay({ play, goalEffect, changedTeamId }: CurrentPlayProps) {
    let detail: string | undefined;
    if (isPenalty(play)) {
       const playerId = play.details.committedByPlayerId ?? play.details.servedByPlayerId;
-      const player = playerId ? playerById(playerId) : undefined;
+      const player = playerId !== undefined ? playerById(playerId) : undefined;
       detail = `${penaltyDisplayName(play.details.descKey)} | ${play.details.duration} min | ${playerShortName(player)}`;
    } else if (isGoal(play)) {
       detail = playerShortName(playerById(play.details.scoringPlayerId));
@@ -52,7 +52,7 @@ function CurrentPlay({ play, goalEffect, changedTeamId }: CurrentPlayProps) {
    return (
       <div className="current-play">
          <div className="current-play__what">
-            {teamId && <TeamChip teamId={teamId} />}
+            {teamId !== undefined && <TeamChip teamId={teamId} />}
             {situation && `${SITUATION_LABELS[situation]} `}
             {stepTypeLabel(play.typeDescKey)}
          </div>

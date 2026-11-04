@@ -19,7 +19,7 @@ const isGoalie = (player: Player): boolean => player.positionCode === POSITION_C
 const idsOf = (players: Player[]): string =>
    players
       .map(({ playerId }) => playerId)
-      .toSorted()
+      .toSorted((a, b) => a - b)
       .join();
 
 function OnIcePanel({ side, onIce, position }: OnIcePanelProps) {

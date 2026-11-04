@@ -93,7 +93,7 @@ function PenaltyChart() {
                const play = penaltyById.get(penalty.penaltyEventId);
                if (!play) return null;
                const playerId = play.details.committedByPlayerId ?? play.details.servedByPlayerId;
-               const player = playerId ? playerById(playerId) : undefined;
+               const player = playerId !== undefined ? playerById(playerId) : undefined;
                const infraction = penaltyDisplayName(play.details.descKey);
                return (
                   <div
