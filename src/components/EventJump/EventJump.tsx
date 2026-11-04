@@ -12,13 +12,14 @@ type EventJumpProps = {
    steps: ReplayStep[];
    stepIndex: number;
    playing: boolean;
+   disabled?: boolean;
    onJump: (stepIndex: number) => void;
 };
 
 const JUMP_TYPES = STEP_TYPES.toSorted((a, b) => stepTypeLabel(a).localeCompare(stepTypeLabel(b)));
 
 // Jumps to the previous or next step of a chosen type, such as the next goal.
-function EventJump({ plays, steps, stepIndex, playing, onJump }: EventJumpProps) {
+function EventJump({ plays, steps, stepIndex, playing, disabled = false, onJump }: EventJumpProps) {
    const [eventType, setEventType] = useState<StepType>(PLAY_TYPES.GOAL);
    const stepsOfType = useMemo(
       () => steps.flatMap((step, i) => (stepType(step, plays) === eventType ? [i] : [])),
@@ -42,6 +43,7 @@ function EventJump({ plays, steps, stepIndex, playing, onJump }: EventJumpProps)
          <select
             aria-label="Event type"
             value={eventType}
+            disabled={disabled}
             onChange={(event) =>
                setEventType(JUMP_TYPES.find((type) => type === event.target.value) ?? eventType)
             }

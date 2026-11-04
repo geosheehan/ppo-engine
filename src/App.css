@@ -1,3 +1,7 @@
+.app__message {
+   margin: auto;
+}
+
 #center {
    display: flex;
    flex-direction: column;

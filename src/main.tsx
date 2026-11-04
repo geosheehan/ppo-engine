@@ -1,14 +1,13 @@
-import { StrictMode } from 'react';
+import { StrictMode, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import '@/index.css';
 import App from '@/App';
-import GameProvider from '@context/GameProvider';
-import { game, shifts } from '@data/currentGame';
+import ReplayScreen from '@views/ReplayView/ReplayScreen';
 
 createRoot(document.getElementById('root')!).render(
    <StrictMode>
-      <GameProvider game={game} shifts={shifts}>
+      <Suspense fallback={<ReplayScreen />}>
          <App />
-      </GameProvider>
+      </Suspense>
    </StrictMode>,
 );

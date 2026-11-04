@@ -40,3 +40,9 @@ export function runningScores(plays: Play[]): Score[] {
 export const isPenalty = (play: Play): play is PenaltyPlay =>
    play.typeDescKey === PLAY_TYPES.PENALTY;
 export const isGoal = (play: Play): play is GoalPlay => play.typeDescKey === PLAY_TYPES.GOAL;
+
+export function featuredPlayerId(play: Play): number | undefined {
+   if (isPenalty(play)) return play.details.committedByPlayerId ?? play.details.servedByPlayerId;
+   if (isGoal(play)) return play.details.scoringPlayerId;
+   return undefined;
+}

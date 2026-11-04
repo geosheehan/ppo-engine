@@ -3,16 +3,16 @@ import { LINE_CHANGE } from '@domain/constants';
 import { isGoal, isPenalty } from '@domain/plays';
 import '@components/CurrentPlay/CurrentPlay.css';
 import TeamChip from '@components/TeamChip';
-import { useGame } from '@context/useGame';
 import { goalSituation } from '@engine/powerPlayCounter';
 import type { GoalEffect } from '@engine/types';
 import { penaltyDisplayName } from '@domain/penalties';
 import { playerShortName } from '@domain/players';
 import { stepTypeLabel } from '@domain/steps';
-import type { Play } from '@domain/types';
+import type { Play, Player } from '@domain/types';
 
 type CurrentPlayProps = {
-   play: Play;
+   play?: Play;
+   player?: Player;
    goalEffect?: GoalEffect;
    changedTeamId?: number;
 };
@@ -22,9 +22,7 @@ const SITUATION_LABELS: Record<GoalSituation, string> = {
    'shorthanded': 'Short Handed',
 };
 
-function CurrentPlay({ play, goalEffect, changedTeamId }: CurrentPlayProps) {
-   const { playerById } = useGame();
-
+function CurrentPlay({ play, player, goalEffect, changedTeamId }: CurrentPlayProps) {
    if (changedTeamId !== undefined) {
       return (
          <div className="current-play">
@@ -37,16 +35,23 @@ function CurrentPlay({ play, goalEffect, changedTeamId }: CurrentPlayProps) {
       );
    }
 
+   if (!play) {
+      return (
+         <div className="current-play">
+            <div className="current-play__what" />
+            <div className="current-play__detail" />
+         </div>
+      );
+   }
+
    const teamId = play.details?.eventOwnerTeamId;
    const situation = goalEffect ? goalSituation(goalEffect) : null;
 
    let detail: string | undefined;
    if (isPenalty(play)) {
-      const playerId = play.details.committedByPlayerId ?? play.details.servedByPlayerId;
-      const player = playerId !== undefined ? playerById(playerId) : undefined;
       detail = `${penaltyDisplayName(play.details.descKey)} | ${play.details.duration} min | ${playerShortName(player)}`;
    } else if (isGoal(play)) {
-      detail = playerShortName(playerById(play.details.scoringPlayerId));
+      detail = playerShortName(player);
    }
 
    return (

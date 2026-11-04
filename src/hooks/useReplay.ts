@@ -1,16 +1,36 @@
 import { useMemo, useState } from 'react';
 import { useGame } from '@context/useGame';
+import { playParticipantLayout } from '@layout/participantLayout';
 import { totalsAt } from '@engine/powerPlayCounter';
 import { snapshotAt } from '@engine/snapshot';
 import { DEFENDING_SIDES, PLAY_TYPES, SIDES } from '@domain/constants';
 import { onIceAt } from '@domain/onIce';
-import { delayedPenaltyCall, isPenalty, playTime, runningScores } from '@domain/plays';
+import {
+   delayedPenaltyCall,
+   featuredPlayerId,
+   isPenalty,
+   playTime,
+   runningScores,
+} from '@domain/plays';
 import { lineChangeAt, replaySteps, stepIndexAt, teamsYetToChange } from '@domain/steps';
-import type { ReplayPosition, Side } from '@domain/types';
+import type { Player, ReplayPosition, Side } from '@domain/types';
 
 // The state of the game at the play being replayed, and a way to move between plays.
 export function useReplay() {
-   const { game, plays, shifts, onIceIndex, penaltyResult, powerPlays, defendingSides } = useGame();
+   const {
+      game,
+      plays,
+      shifts,
+      onIceIndex,
+      penaltyResult,
+      powerPlays,
+      defendingSides,
+      playerById,
+      teamById,
+      teamByHomeOrAway,
+      sideOf,
+      teamColor,
+   } = useGame();
 
    // Computed once per game. Nothing here changes while stepping through plays.
    const penaltyPlays = useMemo(
@@ -41,6 +61,19 @@ export function useReplay() {
    const homeOnLeft = defendingSides.get(play.periodDescriptor.number) === DEFENDING_SIDES.LEFT;
    const sides: [Side, Side] = homeOnLeft ? [SIDES.HOME, SIDES.AWAY] : [SIDES.AWAY, SIDES.HOME];
 
+   const lineChange =
+      changedTeamId !== undefined
+         ? lineChangeAt(onIceIndex, changedTeamId, steps[stepIndex].time)
+         : undefined;
+   const onIce = onIceAt(onIceIndex, play, time, teamsYetToChange(steps, stepIndex));
+   const onIcePlayers = (side: Side): Player[] => {
+      const { id } = teamByHomeOrAway(side);
+      return onIce
+         .filter(({ teamId }) => teamId === id)
+         .flatMap(({ playerId }) => playerById(playerId) ?? []);
+   };
+   const featuredId = featuredPlayerId(play);
+
    return {
       play,
       index,
@@ -50,17 +83,20 @@ export function useReplay() {
       steps,
       stepIndex,
       changedTeamId,
-      lineChange:
-         changedTeamId !== undefined
-            ? lineChangeAt(onIceIndex, changedTeamId, steps[stepIndex].time)
-            : undefined,
+      participants: playParticipantLayout(
+         { playerById, teamById, sideOf, teamColor },
+         play,
+         lineChange,
+         sides,
+      ),
+      featuredPlayer: featuredId !== undefined ? playerById(featuredId) : undefined,
       calledPenalty:
          play.typeDescKey === PLAY_TYPES.DELAYED_PENALTY
             ? delayedPenaltyCall(plays, index)
             : undefined,
       goalEffect: goalEffects.get(play.eventId),
       snapshot: snapshotAt(penaltyResult, penaltyPlays, time),
-      onIce: onIceAt(onIceIndex, play, time, teamsYetToChange(steps, stepIndex)),
+      onIcePlayers: { away: onIcePlayers(SIDES.AWAY), home: onIcePlayers(SIDES.HOME) },
       totals: totalsAt(powerPlays, time),
       score: scores[index],
       homeOnLeft,

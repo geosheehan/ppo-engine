@@ -10,13 +10,21 @@ type StepButtonsProps = {
    stepIndex: number;
    lastStep: number;
    playing: boolean;
+   disabled?: boolean;
    onStep: (stepIndex: number) => void;
    onTogglePlaying: () => void;
 };
 
-function StepButtons({ stepIndex, lastStep, playing, onStep, onTogglePlaying }: StepButtonsProps) {
-   const atStart = stepIndex === 0;
-   const atEnd = stepIndex === lastStep;
+function StepButtons({
+   stepIndex,
+   lastStep,
+   playing,
+   disabled = false,
+   onStep,
+   onTogglePlaying,
+}: StepButtonsProps) {
+   const atStart = disabled || stepIndex === 0;
+   const atEnd = disabled || stepIndex === lastStep;
 
    return (
       <div className="step-buttons">

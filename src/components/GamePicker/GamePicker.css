@@ -1,0 +1,26 @@
+.game-picker {
+   position: absolute;
+   top: 8px;
+   left: 32px;
+   display: flex;
+   align-items: center;
+   gap: 8px;
+   font-size: 14px;
+   color: var(--text);
+
+   @media (max-width: 768px) {
+      position: static;
+      padding: 12px 20px 0;
+   }
+}
+
+.game-picker__select {
+   font: inherit;
+   height: 32px;
+   padding: 0 14px;
+   border: 1px solid var(--border);
+   border-radius: 6px;
+   background: transparent;
+   color: var(--text-h);
+   cursor: pointer;
+}

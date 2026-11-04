@@ -10,15 +10,27 @@ import { isGoalStep } from '@domain/steps';
 import type { GameElapsed, Play, ReplayPosition, ReplayStep } from '@domain/types';
 
 type ReplayControlsProps = {
-   index: number;
-   time: GameElapsed;
-   plays: Play[];
-   steps: ReplayStep[];
-   stepIndex: number;
-   onChange: (position: ReplayPosition) => void;
+   index?: number;
+   time?: GameElapsed;
+   plays?: Play[];
+   steps?: ReplayStep[];
+   stepIndex?: number;
+   onChange?: (position: ReplayPosition) => void;
 };
 
-function ReplayControls({ index, time, plays, steps, stepIndex, onChange }: ReplayControlsProps) {
+const NO_PLAYS: Play[] = [];
+const NO_STEPS: ReplayStep[] = [];
+const ignoreChange = () => {};
+
+function ReplayControls({
+   index = 0,
+   time = 0,
+   plays = NO_PLAYS,
+   steps = NO_STEPS,
+   stepIndex = 0,
+   onChange = ignoreChange,
+}: ReplayControlsProps) {
+   const disabled = steps.length === 0;
    const lastStep = steps.length - 1;
    const goTo = (i: number) => onChange(steps[i]);
    const goalSteps = useMemo(
@@ -42,19 +54,21 @@ function ReplayControls({ index, time, plays, steps, stepIndex, onChange }: Repl
             stepIndex={stepIndex}
             lastStep={lastStep}
             goalSteps={goalSteps}
+            disabled={disabled}
             onSeek={goTo}
          />
          <div className="replay-controls__bar">
             <div className="replay-controls__group">
                <span className="replay-controls__position">
-                  Play {index + 1} / {plays.length}
+                  {disabled ? 'Play – / –' : `Play ${index + 1} / ${plays.length}`}
                </span>
-               <PlaybackSelect value={playbackKey} onChange={setPlaybackKey} />
+               <PlaybackSelect value={playbackKey} disabled={disabled} onChange={setPlaybackKey} />
             </div>
             <StepButtons
                stepIndex={stepIndex}
                lastStep={lastStep}
                playing={playing}
+               disabled={disabled}
                onStep={goTo}
                onTogglePlaying={togglePlaying}
             />
@@ -63,6 +77,7 @@ function ReplayControls({ index, time, plays, steps, stepIndex, onChange }: Repl
                steps={steps}
                stepIndex={stepIndex}
                playing={playing}
+               disabled={disabled}
                onJump={goTo}
             />
          </div>

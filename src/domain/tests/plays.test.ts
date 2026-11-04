@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { byGameOrder, delayedPenaltyCall, runningScores } from '@domain/plays';
+import {
+   byGameOrder,
+   delayedPenaltyCall,
+   featuredPlayerId,
+   isGoal,
+   runningScores,
+} from '@domain/plays';
 import type { Game, Play } from '@domain/types';
 
 const games = import.meta.glob<Game>('@data/games/*.json', { eager: true, import: 'default' });
@@ -15,6 +21,29 @@ const play = (typeDescKey: string, eventOwnerTeamId?: number) =>
       typeCode: TYPE_CODES[typeDescKey] ?? 0,
       details: { eventOwnerTeamId },
    }) as unknown as Play;
+
+describe('featuredPlayerId', () => {
+   const withDetails = (typeDescKey: string, details: object) =>
+      ({ typeDescKey, details }) as unknown as Play;
+
+   it('names the player who committed a penalty', () => {
+      expect(
+         featuredPlayerId(withDetails('penalty', { committedByPlayerId: 1, servedByPlayerId: 2 })),
+      ).toBe(1);
+   });
+
+   it('falls back to the player serving a penalty nobody committed', () => {
+      expect(featuredPlayerId(withDetails('penalty', { servedByPlayerId: 2 }))).toBe(2);
+   });
+
+   it('names the scorer of a goal', () => {
+      expect(featuredPlayerId(withDetails('goal', { scoringPlayerId: 3 }))).toBe(3);
+   });
+
+   it('names nobody for other plays', () => {
+      expect(featuredPlayerId(withDetails('faceoff', {}))).toBeUndefined();
+   });
+});
 
 describe('delayedPenaltyCall', () => {
    it('finds the penalty called on the same team once play stops', () => {
@@ -56,15 +85,22 @@ describe('delayedPenaltyCall', () => {
    });
 
    it.each(Object.entries(games))(
-      'finds a penalty by the same team for every delayed penalty in %s',
+      'finds a penalty by the same team for every delayed penalty in %s, unless the other team scores first',
       (_, game) => {
          const plays = game.plays.toSorted(byGameOrder);
          plays.forEach((p, i) => {
             if (p.typeDescKey !== 'delayed-penalty') return;
+            const team = (p.details as { eventOwnerTeamId: number }).eventOwnerTeamId;
             const called = delayedPenaltyCall(plays, i);
-            expect(called?.details.eventOwnerTeamId).toBe(
-               (p.details as { eventOwnerTeamId: number }).eventOwnerTeamId,
-            );
+            if (called !== undefined) {
+               expect(called.details.eventOwnerTeamId).toBe(team);
+               return;
+            }
+            const nextFaceoff = plays.findIndex((q, j) => j > i && q.typeDescKey === 'faceoff');
+            const beforeFaceoff = plays.slice(i + 1, nextFaceoff === -1 ? undefined : nextFaceoff);
+            expect(
+               beforeFaceoff.some((q) => isGoal(q) && q.details.eventOwnerTeamId !== team),
+            ).toBe(true);
          });
       },
    );

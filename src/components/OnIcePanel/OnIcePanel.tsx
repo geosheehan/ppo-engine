@@ -1,18 +1,20 @@
-import type { TimedShift } from '@domain/types';
 import '@components/OnIcePanel/OnIcePanel.css';
 import { useState } from 'react';
 import { clsx } from 'clsx';
 import PlayerCard from '@components/PlayerCard';
-import { useGame } from '@context/useGame';
 import { POSITION_CODES } from '@domain/constants';
 import { byPosition, keepSlots } from '@domain/lineup';
-import type { Player, Side } from '@domain/types';
+import type { Player, Team } from '@domain/types';
 
 type OnIcePanelProps = {
-   side: Side;
-   onIce: TimedShift[];
    position: 'left' | 'right';
+   team?: Team;
+   color?: string;
+   players?: Player[];
 };
+
+const SKATER_SLOTS = 5;
+const NO_PLAYERS: Player[] = [];
 
 const isGoalie = (player: Player): boolean => player.positionCode === POSITION_CODES.GOALIE;
 
@@ -22,24 +24,20 @@ const idsOf = (players: Player[]): string =>
       .toSorted((a, b) => a - b)
       .join();
 
-function OnIcePanel({ side, onIce, position }: OnIcePanelProps) {
-   const { playerById, teamByHomeOrAway, teamColor } = useGame();
-   const team = teamByHomeOrAway(side);
-
-   const players = onIce
-      .filter(({ teamId }) => teamId === team.id)
-      .flatMap(({ playerId }) => playerById(playerId) ?? []);
-   const goalies = players.filter(isGoalie);
-   const onIceSkaters = players.filter((player) => !isGoalie(player));
+function OnIcePanel({ position, team, color, players }: OnIcePanelProps) {
+   const onIce = players ?? NO_PLAYERS;
+   const goalies = onIce.filter(isGoalie);
+   const onIceSkaters = onIce.filter((player) => !isGoalie(player));
+   const mirrored = position === 'left';
 
    const [skaters, setSkaters] = useState(() => onIceSkaters.toSorted(byPosition));
-   const [shown, setShown] = useState(players);
+   const [shown, setShown] = useState(onIce);
    const [arrivals, setArrivals] = useState<number[]>([]);
-   if (idsOf(players) !== idsOf(shown)) {
+   if (idsOf(onIce) !== idsOf(shown)) {
       setSkaters(keepSlots(skaters, onIceSkaters));
-      setShown(players);
+      setShown(onIce);
       setArrivals(
-         players.filter((player) => !shown.includes(player)).map(({ playerId }) => playerId),
+         onIce.filter((player) => !shown.includes(player)).map(({ playerId }) => playerId),
       );
    }
 
@@ -48,20 +46,34 @@ function OnIcePanel({ side, onIce, position }: OnIcePanelProps) {
          key={player.playerId}
          className={clsx(arrivals.includes(player.playerId) && 'on-ice__arrival')}
       >
-         <PlayerCard player={player} team={team} mirrored={position === 'left'} />
+         <PlayerCard player={player} team={team} color={color} mirrored={mirrored} />
       </li>
    );
+   const emptyCards = (count: number) =>
+      Array.from({ length: count }, (_, i) => (
+         <li key={i}>
+            <PlayerCard mirrored={mirrored} />
+         </li>
+      ));
 
    return (
       <div
          className={`on-ice on-ice--${position}`}
-         aria-label={`${team.abbrev} on the ice`}
-         style={{ '--team-color': teamColor(team.id) }}
+         aria-label={team && `${team.abbrev} on the ice`}
+         style={color !== undefined ? { '--team-color': color } : undefined}
       >
-         <ol className="on-ice__column">{skaters.map(card)}</ol>
          <ol className="on-ice__column">
-            {goalies.map(card)}
-            {goalies.length === 0 && <li className="on-ice__empty-net">Empty net</li>}
+            {players ? skaters.map(card) : emptyCards(SKATER_SLOTS)}
+         </ol>
+         <ol className="on-ice__column">
+            {players ? (
+               <>
+                  {goalies.map(card)}
+                  {goalies.length === 0 && <li className="on-ice__empty-net">Empty net</li>}
+               </>
+            ) : (
+               emptyCards(1)
+            )}
          </ol>
       </div>
    );

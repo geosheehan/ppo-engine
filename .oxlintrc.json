@@ -22,6 +22,7 @@
                 "group": [
                   "@engine/*",
                   "@layout/*",
+                  "@api/*",
                   "@context/*",
                   "@hooks/*",
                   "@components/*",
@@ -48,6 +49,7 @@
               {
                 "group": [
                   "@layout/*",
+                  "@api/*",
                   "@context/*",
                   "@hooks/*",
                   "@components/*",
@@ -73,6 +75,7 @@
             "patterns": [
               {
                 "group": [
+                  "@api/*",
                   "@context/*",
                   "@hooks/*",
                   "@components/*",
@@ -83,6 +86,31 @@
                   "react-dom/*"
                 ],
                 "message": "Layering: layout is plain TypeScript and imports only @layout, @engine and @domain."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/api/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@context/*",
+                  "@hooks/*",
+                  "@components/*",
+                  "@views/*",
+                  "react",
+                  "react/*",
+                  "react-dom",
+                  "react-dom/*"
+                ],
+                "message": "Layering: api is plain TypeScript and imports only @api, @layout, @engine and @domain."
               }
             ]
           }

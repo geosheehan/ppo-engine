@@ -10,16 +10,18 @@ type PenaltyCardProps = {
 };
 
 function PenaltyCard({ clocked }: PenaltyCardProps) {
-   const { playerById, teamByHomeOrAway } = useGame();
+   const { playerById, teamByHomeOrAway, teamColor } = useGame();
    const { details } = clocked.play;
    const playerId = details.committedByPlayerId ?? details.servedByPlayerId;
+   const team = teamByHomeOrAway(clocked.served.side);
    const infraction = penaltyDisplayName(details.descKey);
 
    return (
       <div className="penalty-card">
          <PlayerCard
             player={playerId !== undefined ? playerById(playerId) : undefined}
-            team={teamByHomeOrAway(clocked.served.side)}
+            team={team}
+            color={teamColor(team.id)}
          />
          <div className="penalty-card__penalty">
             <span className="penalty-card__time">{secondsToClock(clocked.remaining)}</span>

@@ -3,6 +3,7 @@ import type { Playback } from '@hooks/types';
 
 type PlaybackSelectProps = {
    value: string;
+   disabled?: boolean;
    onChange: (playbackKey: string) => void;
 };
 
@@ -15,11 +16,12 @@ const options = (mode: Playback['mode']) =>
          </option>
       ));
 
-function PlaybackSelect({ value, onChange }: PlaybackSelectProps) {
+function PlaybackSelect({ value, disabled = false, onChange }: PlaybackSelectProps) {
    return (
       <select
          aria-label="Replay speed"
          value={value}
+         disabled={disabled}
          onChange={(event) => onChange(event.target.value)}
       >
          <optgroup label="Live clock">{options('live')}</optgroup>

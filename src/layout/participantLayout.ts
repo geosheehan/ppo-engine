@@ -1,6 +1,9 @@
-import type { LayoutCard, ParticipantLayout, PlacedCard } from '@layout/types';
+import type { LayoutCard, ParticipantCard, ParticipantLayout, PlacedCard } from '@layout/types';
 import { otherSide } from '@domain/game';
-import type { Side } from '@domain/types';
+import { playParticipants } from '@domain/participants';
+import type { GameIndex, LineChange, Play, Side } from '@domain/types';
+
+type PlayerLookups = Pick<GameIndex, 'playerById' | 'teamById' | 'sideOf' | 'teamColor'>;
 
 // A mirrored card faces right. The wide gap goes between two cards that face each other.
 const facing = (leftMirrored: boolean, rightMirrored: boolean): boolean =>
@@ -68,4 +71,50 @@ export function layoutParticipants<C extends LayoutCard>(
       closeAtCenter:
          left.length > 0 && right.length > 0 && !facing(left[0].mirrored, right[0].mirrored),
    };
+}
+
+// A line change shows who came off on the left and who came on on the right; any other play is laid out by
+// layoutParticipants.
+export function playParticipantLayout(
+   lookups: PlayerLookups,
+   play: Play,
+   lineChange: LineChange | undefined,
+   sides: [Side, Side],
+): ParticipantLayout<ParticipantCard> {
+   const cardsFor = (
+      participants: { field: string; role: string; playerId: number }[],
+   ): ParticipantCard[] =>
+      participants.flatMap(({ field, role, playerId }) => {
+         const player = lookups.playerById(playerId);
+         const team = player && lookups.teamById(player.teamId);
+         return player && team
+            ? [
+                 {
+                    field,
+                    role,
+                    player,
+                    team,
+                    side: lookups.sideOf(team.id),
+                    color: lookups.teamColor(team.id),
+                 },
+              ]
+            : [];
+      });
+
+   if (lineChange) {
+      const changeCards = (ids: number[], role: string, mirrored: boolean) =>
+         cardsFor(ids.map((playerId) => ({ field: role, role, playerId }))).map((card) => ({
+            ...card,
+            mirrored,
+            apart: false,
+         }));
+      return {
+         lists: [
+            { position: 'left', cards: changeCards(lineChange.off, 'Off', true) },
+            { position: 'right', cards: changeCards(lineChange.on, 'On', false) },
+         ],
+         closeAtCenter: false,
+      };
+   }
+   return layoutParticipants(cardsFor(playParticipants(play)), sides);
 }

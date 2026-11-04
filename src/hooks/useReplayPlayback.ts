@@ -34,13 +34,16 @@ export function useReplayPlayback({
       () => steps.slice(0, -1).reduce((sum, step) => sum + stepWeight(step, plays), 0),
       [steps, plays],
    );
-   const scaledDelay = live
-      ? 0
-      : ((playback.minutes * 60 * 1000) / Math.max(totalWeight, 1))
-        * stepWeight(steps[stepIndex], plays);
-   const delay = isGoalStep(steps[stepIndex], plays)
-      ? Math.max(scaledDelay, GOAL_HOLD_MS)
-      : scaledDelay;
+   // No step while a game is still loading.
+   const step = steps.at(stepIndex);
+   const scaledDelay =
+      live || step === undefined
+         ? 0
+         : ((playback.minutes * 60 * 1000) / Math.max(totalWeight, 1)) * stepWeight(step, plays);
+   const delay =
+      step !== undefined && isGoalStep(step, plays)
+         ? Math.max(scaledDelay, GOAL_HOLD_MS)
+         : scaledDelay;
 
    useEffect(() => {
       if (!playing || live) return;

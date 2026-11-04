@@ -2,29 +2,37 @@ import type { OpportunityTotal } from '@engine/types';
 import '@components/StrengthTable/StrengthTable.css';
 import { clsx } from 'clsx';
 import TeamChip from '@components/TeamChip';
-import { useGame } from '@context/useGame';
 import { strengthLabel } from '@engine/strength';
 import type { Strength } from '@engine/types';
 import { secondsToClock } from '@domain/clock';
 import { textColorOn } from '@domain/colors';
-import type { Side } from '@domain/types';
+import type { Side, Team } from '@domain/types';
 
 type StrengthTableProps = {
    side: Side;
-   totals: OpportunityTotal[];
-   strength: Strength;
    position: 'left' | 'right';
+   team?: Team;
+   color?: string;
+   totals?: OpportunityTotal[];
+   strength?: Strength;
 };
 
 const STRENGTHS = ['5v4', '5v3', '4v3'] as const;
+const NO_TOTALS: OpportunityTotal[] = [];
 
 const record = (goals: number, opportunities: number): string => `${goals}/${opportunities}`;
 
-function StrengthTable({ side, totals, strength, position }: StrengthTableProps) {
-   const { teamByHomeOrAway, colors } = useGame();
+function StrengthTable({
+   side,
+   position,
+   team,
+   color,
+   totals = NO_TOTALS,
+   strength,
+}: StrengthTableProps) {
    const byLabel = new Map(totals.map((row) => [row.label, row]));
    // Only the power-play strengths have columns, so even strengths and 6v5 never light one up.
-   const liveLabel = strengthLabel(strength, side);
+   const liveLabel = strength && strengthLabel(strength, side);
    const liveClass = (label: string): string | undefined =>
       label === liveLabel ? 'strength-table__live' : undefined;
    const total = totals.reduce(
@@ -40,14 +48,13 @@ function StrengthTable({ side, totals, strength, position }: StrengthTableProps)
       <div className={`strength-table__card strength-table__card--${position}`}>
          <table
             className="strength-table"
-            style={{
-               '--team-color': colors[side],
-               '--team-text-color': textColorOn(colors[side]),
-            }}
+            style={
+               color !== undefined
+                  ? { '--team-color': color, '--team-text-color': textColorOn(color) }
+                  : undefined
+            }
          >
-            <caption>
-               <TeamChip teamId={teamByHomeOrAway(side).id} /> POWER PLAYS
-            </caption>
+            <caption>{team && <TeamChip teamId={team.id} />} POWER PLAYS</caption>
             <thead>
                <tr>
                   <th />

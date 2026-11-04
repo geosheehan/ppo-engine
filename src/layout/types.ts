@@ -1,4 +1,4 @@
-import type { Side } from '@domain/types';
+import type { Player, Side, Team } from '@domain/types';
 
 export type Position = 'left' | 'right' | 'solo';
 export type LayoutCard = {
@@ -16,4 +16,10 @@ export type ParticipantList<C extends LayoutCard> = {
 export type ParticipantLayout<C extends LayoutCard> = {
    lists: ParticipantList<C>[];
    closeAtCenter: boolean;
+};
+export type ParticipantCard = LayoutCard & {
+   role: string;
+   player: Player;
+   team: Team;
+   color: string;
 };

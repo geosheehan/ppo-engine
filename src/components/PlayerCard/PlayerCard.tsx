@@ -1,29 +1,27 @@
 import '@components/PlayerCard/PlayerCard.css';
 import { clsx } from 'clsx';
 import placeholderHeadshot from '@assets/placeholder-headshot.png';
-import { useGame } from '@context/useGame';
 import type { Player, Team } from '@domain/types';
 
 type PlayerCardProps = {
    player?: Player;
-   team: Team;
+   team?: Team;
+   color?: string;
    mirrored?: boolean;
 };
 
-function PlayerCard({ player, team, mirrored = false }: PlayerCardProps) {
-   const { teamColor } = useGame();
-
+function PlayerCard({ player, team, color, mirrored = false }: PlayerCardProps) {
    return (
       <div className={clsx('player-card', mirrored && 'player-card--mirrored')}>
          <img
             className="player-card__headshot"
             src={placeholderHeadshot}
             alt=""
-            style={{ background: teamColor(team.id) }}
+            style={color !== undefined ? { background: color } : undefined}
          />
          <div className="player-card__info">
             <div className="player-card__meta">
-               {team.abbrev}
+               {team?.abbrev}
                {player && (
                   <>
                      {' '}
@@ -32,7 +30,9 @@ function PlayerCard({ player, team, mirrored = false }: PlayerCardProps) {
                )}
             </div>
             <div className="player-card__first">{player?.firstName.default}</div>
-            <div className="player-card__last">{player ? player.lastName.default : 'Team'}</div>
+            <div className="player-card__last">
+               {player ? player.lastName.default : team && 'Team'}
+            </div>
          </div>
       </div>
    );

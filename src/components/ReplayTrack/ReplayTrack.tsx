@@ -4,11 +4,18 @@ type ReplayTrackProps = {
    stepIndex: number;
    lastStep: number;
    goalSteps: number[];
+   disabled?: boolean;
    onSeek: (stepIndex: number) => void;
 };
 
 // The replay's progress slider, with a mark under each goal already reached.
-function ReplayTrack({ stepIndex, lastStep, goalSteps, onSeek }: ReplayTrackProps) {
+function ReplayTrack({
+   stepIndex,
+   lastStep,
+   goalSteps,
+   disabled = false,
+   onSeek,
+}: ReplayTrackProps) {
    const at = (step: number): number => step / Math.max(lastStep, 1);
 
    return (
@@ -20,6 +27,7 @@ function ReplayTrack({ stepIndex, lastStep, goalSteps, onSeek }: ReplayTrackProp
             min={0}
             max={lastStep}
             value={stepIndex}
+            disabled={disabled}
             onChange={(event) => onSeek(Number(event.target.value))}
             style={{ '--replay-track-progress': at(stepIndex) }}
          />

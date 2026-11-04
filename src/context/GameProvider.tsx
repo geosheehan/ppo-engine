@@ -1,31 +1,26 @@
 import type { ReactNode } from 'react';
-import { useMemo } from 'react';
+import { use, useMemo } from 'react';
 import { GameContext } from '@context/GameContext';
+import { ppoApi } from '@api/ppoApi';
 import { homeDefendingSides } from '@engine/defendingSide';
-import { runPenaltyEngine } from '@engine/penaltyEngine';
-import { countPowerPlays } from '@engine/powerPlayCounter';
 import { indexGame } from '@domain/game';
-import type { Game, Shift } from '@domain/types';
 
-function GameProvider({
-   game,
-   shifts,
-   children,
-}: {
-   game: Game;
-   shifts?: Shift[];
+type GameProviderProps = {
+   gameId: string;
    children: ReactNode;
-}) {
-   const value = useMemo(() => {
-      const index = indexGame(game, shifts);
-      const penaltyResult = runPenaltyEngine(index);
-      return {
-         ...index,
+};
+
+function GameProvider({ gameId, children }: GameProviderProps) {
+   const { game, shifts, penaltyResult, powerPlays } = use(ppoApi.getGamePpo(gameId));
+   const value = useMemo(
+      () => ({
+         ...indexGame(game, shifts),
          penaltyResult,
-         powerPlays: countPowerPlays(penaltyResult.timeline),
+         powerPlays,
          defendingSides: homeDefendingSides(game),
-      };
-   }, [game, shifts]);
+      }),
+      [game, shifts, penaltyResult, powerPlays],
+   );
    return <GameContext value={value}>{children}</GameContext>;
 }
 
