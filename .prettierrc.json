@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json.schemastore.org/prettierrc",
+  "printWidth": 100,
+  "tabWidth": 3,
+  "useTabs": false,
+  "semi": true,
+  "singleQuote": true,
+  "jsxSingleQuote": false,
+  "quoteProps": "consistent",
+  "trailingComma": "all",
+  "bracketSpacing": true,
+  "bracketSameLine": false,
+  "objectWrap": "preserve",
+  "arrowParens": "always",
+  "singleAttributePerLine": false,
+  "endOfLine": "lf",
+  "plugins": ["@ianvs/prettier-plugin-sort-imports"],
+  "importOrder": [
+    "^react$",
+    "^react/(.*)$",
+    "^react-dom(/.*)?$",
+    "<THIRD_PARTY_MODULES>",
+    "^@/(.*)$",
+    "^@views/(.*)$",
+    "^@components/(.*)$",
+    "^@assets/(.*)$",
+    "^@context/(.*)$",
+    "^@layout/(.*)$",
+    "^@engine/(.*)$",
+    "^@domain/(.*)$",
+    "^@data/(.*)$"
+  ],
+  "overrides": [
+    {
+      "files": ["*.json", "*.html"],
+      "options": { "tabWidth": 2 }
+    }
+  ]
+}
