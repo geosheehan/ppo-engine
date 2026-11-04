@@ -1,4 +1,5 @@
 import '@components/Scoreboard.css';
+import { clsx } from 'clsx';
 import { useGame } from '@context/useGame';
 import { secondsToClock } from '@domain/clock';
 import { SIDES } from '@domain/constants';
@@ -23,7 +24,7 @@ function Scoreboard({ play, time, score, homeOnLeft, scoringSide }: ScoreboardPr
 
    // Keyed by the score so the number remounts, and its pop animation replays, on every goal.
    const number = (team: typeof left) => (
-      <strong key={`${team.side}-${team.score}`}className={team.side === scoringSide ? 'scoreboard__pop' : undefined}>{team.score}</strong>
+      <strong key={`${team.side}-${team.score}`} className={clsx(team.side === scoringSide && 'scoreboard__pop')}>{team.score}</strong>
    );
 
    return (

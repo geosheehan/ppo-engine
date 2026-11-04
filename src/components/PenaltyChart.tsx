@@ -1,6 +1,7 @@
 import '@components/PenaltyChart.css';
 import { useMemo } from 'react';
 import type { CSSProperties } from 'react';
+import { clsx } from 'clsx';
 import { useGame } from '@context/useGame';
 import { chartMoments, momentClock, momentPeriod } from '@layout/penaltyChart';
 import { SIDES } from '@domain/constants';
@@ -58,14 +59,14 @@ function PenaltyChart() {
                const playerId = play.details.committedByPlayerId ?? play.details.servedByPlayerId;
                const player = playerId ? playerById(playerId) : undefined;
                const infraction = penaltyDisplayName(play.details.descKey);
-               const modifiers = [penalty.coincidental && 'coincidental', penalty.endReason === 'goal' && 'goal']
-                  .filter(Boolean)
-                  .map((modifier) => ` penalty-chart__box--${modifier}`)
-                  .join('');
                return (
                   <div
                      key={`${penalty.penaltyEventId}-${penalty.doubleMinorHalf ?? 0}`}
-                     className={`penalty-chart__box${modifiers}`}
+                     className={clsx(
+                        'penalty-chart__box',
+                        penalty.coincidental && 'penalty-chart__box--coincidental',
+                        penalty.endReason === 'goal' && 'penalty-chart__box--goal',
+                     )}
                      title={`${playerShortName(player)} · ${infraction} · ${play.details.duration} min`}
                      style={{
                         gridColumn: `${line(penalty.start)} / ${line(penalty.end)}`,

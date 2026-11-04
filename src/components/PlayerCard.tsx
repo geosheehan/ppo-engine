@@ -1,4 +1,5 @@
 import '@components/PlayerCard.css';
+import { clsx } from 'clsx';
 import placeholderHeadshot from '@assets/placeholder-headshot.png';
 import { useGame } from '@context/useGame';
 import type { Player, Team } from '@domain/types';
@@ -13,7 +14,7 @@ function PlayerCard({ player, team, mirrored = false }: PlayerCardProps) {
    const { teamColor } = useGame();
 
    return (
-      <div className={`player-card${mirrored ? ' player-card--mirrored' : ''}`}>
+      <div className={clsx('player-card', mirrored && 'player-card--mirrored')}>
          <img className="player-card__headshot" src={placeholderHeadshot} alt="" style={{ background: teamColor(team.id) }} />
          <div className="player-card__info">
             <div className="player-card__meta">

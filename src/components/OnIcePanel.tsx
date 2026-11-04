@@ -1,6 +1,7 @@
 import '@components/OnIcePanel.css';
 import { useState } from 'react';
 import type { CSSProperties } from 'react';
+import { clsx } from 'clsx';
 import { useGame } from '@context/useGame';
 import { POSITION_CODES } from '@domain/constants';
 import { byPosition, keepSlots } from '@domain/lineup';
@@ -38,7 +39,7 @@ function OnIcePanel({ side, onIce, position }: OnIcePanelProps) {
    }
 
    const card = (player: Player) => (
-      <li key={player.playerId} className={arrivals.includes(player.playerId) ? 'on-ice__arrival' : undefined}>
+      <li key={player.playerId} className={clsx(arrivals.includes(player.playerId) && 'on-ice__arrival')}>
          <PlayerCard player={player} team={team} mirrored={position === 'left'} />
       </li>
    );

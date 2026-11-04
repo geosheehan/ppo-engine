@@ -1,4 +1,5 @@
 import '@components/PlayParticipants.css';
+import { clsx } from 'clsx';
 import { useGame } from '@context/useGame';
 import { layoutParticipants } from '@layout/participantLayout';
 import type { ParticipantLayout } from '@layout/participantLayout';
@@ -42,15 +43,17 @@ function PlayParticipants({ play, lineChange, sides }: PlayParticipantsProps) {
    const { lists, closeAtCenter } = layout;
 
    return (
-      <div className={`play-participants${closeAtCenter ? ' play-participants--close' : ''}`}>
+      <div className={clsx('play-participants', closeAtCenter && 'play-participants--close')}>
          {lists.map(({ position, cards }) => (
             <ol key={position} className={`play-participants__side play-participants__side--${position}`}>
                {cards.map(({ role, player, team, mirrored, apart }) => (
                   <li
                      key={`${role}-${player.playerId}`}
-                     className={['play-participants__card', mirrored && 'play-participants__card--mirrored', apart && 'play-participants__card--apart']
-                        .filter(Boolean)
-                        .join(' ')}
+                     className={clsx(
+                        'play-participants__card',
+                        mirrored && 'play-participants__card--mirrored',
+                        apart && 'play-participants__card--apart',
+                     )}
                   >
                      <PlayerCard player={player} team={team} mirrored={mirrored} />
                      <div className="play-participants__role">{role}</div>

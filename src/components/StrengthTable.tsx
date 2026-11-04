@@ -1,5 +1,6 @@
 import '@components/StrengthTable.css';
 import type { CSSProperties } from 'react';
+import { clsx } from 'clsx';
 import { useGame } from '@context/useGame';
 import { secondsToClock } from '@domain/clock';
 import { textColorOn } from '@domain/colors';
@@ -69,7 +70,7 @@ function StrengthTable({ side, totals, strength, position }: StrengthTableProps)
                      STRENGTHS.map((label) => {
                         const row = byLabel.get(label);
                         return (
-                           <td key={label} className={`strength-table__time ${liveClass(label) ?? ''}`}>
+                           <td key={label} className={clsx('strength-table__time', liveClass(label))}>
                               {row ? secondsToClock(row.seconds) : '0:00'}
                            </td>
                         );
