@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useGame } from '@context/useGame';
 import { totalsAt } from '@engine/powerPlayCounter';
 import { snapshotAt } from '@engine/snapshot';
@@ -35,11 +35,6 @@ export function useReplay() {
    }));
    const { index, time } = position;
    const play = plays[index];
-   const setIndex = useCallback(
-      (index: number, time = playTime(plays[index]), changedTeamId?: number) =>
-         setPosition({ index, time, changedTeamId }),
-      [plays],
-   );
 
    const stepIndex = stepIndexAt(steps, position);
    const { changedTeamId } = steps[stepIndex];
@@ -50,7 +45,7 @@ export function useReplay() {
       play,
       index,
       time,
-      setIndex,
+      setPosition,
       plays,
       steps,
       stepIndex,

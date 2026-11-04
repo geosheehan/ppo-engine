@@ -3,7 +3,7 @@ import { GOAL_HOLD_MS, GOAL_STEP_WEIGHT } from '@hooks/constants';
 import type { Playback } from '@hooks/types';
 import { useLivePlayback } from '@hooks/useLivePlayback';
 import { isGoalStep } from '@domain/steps';
-import type { GameElapsed, Play, ReplayPosition, ReplayStep } from '@domain/types';
+import type { Play, ReplayPosition, ReplayStep } from '@domain/types';
 
 type ReplayPlaybackOptions = {
    playback: Playback;
@@ -11,7 +11,7 @@ type ReplayPlaybackOptions = {
    steps: ReplayStep[];
    stepIndex: number;
    position: ReplayPosition;
-   onChange: (index: number, time?: GameElapsed, changedTeamId?: number) => void;
+   onChange: (position: ReplayPosition) => void;
 };
 
 const stepWeight = (step: ReplayStep, plays: Play[]): number =>
@@ -45,7 +45,7 @@ export function useReplayPlayback({
    useEffect(() => {
       if (!playing || live) return;
       const next = steps[stepIndex + 1];
-      const timer = setTimeout(() => onChange(next.index, next.time, next.changedTeamId), delay);
+      const timer = setTimeout(() => onChange(next), delay);
       return () => clearTimeout(timer);
    }, [playing, live, steps, stepIndex, onChange, delay]);
 

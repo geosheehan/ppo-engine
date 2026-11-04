@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { GOAL_HOLD_MS, SAME_SECOND_HOLD_MS } from '@hooks/constants';
 import { livePosition } from '@domain/playback';
-import type { GameElapsed, Play, ReplayPosition } from '@domain/types';
+import type { Play, ReplayPosition } from '@domain/types';
 
 const TICK_MS = 50;
 
@@ -13,7 +13,7 @@ export function useLivePlayback(
    speed: number,
    plays: Play[],
    position: ReplayPosition,
-   onChange: (index: number, time: GameElapsed) => void,
+   onChange: (position: ReplayPosition) => void,
 ) {
    const positionRef = useRef(position);
    useEffect(() => {
@@ -40,7 +40,7 @@ export function useLivePlayback(
          if (samePosition(next, emitted)) return;
          emitted = next;
          positionRef.current = next;
-         onChange(next.index, next.time);
+         onChange(next);
       }, TICK_MS);
 
       return () => clearInterval(timer);

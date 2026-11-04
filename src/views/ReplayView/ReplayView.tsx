@@ -20,7 +20,7 @@ function ReplayView() {
       play,
       index,
       time,
-      setIndex,
+      setPosition,
       plays,
       steps,
       stepIndex,
@@ -109,7 +109,7 @@ function ReplayView() {
             plays={plays}
             steps={steps}
             stepIndex={stepIndex}
-            onChange={setIndex}
+            onChange={setPosition}
          />
          <div className="replay__clocks">
             {sides.map((side, i) => (

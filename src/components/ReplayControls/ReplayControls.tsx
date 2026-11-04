@@ -7,7 +7,7 @@ import ReplayTrack from '@components/ReplayTrack';
 import StepButtons from '@components/StepButtons';
 import { useReplayPlayback } from '@hooks/useReplayPlayback';
 import { isGoalStep } from '@domain/steps';
-import type { GameElapsed, Play, ReplayStep } from '@domain/types';
+import type { GameElapsed, Play, ReplayPosition, ReplayStep } from '@domain/types';
 
 type ReplayControlsProps = {
    index: number;
@@ -15,12 +15,12 @@ type ReplayControlsProps = {
    plays: Play[];
    steps: ReplayStep[];
    stepIndex: number;
-   onChange: (index: number, time?: GameElapsed, changedTeamId?: number) => void;
+   onChange: (position: ReplayPosition) => void;
 };
 
 function ReplayControls({ index, time, plays, steps, stepIndex, onChange }: ReplayControlsProps) {
    const lastStep = steps.length - 1;
-   const goTo = (i: number) => onChange(steps[i].index, steps[i].time, steps[i].changedTeamId);
+   const goTo = (i: number) => onChange(steps[i]);
    const goalSteps = useMemo(
       () => steps.flatMap((step, i) => (isGoalStep(step, plays) ? [i] : [])),
       [steps, plays],
