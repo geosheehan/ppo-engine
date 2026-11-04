@@ -26,11 +26,6 @@ export type ServedPenalty = PenaltyOnClock & {
    releasedByGoalId?: number;
 };
 
-export type StrengthInterval = Strength & {
-   start: GameElapsed;
-   end: GameElapsed;
-};
-
 export type GoalEffect = {
    goalEventId: number;
    side: Side;
@@ -54,7 +49,6 @@ export type TimelineEntry =
 export type PenaltyEngineResult = {
    timeline: TimelineEntry[];
    servedPenalties: ServedPenalty[];
-   strengthIntervals: StrengthInterval[];
    goals: GoalEffect[];
 };
 

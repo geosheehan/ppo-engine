@@ -7,7 +7,7 @@ describe('PlayGroup: a goal on a delayed penalty', () => {
       const result = engineFor(goal(AWAY, '05:00'), called);
       expect(result.goals[0].washedPenaltyId).toBe(called.eventId);
       expect(result.servedPenalties).toEqual([]);
-      expect(result.strengthIntervals.every((interval) => interval.home === 5)).toBe(true);
+      expect(result.timeline.filter((entry) => entry.kind === 'strength')).toEqual([]);
    });
 
    it('washes out a delayed minor recorded before the goal', () => {

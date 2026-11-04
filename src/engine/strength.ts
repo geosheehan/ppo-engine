@@ -1,6 +1,7 @@
-import type { Strength } from '@engine/types';
+import type { Strength, TimelineEntry } from '@engine/types';
 import { GAME_TYPES, PERIOD_SECONDS, SIDES } from '@domain/constants';
 import { otherSide } from '@domain/game';
+import { lastIndexWhere } from '@domain/search';
 import type { Game, GameElapsed, Side } from '@domain/types';
 
 const TEAMS: Side[] = [SIDES.AWAY, SIDES.HOME];
@@ -8,6 +9,14 @@ const TEAMS: Side[] = [SIDES.AWAY, SIDES.HOME];
 const FIRST_THREE_ON_THREE_SEASON = 20152016;
 
 export const isSameStrength = (a: Strength, b: Strength) => a.away === b.away && a.home === b.home;
+
+export function strengthAt(timeline: TimelineEntry[], time: GameElapsed): Strength {
+   for (let i = lastIndexWhere(timeline, (entry) => entry.time <= time); i >= 0; i--) {
+      const entry = timeline[i];
+      if (entry.kind === 'strength') return entry.strength;
+   }
+   return { away: 5, home: 5 };
+}
 
 export const strengthLabel = (strength: Strength, side: Side): string =>
    `${strength[side]}v${strength[otherSide(side)]}`;

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { runPenaltyEngine } from '@engine/penaltyEngine';
+import { strengthAt } from '@engine/strength';
 import { indexGame } from '@domain/game';
 import { playTime } from '@domain/plays';
 import type { Game } from '@domain/types';
@@ -31,14 +32,7 @@ function recordedStrength(code: string) {
 describe.each(Object.entries(games).map(([path, game]) => [path.split('/').pop()!, game] as const))(
    '%s',
    (_, game) => {
-      const { strengthIntervals } = runPenaltyEngine(indexGame(game));
-      const strengthAt = (time: number) => {
-         const interval = strengthIntervals.find((s) => s.start <= time && time < s.end) ?? {
-            away: 5,
-            home: 5,
-         };
-         return { away: interval.away, home: interval.home };
-      };
+      const { timeline } = runPenaltyEngine(indexGame(game));
 
       const checked = game.plays.filter(
          (play) =>
@@ -57,7 +51,7 @@ describe.each(Object.entries(games).map(([path, game]) => [path.split('/').pop()
          // The clock only has whole seconds, so a shot in the same second a penalty starts or ends
          // may have happened on either side of the change.
          const time = playTime(play);
-         expect([strengthAt(time), strengthAt(time - 0.5)]).toContainEqual(
+         expect([strengthAt(timeline, time), strengthAt(timeline, time - 0.5)]).toContainEqual(
             recordedStrength(play.situationCode!),
          );
       });

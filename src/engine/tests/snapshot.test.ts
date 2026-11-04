@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { snapshotAt } from '@engine/snapshot';
-import type { PenaltyEngineResult, ServedPenalty } from '@engine/types';
+import type { PenaltyEngineResult, ServedPenalty, TimelineEntry } from '@engine/types';
 import type { PenaltyPlay } from '@domain/types';
 
 const penaltyPlay = (eventId: number, timeInPeriod: string, duration: number) =>
@@ -26,13 +26,18 @@ const served = (overrides: Partial<ServedPenalty>): ServedPenalty => ({
    ...overrides,
 });
 
+const change = (time: number, away: number, home: number): TimelineEntry => ({
+   kind: 'strength',
+   time,
+   strength: { away, home },
+});
+
 const plays = (...list: PenaltyPlay[]) => new Map(list.map((play) => [play.eventId, play]));
 
 // A home minor called at 16:10 of the 1st (970 s) and released by a goal at 17:45 (1065 s).
 const releasedMinor: PenaltyEngineResult = {
-   timeline: [],
+   timeline: [change(970, 5, 4), change(1065, 5, 5)],
    servedPenalties: [served({})],
-   strengthIntervals: [{ away: 5, home: 4, start: 970, end: 1065 }],
    goals: [],
 };
 
@@ -48,28 +53,23 @@ describe('snapshotAt', () => {
       );
    });
 
-   it('reads strength from the interval and falls back to 5v5', () => {
+   it('reads strength from the timeline, 5v5 before the first change', () => {
       const penaltyPlays = plays(penaltyPlay(1, '16:10', 2));
+      expect(snapshotAt(releasedMinor, penaltyPlays, 969).strength).toEqual({ away: 5, home: 5 });
       expect(snapshotAt(releasedMinor, penaltyPlays, 1000).strength).toEqual({ away: 5, home: 4 });
       expect(snapshotAt(releasedMinor, penaltyPlays, 1065).strength).toEqual({ away: 5, home: 5 });
    });
 
-   it('finds the strength among several intervals, including at their edges', () => {
+   it('finds the strength among several changes, including at the second they happen', () => {
       const result: PenaltyEngineResult = {
-         timeline: [],
+         timeline: [change(60, 5, 4), change(120, 5, 3), change(150, 5, 4), change(240, 5, 5)],
          servedPenalties: [],
-         strengthIntervals: [
-            { away: 5, home: 5, start: 0, end: 60 },
-            { away: 5, home: 4, start: 60, end: 120 },
-            { away: 5, home: 3, start: 120, end: 150 },
-            { away: 5, home: 4, start: 150, end: 240 },
-         ],
          goals: [],
       };
-      const strengthAt = (time: number) => snapshotAt(result, plays(), time).strength;
+      const strength = (time: number) => snapshotAt(result, plays(), time).strength;
       expect(
          [0, 59, 60, 119, 120, 149, 150, 239, 240]
-            .map(strengthAt)
+            .map(strength)
             .map(({ away, home }) => `${away}v${home}`),
       ).toEqual(['5v5', '5v5', '5v4', '5v4', '5v3', '5v3', '5v4', '5v4', '5v5']);
    });
@@ -79,7 +79,6 @@ describe('snapshotAt', () => {
       const result: PenaltyEngineResult = {
          timeline: [],
          servedPenalties: [served({ start: 1090, end: 1210, endReason: 'expired' })],
-         strengthIntervals: [],
          goals: [],
       };
       const penaltyPlays = plays(penaltyPlay(1, '16:10', 2));
@@ -100,7 +99,6 @@ describe('snapshotAt', () => {
             served({ doubleMinorHalf: 1, start: 970, end: 1090, endReason: 'expired' }),
             served({ doubleMinorHalf: 2, start: 1090, end: 1210, endReason: 'expired' }),
          ],
-         strengthIntervals: [],
          goals: [],
       };
       const penaltyPlays = plays(penaltyPlay(1, '16:10', 4));

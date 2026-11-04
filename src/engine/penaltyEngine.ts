@@ -10,7 +10,6 @@ import type {
    PenaltyEngineResult,
    ServedPenalty,
    Strength,
-   StrengthInterval,
    TimelineEntry,
 } from '@engine/types';
 import { PENALTY_SEVERITIES, PERIOD_TYPES, PLAY_TYPES, SIDES } from '@domain/constants';
@@ -42,11 +41,7 @@ class PenaltyEngine {
    };
    private readonly onIce = new OnIceStrength();
    private readonly servedPenalties: ServedPenalty[] = [];
-   private readonly strengthIntervals: StrengthInterval[] = [];
    private readonly goals: GoalEffect[] = [];
-   private strengthStart: GameElapsed = 0;
-   // The latest game time the engine has reached, in game seconds like playTime.
-   private currentTime: GameElapsed = 0;
    private gameEnd: GameElapsed | undefined;
 
    constructor({ game, plays, sideOf }: GameIndex) {
@@ -74,7 +69,6 @@ class PenaltyEngine {
       return {
          timeline: this.timeline,
          servedPenalties: this.servedPenalties,
-         strengthIntervals: this.strengthIntervals,
          goals: this.goals,
       };
    }
@@ -94,7 +88,6 @@ class PenaltyEngine {
          );
          this.updateStrength(next, false);
       }
-      this.currentTime = Math.max(this.currentTime, time);
    }
 
    // Goals go before the second's penalties: a goal applies to the penalties already running, and a penalty
@@ -184,10 +177,8 @@ class PenaltyEngine {
             ...this.penaltyBoxes.home.closeAll(gameEnd, 'gameEnd'),
          );
          this.updateStrength(gameEnd, true);
-         this.closeStrengthInterval(gameEnd);
       } else {
          this.advanceTo(Infinity, 'projected');
-         this.closeStrengthInterval(this.currentTime);
       }
    }
 
@@ -208,15 +199,7 @@ class PenaltyEngine {
       );
       if (!isSameStrength(prevStrength, nextStrength)) {
          this.record({ kind: 'strength', time, strength: nextStrength });
-         this.closeStrengthInterval(time, prevStrength);
-         this.strengthStart = time;
       }
-      this.currentTime = Math.max(this.currentTime, time);
-   }
-
-   private closeStrengthInterval(time: GameElapsed, strength: Strength = this.onIce.current): void {
-      if (time > this.strengthStart)
-         this.strengthIntervals.push({ ...strength, start: this.strengthStart, end: time });
    }
 }
 
