@@ -7,13 +7,17 @@ export const AWAY = 1;
 export const HOME = 2;
 
 let nextId = 1;
-const base = (clock: string) => {
+const base = (clock: string, period = 1) => {
    const eventId = nextId++;
    return {
       eventId,
       sortOrder: eventId,
       typeCode: 0,
-      periodDescriptor: { number: 1, periodType: PERIOD_TYPES.REGULATION, maxRegulationPeriods: 3 },
+      periodDescriptor: {
+         number: period,
+         periodType: period > 3 ? PERIOD_TYPES.OVERTIME : PERIOD_TYPES.REGULATION,
+         maxRegulationPeriods: 3,
+      },
       timeInPeriod: clock,
       timeRemaining: '00:00',
    };
@@ -58,9 +62,15 @@ export const goal = (teamId: number, clock: string, situationCode?: string): Goa
    },
 });
 
-export const gameEnd = (clock: string): Play => ({
-   ...base(clock),
+export const gameEnd = (clock: string, period = 1): Play => ({
+   ...base(clock, period),
    typeDescKey: PLAY_TYPES.GAME_END,
+});
+
+export const faceoff = (clock: string, period = 1): Play => ({
+   ...base(clock, period),
+   typeDescKey: PLAY_TYPES.FACEOFF,
+   details: { eventOwnerTeamId: HOME, winningPlayerId: 1, losingPlayerId: 2 },
 });
 
 export const engineFor = (...plays: Play[]) =>

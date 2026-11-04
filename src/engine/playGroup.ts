@@ -9,7 +9,7 @@ export class PlayGroup {
    readonly time: GameElapsed;
    readonly goals: GoalPlay[] = [];
    readonly penalties: PenaltyPlay[] = [];
-   hasFaceoff = false;
+   faceoffPeriod: number | undefined;
 
    constructor(time: GameElapsed) {
       this.time = time;
@@ -18,7 +18,8 @@ export class PlayGroup {
    add(play: Play): void {
       if (isGoal(play)) this.goals.push(play);
       else if (isPenalty(play)) this.penalties.push(play);
-      else if (play.typeDescKey === PLAY_TYPES.FACEOFF) this.hasFaceoff = true;
+      else if (play.typeDescKey === PLAY_TYPES.FACEOFF)
+         this.faceoffPeriod = play.periodDescriptor.number;
    }
 
    // Plays from before situationCode was recorded fall back to a PS penalty to the other team in the same second.

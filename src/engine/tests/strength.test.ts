@@ -1,26 +1,43 @@
 import { describe, expect, it } from 'vitest';
-import { isThreeOnThreeOvertime, OnIceStrength, overtimeStrength } from '@engine/strength';
+import {
+   isThreeOnThreeOvertime,
+   OnIceStrength,
+   overtimeStrength,
+   periodAt,
+} from '@engine/strength';
 import type { Game } from '@domain/types';
 
 describe('isThreeOnThreeOvertime', () => {
    const game = (gameType: number, season = 20262027) =>
       ({ gameType, season, regPeriods: 3 }) as Game;
-   const overtime = 3 * 20 * 60 + 30;
 
    it.each([
       ['pre-season', 1, true],
       ['regular season', 2, true],
       ['playoffs', 3, false],
    ])('%s overtime', (_, gameType, expected) => {
-      expect(isThreeOnThreeOvertime(game(gameType), overtime)).toBe(expected);
+      expect(isThreeOnThreeOvertime(game(gameType), 4)).toBe(expected);
    });
 
    it('is never 3-on-3 in regulation', () => {
-      expect(isThreeOnThreeOvertime(game(2), overtime - 60)).toBe(false);
+      expect(isThreeOnThreeOvertime(game(2), 3)).toBe(false);
    });
 
    it('is not 3-on-3 before the 2015-16 season', () => {
-      expect(isThreeOnThreeOvertime(game(2, 20142015), overtime)).toBe(false);
+      expect(isThreeOnThreeOvertime(game(2, 20142015), 4)).toBe(false);
+   });
+});
+
+describe('periodAt', () => {
+   it.each([
+      [0, 1],
+      [1199, 1],
+      [1200, 1],
+      [1201, 2],
+      [3600, 3],
+      [3601, 4],
+   ])('puts %i seconds in period %i', (time, period) => {
+      expect(periodAt(time)).toBe(period);
    });
 });
 

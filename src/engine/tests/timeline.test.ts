@@ -3,6 +3,7 @@ import { runPenaltyEngine } from '@engine/penaltyEngine';
 import {
    AWAY,
    engineFor,
+   faceoff,
    gameEnd,
    goal,
    HOME,
@@ -21,6 +22,18 @@ const starts = (timeline: TimelineEntry[]) =>
    );
 
 describe('engine timeline', () => {
+   it('keeps regulation strength when the game ends at the end of regulation', () => {
+      const { timeline } = engineFor(gameEnd('20:00', 3));
+      expect(timeline.filter((entry) => entry.kind === 'strength')).toEqual([]);
+   });
+
+   it('goes to 3-on-3 at the opening faceoff of overtime', () => {
+      const { timeline } = engineFor(faceoff('00:00', 4), gameEnd('01:00', 4));
+      expect(timeline.filter((entry) => entry.kind === 'strength')).toEqual([
+         { kind: 'strength', time: 3600, strength: { away: 3, home: 3 } },
+      ]);
+   });
+
    it('records a penalty starting and expiring, with the strength changes it causes', () => {
       const { timeline } = engineFor(penalty(HOME, '02:00', 2), gameEnd('20:00'));
       expect(timeline).toMatchObject([

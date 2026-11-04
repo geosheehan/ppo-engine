@@ -26,10 +26,13 @@ export function overtimeStrength(entitled: Strength): Strength {
    return advantage > 0 ? { away: leader, home: 3 } : { away: 3, home: leader };
 }
 
-export const isThreeOnThreeOvertime = (game: Game, time: GameElapsed) =>
+export const periodAt = (time: GameElapsed): number =>
+   Math.max(1, Math.ceil(time / PERIOD_SECONDS));
+
+export const isThreeOnThreeOvertime = (game: Game, period: number) =>
    (game.gameType === GAME_TYPES.PRESEASON || game.gameType === GAME_TYPES.REGULAR_SEASON)
    && game.season >= FIRST_THREE_ON_THREE_SEASON
-   && Math.floor(time / PERIOD_SECONDS) + 1 > game.regPeriods;
+   && period > game.regPeriods;
 
 // Tracks skaters on the ice. In 3-on-3 overtime, strength is only reset at stoppages (Tables 15-16);
 // during play, a player whose penalty ends simply returns, adding a skater.

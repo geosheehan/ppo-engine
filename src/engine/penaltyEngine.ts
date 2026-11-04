@@ -2,7 +2,7 @@ import { assessPenalties } from '@engine/assessment';
 import { STRENGTH_SEVERITIES } from '@engine/constants';
 import { PenaltyBox } from '@engine/penaltyBox';
 import { PlayGroup } from '@engine/playGroup';
-import { isSameStrength, isThreeOnThreeOvertime, OnIceStrength } from '@engine/strength';
+import { isSameStrength, isThreeOnThreeOvertime, OnIceStrength, periodAt } from '@engine/strength';
 import type {
    CalledPenalty,
    GoalEffect,
@@ -104,7 +104,8 @@ class PenaltyEngine {
       const washed = new Set<number>();
       for (const goal of group.goals) this.handleGoal(goal, group, washed);
       if (group.penalties.length > 0) this.handlePenalties(group, washed);
-      if (group.hasFaceoff) this.updateStrength(group.time, true);
+      if (group.faceoffPeriod !== undefined)
+         this.updateStrength(group.time, true, group.faceoffPeriod);
    }
 
    private handleGoal(goal: GoalPlay, group: PlayGroup, washed: Set<number>): void {
@@ -190,7 +191,11 @@ class PenaltyEngine {
       }
    }
 
-   private updateStrength(time: GameElapsed, atStoppage: boolean): void {
+   private updateStrength(
+      time: GameElapsed,
+      atStoppage: boolean,
+      period: number = periodAt(time),
+   ): void {
       const prevStrength = this.onIce.current;
       const running: Strength = {
          away: this.penaltyBoxes.away.runningClockCount,
@@ -198,7 +203,7 @@ class PenaltyEngine {
       };
       const nextStrength = this.onIce.update(
          running,
-         isThreeOnThreeOvertime(this.game, time),
+         isThreeOnThreeOvertime(this.game, period),
          atStoppage,
       );
       if (!isSameStrength(prevStrength, nextStrength)) {
