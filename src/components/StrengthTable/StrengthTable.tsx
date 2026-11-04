@@ -1,6 +1,5 @@
 import type { OpportunityTotal } from '@engine/types';
 import '@components/StrengthTable/StrengthTable.css';
-import type { CSSProperties } from 'react';
 import { clsx } from 'clsx';
 import TeamChip from '@components/TeamChip';
 import { useGame } from '@context/useGame';
@@ -41,12 +40,10 @@ function StrengthTable({ side, totals, strength, position }: StrengthTableProps)
       <div className={`strength-table__card strength-table__card--${position}`}>
          <table
             className="strength-table"
-            style={
-               {
-                  '--team-color': colors[side],
-                  '--team-text-color': textColorOn(colors[side]),
-               } as CSSProperties
-            }
+            style={{
+               '--team-color': colors[side],
+               '--team-text-color': textColorOn(colors[side]),
+            }}
          >
             <caption>
                <TeamChip teamId={teamByHomeOrAway(side).id} /> POWER PLAYS

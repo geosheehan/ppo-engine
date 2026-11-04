@@ -1,7 +1,6 @@
 import type { TimedShift } from '@domain/types';
 import '@components/OnIcePanel/OnIcePanel.css';
 import { useState } from 'react';
-import type { CSSProperties } from 'react';
 import { clsx } from 'clsx';
 import PlayerCard from '@components/PlayerCard';
 import { useGame } from '@context/useGame';
@@ -57,7 +56,7 @@ function OnIcePanel({ side, onIce, position }: OnIcePanelProps) {
       <div
          className={`on-ice on-ice--${position}`}
          aria-label={`${team.abbrev} on the ice`}
-         style={{ '--team-color': teamColor(team.id) } as CSSProperties}
+         style={{ '--team-color': teamColor(team.id) }}
       >
          <ol className="on-ice__column">{skaters.map(card)}</ol>
          <ol className="on-ice__column">

@@ -6,9 +6,9 @@
 .penalty-chart__grid {
    display: grid;
    /* The last moment's line closes the grid, so its label sits in a zero-width column. */
-   grid-template-columns: 4rem repeat(var(--intervals), minmax(3.5rem, 1fr)) 0;
+   grid-template-columns: 4rem repeat(var(--penalty-chart-interval-count), minmax(3.5rem, 1fr)) 0;
    grid-template-rows: 1.25rem 1.5rem repeat(2, 1.75rem) 0.75rem repeat(2, 1.75rem);
-   min-width: calc(4rem + var(--intervals) * 3.5rem);
+   min-width: calc(4rem + var(--penalty-chart-interval-count) * 3.5rem);
    font-size: 13px;
 }
 

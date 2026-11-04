@@ -1,6 +1,5 @@
 import '@components/PenaltyChart/PenaltyChart.css';
 import { useMemo } from 'react';
-import type { CSSProperties } from 'react';
 import { clsx } from 'clsx';
 import { useGame } from '@context/useGame';
 import { chartMoments, momentClock, momentPeriod } from '@layout/penaltyChart';
@@ -36,7 +35,7 @@ function PenaltyChart() {
       <div className="penalty-chart">
          <div
             className="penalty-chart__grid"
-            style={{ '--intervals': Math.max(moments.length - 1, 1) } as CSSProperties}
+            style={{ '--penalty-chart-interval-count': Math.max(moments.length - 1, 1) }}
          >
             {TEAM_ROWS.map((side) => (
                <div
@@ -105,13 +104,11 @@ function PenaltyChart() {
                         penalty.endReason === 'goal' && 'penalty-chart__box--goal',
                      )}
                      title={`${playerShortName(player)} · ${infraction} · ${play.details.duration} min`}
-                     style={
-                        {
-                           'gridColumn': `${line(penalty.start)} / ${line(penalty.end)}`,
-                           'gridRow': laneRow(penalty.side, penalty.penaltyClock),
-                           '--team-color': colors[penalty.side],
-                        } as CSSProperties
-                     }
+                     style={{
+                        'gridColumn': `${line(penalty.start)} / ${line(penalty.end)}`,
+                        'gridRow': laneRow(penalty.side, penalty.penaltyClock),
+                        '--team-color': colors[penalty.side],
+                     }}
                   >
                      {player ? `#${player.sweaterNumber}` : infraction}
                   </div>

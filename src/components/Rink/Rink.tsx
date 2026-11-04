@@ -9,12 +9,12 @@ type RinkProps = {
 
 // NHL rink, 1 unit = 1 ft, origin at center ice (same axes as the NHL API's x/y).
 // x: -100 (left boards) to 100 (right boards); y: -42.5 to 42.5. Corner radius 28 ft.
-// Team colors: set the CSS custom properties --left-end-color / --right-end-color on the
+// Team colors: set the CSS custom properties --rink-left-end-color / --rink-right-end-color on the
 // rink or any parent. They fill the corners outside the boards and that end's crease.
 const RED = '#c8102e';
 const BLUE = '#0072ce';
-const LEFT_END = `var(--left-end-color, ${RED})`;
-const RIGHT_END = `var(--right-end-color, ${BLUE})`;
+const LEFT_END = `var(--rink-left-end-color, ${RED})`;
+const RIGHT_END = `var(--rink-right-end-color, ${BLUE})`;
 
 // Rule-book width (2 in) for the thin markings.
 const MARKING = 2 / 12;

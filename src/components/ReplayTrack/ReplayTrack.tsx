@@ -1,5 +1,4 @@
 import '@components/ReplayTrack/ReplayTrack.css';
-import type { CSSProperties } from 'react';
 
 type ReplayTrackProps = {
    stepIndex: number;
@@ -22,7 +21,7 @@ function ReplayTrack({ stepIndex, lastStep, goalSteps, onSeek }: ReplayTrackProp
             max={lastStep}
             value={stepIndex}
             onChange={(event) => onSeek(Number(event.target.value))}
-            style={{ '--progress': at(stepIndex) } as CSSProperties}
+            style={{ '--replay-track-progress': at(stepIndex) }}
          />
          {goalSteps
             .filter((goalStep) => goalStep <= stepIndex)
@@ -30,7 +29,7 @@ function ReplayTrack({ stepIndex, lastStep, goalSteps, onSeek }: ReplayTrackProp
                <span
                   key={goalStep}
                   className="replay-track__goal-mark"
-                  style={{ '--at': at(goalStep) } as CSSProperties}
+                  style={{ '--replay-track-goal-position': at(goalStep) }}
                />
             ))}
       </div>

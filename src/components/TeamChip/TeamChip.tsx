@@ -1,5 +1,4 @@
 import '@components/TeamChip/TeamChip.css';
-import type { CSSProperties } from 'react';
 import { useGame } from '@context/useGame';
 import { textColorOn } from '@domain/colors';
 
@@ -14,7 +13,7 @@ function TeamChip({ teamId }: TeamChipProps) {
    return (
       <span
          className="team-chip"
-         style={{ '--chip-color': color, '--chip-text-color': textColorOn(color) } as CSSProperties}
+         style={{ '--team-color': color, '--team-text-color': textColorOn(color) }}
       >
          {teamById(teamId)?.abbrev}
       </span>

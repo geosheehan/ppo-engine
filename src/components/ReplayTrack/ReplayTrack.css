@@ -8,7 +8,9 @@
 /* Styled by hand so the thumb has a known width: the browser's own thumb differs in size between browsers,
    and the goal marks need to line up under its center. */
 .replay-track__slider {
-   --fill: calc(var(--thumb-width) / 2 + var(--progress) * (100% - var(--thumb-width)));
+   --fill: calc(
+      var(--thumb-width) / 2 + var(--replay-track-progress) * (100% - var(--thumb-width))
+   );
    flex: 1;
    height: var(--thumb-width);
    margin: 0;
@@ -50,7 +52,9 @@
 .replay-track__goal-mark {
    position: absolute;
    top: calc(50% + 6px);
-   left: calc(var(--thumb-width) / 2 + var(--at) * (100% - var(--thumb-width)));
+   left: calc(
+      var(--thumb-width) / 2 + var(--replay-track-goal-position) * (100% - var(--thumb-width))
+   );
    width: 3px;
    height: 7px;
    translate: -50% 0;

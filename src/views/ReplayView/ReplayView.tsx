@@ -1,6 +1,5 @@
 import { isGoal } from '@domain/plays';
 import '@views/ReplayView/ReplayView.css';
-import type { CSSProperties } from 'react';
 import CurrentPlay from '@components/CurrentPlay';
 import OnIcePanel from '@components/OnIcePanel';
 import PenaltyClocks from '@components/PenaltyClocks';
@@ -38,10 +37,6 @@ function ReplayView() {
    const isLineChange = changedTeamId !== undefined;
 
    const [left, right] = sides;
-   const endColors = {
-      '--left-end-color': colors[left],
-      '--right-end-color': colors[right],
-   } as CSSProperties;
    // A power-play goal ends the penalty in the same second, so the snapshot already shows the strength after the
    // goal. Show the strength it was scored at until the next play.
    const liveStrength = goalEffect?.strength ?? snapshot.strength;
@@ -51,7 +46,13 @@ function ReplayView() {
       isGoal(play) && play.details.xCoord !== undefined && play.details.yCoord !== undefined;
 
    return (
-      <section className="replay" style={endColors}>
+      <section
+         className="replay"
+         style={{
+            '--rink-left-end-color': colors[left],
+            '--rink-right-end-color': colors[right],
+         }}
+      >
          <title>{`${game.awayTeam.abbrev} @ ${game.homeTeam.abbrev}`}</title>
          <header className="replay__header">
             <Scoreboard
