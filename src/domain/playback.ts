@@ -1,14 +1,12 @@
 import { isGoal, playTime } from '@domain/plays';
 import type { Play, ReplayPosition } from '@domain/types';
 
-const SAME_SECOND_HOLD_MS = 3000;
-
 export function livePosition(
    plays: Play[],
    start: ReplayPosition,
    elapsedMs: number,
    speed: number,
-   goalHoldMs: number,
+   holds: { goalMs: number; sameSecondMs: number },
 ): ReplayPosition {
    let { index, time } = start;
    let left = elapsedMs;
@@ -19,8 +17,8 @@ export function livePosition(
 
       if (time === playAt) {
          let hold = 0;
-         if (isGoal(plays[index])) hold = goalHoldMs;
-         else if (nextAt === playAt) hold = SAME_SECOND_HOLD_MS / speed;
+         if (isGoal(plays[index])) hold = holds.goalMs;
+         else if (nextAt === playAt) hold = holds.sameSecondMs / speed;
          if (left < hold) return { index, time };
          left -= hold;
       }

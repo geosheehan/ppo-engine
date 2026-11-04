@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { livePosition } from '@domain/playback';
 import type { Play } from '@domain/types';
 
-const GOAL_HOLD = 7000;
+const HOLDS = { goalMs: 7000, sameSecondMs: 3000 };
 
 const play = (typeDescKey: string, clock: string, period = 1) =>
    ({
@@ -13,13 +13,7 @@ const play = (typeDescKey: string, clock: string, period = 1) =>
    }) as unknown as Play;
 
 const at = (plays: Play[], index: number, elapsedMs: number, speed = 1) =>
-   livePosition(
-      plays,
-      { index, time: livePositionStart(plays, index) },
-      elapsedMs,
-      speed,
-      GOAL_HOLD,
-   );
+   livePosition(plays, { index, time: livePositionStart(plays, index) }, elapsedMs, speed, HOLDS);
 
 const livePositionStart = (plays: Play[], index: number): number => {
    const [mins, secs] = plays[index].timeInPeriod.split(':').map(Number);
@@ -46,7 +40,7 @@ describe('livePosition', () => {
    });
 
    it('resumes from partway between two plays', () => {
-      expect(livePosition(plays, { index: 0, time: 8 }, 2000, 1, GOAL_HOLD)).toEqual({
+      expect(livePosition(plays, { index: 0, time: 8 }, 2000, 1, HOLDS)).toEqual({
          index: 1,
          time: 10,
       });

@@ -1,0 +1,11 @@
+.step-buttons {
+   display: flex;
+   align-items: center;
+   gap: 4px;
+}
+
+.step-buttons .step-buttons__play {
+   padding-inline: 16px;
+   background: var(--text-h);
+   color: var(--bg);
+}

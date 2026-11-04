@@ -1,6 +1,6 @@
 import { LINE_CHANGE, PLAY_TYPES } from '@domain/constants';
 import { PLAY_TYPE_LABELS } from '@domain/labels';
-import { playTime } from '@domain/plays';
+import { isGoal, playTime } from '@domain/plays';
 import { lastIndexWhere } from '@domain/search';
 import type {
    GameElapsed,
@@ -17,6 +17,9 @@ export const STEP_TYPES: StepType[] = [...Object.values(PLAY_TYPES), LINE_CHANGE
 
 export const stepTypeLabel = (type: StepType): string =>
    type === LINE_CHANGE ? 'Line change' : PLAY_TYPE_LABELS[type];
+
+export const isGoalStep = (step: ReplayStep, plays: Play[]): boolean =>
+   !step.changedTeamId && isGoal(plays[step.index]);
 
 export const stepType = (step: ReplayStep, plays: Play[]): StepType =>
    step.changedTeamId ? LINE_CHANGE : plays[step.index].typeDescKey;

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { SHOT_ANIMATION_MS } from '@hooks/constants';
+import { GOAL_HOLD_MS, SAME_SECOND_HOLD_MS } from '@hooks/constants';
 import { livePosition } from '@domain/playback';
 import type { GameElapsed, Play, ReplayPosition } from '@domain/types';
 
@@ -33,13 +33,10 @@ export function useLivePlayback(
             startedAt = performance.now();
             emitted = start;
          }
-         const next = livePosition(
-            plays,
-            start,
-            performance.now() - startedAt,
-            speed,
-            SHOT_ANIMATION_MS,
-         );
+         const next = livePosition(plays, start, performance.now() - startedAt, speed, {
+            goalMs: GOAL_HOLD_MS,
+            sameSecondMs: SAME_SECOND_HOLD_MS,
+         });
          if (samePosition(next, emitted)) return;
          emitted = next;
          positionRef.current = next;
