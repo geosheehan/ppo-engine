@@ -53,10 +53,13 @@ class PenaltyEngine {
    run(): PenaltyEngineResult {
       let group: PlayGroup | undefined;
       for (const play of this.plays) {
-         if (play.periodDescriptor.periodType === PERIOD_TYPES.SHOOTOUT) continue;
+         const shootout = play.periodDescriptor.periodType === PERIOD_TYPES.SHOOTOUT;
+         if (play.typeDescKey === PLAY_TYPES.GAME_END) {
+            this.gameEnd = shootout ? group?.time : playTime(play);
+         }
+         if (shootout) continue;
 
          const time = playTime(play);
-         if (play.typeDescKey === PLAY_TYPES.GAME_END) this.gameEnd = time;
          if (group?.time !== time) {
             if (group) this.resolve(group);
             group = new PlayGroup(time);
