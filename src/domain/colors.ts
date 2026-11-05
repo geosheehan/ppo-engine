@@ -53,5 +53,19 @@ export function gameColors(
    return matchupColors(home, away);
 }
 
+export const HEADSHOT_MAX_LIGHTNESS = 0.6;
+
+const lightness = (hex: string): number => toOklab(hex)[0];
+
+export const isLight = (background: string): boolean => lightness(background) > 0.62;
+
 export const textColorOn = (background: string): string =>
-   toOklab(background)[0] > 0.62 ? '#000000' : '#ffffff';
+   isLight(background) ? '#000000' : '#ffffff';
+
+// Headshots are cutouts of the player in the home jersey. A light background (gold, silver, light
+// blue) washes out the face, so it gives way to the team's first dark color, else its darkest one.
+export function headshotColor(palette: string[], color: string): string {
+   if (lightness(color) <= HEADSHOT_MAX_LIGHTNESS) return color;
+   const dark = palette.find((candidate) => lightness(candidate) <= HEADSHOT_MAX_LIGHTNESS);
+   return dark ?? palette.toSorted((a, b) => lightness(a) - lightness(b)).at(0) ?? color;
+}

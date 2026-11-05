@@ -1,0 +1,187 @@
+.headshot-debug {
+   padding: 16px 32px 48px;
+   text-align: left;
+}
+
+.headshot-debug__grid {
+   display: grid;
+   grid-template-columns: 170px repeat(2, minmax(96px, auto)) auto;
+   justify-content: start;
+   gap: 16px;
+   align-items: center;
+   padding-block: 4px;
+}
+
+.headshot-debug__grid--header {
+   position: sticky;
+   top: 0;
+   z-index: 1;
+   align-items: start;
+   padding-block: 8px;
+   background: var(--bg);
+   border-bottom: 1px solid var(--border);
+   color: var(--text-h);
+}
+
+.headshot-debug__instructions {
+   max-width: 72ch;
+   font-size: 14px;
+
+   ol {
+      padding-left: 20px;
+   }
+}
+
+.headshot-debug__voter {
+   display: flex;
+   align-items: center;
+   gap: 8px;
+   color: var(--text-h);
+}
+
+.headshot-debug__status {
+   font-size: 13px;
+}
+
+.headshot-debug__team-row {
+   margin-top: 16px;
+   border-top: 1px solid var(--border);
+
+   h3 {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin: 0;
+      color: var(--text-h);
+   }
+}
+
+.headshot-debug__actions {
+   display: flex;
+   flex-direction: column;
+   gap: 6px;
+}
+
+.headshot-debug__other-votes {
+   font-size: 12px;
+}
+
+.headshot-debug__vote {
+   display: flex;
+   align-items: center;
+   gap: 6px;
+   font-size: 13px;
+   cursor: pointer;
+}
+
+.headshot-debug__swatch {
+   width: 16px;
+   height: 16px;
+   padding: 0;
+   border: none;
+   border-radius: 3px;
+   outline: 1px solid var(--border);
+   background: var(--swatch-color);
+   cursor: pointer;
+}
+
+.headshot-debug__swatch--picked {
+   outline: 2px solid var(--text-h);
+   outline-offset: 2px;
+}
+
+.headshot-debug__player {
+   display: flex;
+   align-items: baseline;
+   gap: 8px;
+   min-width: 0;
+}
+
+.headshot-debug__position {
+   flex: none;
+   width: 12px;
+   font-size: 12px;
+}
+
+.headshot-debug__card {
+   display: flex;
+   align-items: center;
+   gap: 8px;
+   min-width: 0;
+}
+
+.headshot-debug__card--enlarged {
+   flex-direction: column;
+   align-items: stretch;
+}
+
+.headshot-debug__frame {
+   flex: none;
+   display: block;
+   width: 52px;
+   height: 52px;
+   padding: 0;
+   border: 0;
+   cursor: zoom-in;
+   overflow: hidden;
+   border-radius: 6px;
+   position: relative;
+   background: var(--team-color);
+}
+
+/* An overlay, not an outline: the halo's filter would paint the photo over an outline. */
+.headshot-debug__frame::after {
+   content: '';
+   position: absolute;
+   inset: 0;
+   border-radius: inherit;
+   box-shadow: inset 0 0 0 1px var(--text-h);
+   pointer-events: none;
+}
+
+.headshot-debug__frame--accent::after {
+   box-shadow: inset 0 0 0 2px var(--headshot-accent);
+}
+
+.headshot-debug__frame--shade-white {
+   background: linear-gradient(
+      to bottom,
+      var(--team-color) 20%,
+      color-mix(in oklab, var(--team-color), white 50%)
+   );
+}
+
+.headshot-debug__frame--shade-black {
+   background: linear-gradient(
+      to bottom,
+      var(--team-color) 20%,
+      color-mix(in oklab, var(--team-color), black 55%)
+   );
+}
+
+.headshot-debug__headshot {
+   display: block;
+   width: 100%;
+   height: 100%;
+}
+
+.headshot-debug__headshot--halo {
+   filter: drop-shadow(0 1px 2px rgb(0 0 0 / 60%));
+}
+
+.headshot-debug__name {
+   overflow: hidden;
+   font-size: 13px;
+   color: var(--text-h);
+   white-space: nowrap;
+   text-overflow: ellipsis;
+}
+
+/* The NHL headshots are 336px square; larger would only blur them. */
+.headshot-debug__card--enlarged .headshot-debug__frame {
+   width: min(336px, 40vw);
+   height: auto;
+   aspect-ratio: 1;
+   cursor: zoom-out;
+}

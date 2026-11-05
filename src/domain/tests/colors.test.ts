@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { areSimilar, gameColors, matchupColors, textColorOn } from '@domain/colors';
+import { areSimilar, gameColors, headshotColor, matchupColors, textColorOn } from '@domain/colors';
 import { DEFAULT_TEAM_COLORS } from '@domain/constants';
 
 const RED = '#C8102E';
@@ -84,5 +84,22 @@ describe('textColorOn', () => {
       expect(textColorOn(GOLD)).toBe('#000000');
       expect(textColorOn(ORANGE)).toBe('#000000');
       expect(textColorOn('#96D8D8')).toBe('#000000');
+   });
+});
+
+describe('headshotColor', () => {
+   it('keeps a dark team color', () => {
+      expect(headshotColor([NAVY, GOLD], NAVY)).toBe(NAVY);
+      expect(headshotColor([RED], RED)).toBe(RED);
+   });
+
+   it("swaps a light color for the team's first dark one", () => {
+      expect(headshotColor([GOLD, NAVY], GOLD)).toBe(NAVY);
+      expect(headshotColor(['#B9975B', '#333F48', RED, BLACK], '#B9975B')).toBe('#333F48');
+   });
+
+   it('falls back to the darkest color when every team color is light', () => {
+      expect(headshotColor(['#FFFFFF', GOLD], '#FFFFFF')).toBe(GOLD);
+      expect(headshotColor([], GOLD)).toBe(GOLD);
    });
 });
