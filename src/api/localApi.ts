@@ -1,3 +1,4 @@
+import { loadHeadshot } from '@api/headshots';
 import type { GameSummary, PpoApi } from '@api/types';
 import { runPenaltyEngine } from '@engine/penaltyEngine';
 import { countPowerPlays } from '@engine/powerPlayCounter';
@@ -42,6 +43,8 @@ export const localApi: PpoApi = {
       if (loadGame === undefined) throw new Error(`No saved game ${id}`);
       const loadShifts = shiftFiles.get(id);
       const [game, shiftChart] = await Promise.all([loadGame(), loadShifts?.(), latency()]);
+      // Wait for every headshot so cards never flash the placeholder; a failed one doesn't block.
+      await Promise.all(game.rosterSpots.map((player) => loadHeadshot(player.headshot)));
       const shifts = shiftChart?.data ?? [];
       const penaltyResult = runPenaltyEngine(indexGame(game, shifts));
       return {

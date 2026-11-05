@@ -16,7 +16,9 @@
    width: 52px;
    height: 52px;
    border-radius: 6px;
-   background: var(--border);
+   background:
+      linear-gradient(to bottom, rgb(255 255 255 / 12.5%) 1%, rgb(255 255 255 / 25%) 60%),
+      var(--team-color, var(--border));
    outline: 1px solid var(--text-h);
    outline-offset: -1px;
 }
