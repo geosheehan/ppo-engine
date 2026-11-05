@@ -7,7 +7,9 @@ import {
    gameEnd,
    goal,
    HOME,
+   inPeriod,
    penalty,
+   periodEnd,
    playerPenalty,
 } from '@engine/tests/fixtures';
 import type { TimelineEntry } from '@engine/types';
@@ -32,6 +34,15 @@ describe('engine timeline', () => {
       expect(timeline.filter((entry) => entry.kind === 'strength')).toEqual([
          { kind: 'strength', time: 3600, strength: { away: 3, home: 3 } },
       ]);
+   });
+
+   it('ends a shootout game, and any penalty still running, when overtime ends', () => {
+      const { servedPenalties } = engineFor(
+         inPeriod(penalty(HOME, '04:00', 2), 4),
+         periodEnd('05:00', 4),
+         gameEnd('00:00', 5),
+      );
+      expect(servedPenalties).toMatchObject([{ start: 3840, end: 3900, endReason: 'gameEnd' }]);
    });
 
    it('records a penalty starting and expiring, with the strength changes it causes', () => {
