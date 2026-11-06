@@ -27,6 +27,7 @@
       "@hooks/*": ["./src/hooks/*"],
       "@engine/*": ["./src/engine/*"],
       "@layout/*": ["./src/layout/*"],
+      "@router/*": ["./src/router/*"],
       "@views/*": ["./src/views/*"]
     },
 

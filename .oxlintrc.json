@@ -27,6 +27,7 @@
                   "@hooks/*",
                   "@components/*",
                   "@views/*",
+                  "@router/*",
                   "react",
                   "react/*",
                   "react-dom",
@@ -54,6 +55,7 @@
                   "@hooks/*",
                   "@components/*",
                   "@views/*",
+                  "@router/*",
                   "react",
                   "react/*",
                   "react-dom",
@@ -80,6 +82,7 @@
                   "@hooks/*",
                   "@components/*",
                   "@views/*",
+                  "@router/*",
                   "react",
                   "react/*",
                   "react-dom",
@@ -105,6 +108,7 @@
                   "@hooks/*",
                   "@components/*",
                   "@views/*",
+                  "@router/*",
                   "react",
                   "react/*",
                   "react-dom",
@@ -125,7 +129,7 @@
           {
             "patterns": [
               {
-                "group": ["@hooks/*", "@components/*", "@views/*"],
+                "group": ["@hooks/*", "@components/*", "@views/*", "@router/*"],
                 "message": "Layering: context sits below hooks, components and views."
               }
             ]
@@ -141,7 +145,7 @@
           {
             "patterns": [
               {
-                "group": ["@components/*", "@views/*"],
+                "group": ["@components/*", "@views/*", "@router/*"],
                 "message": "Layering: hooks sit below components and views."
               }
             ]
@@ -157,8 +161,24 @@
           {
             "patterns": [
               {
-                "group": ["@views/*"],
+                "group": ["@views/*", "@router/*"],
                 "message": "Layering: components sit below views."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/views/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@router/*"],
+                "message": "Layering: views sit below router."
               }
             ]
           }

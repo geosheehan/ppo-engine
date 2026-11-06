@@ -1,0 +1,33 @@
+.game-nav {
+   position: absolute;
+   top: 8px;
+   right: 32px;
+   display: flex;
+   gap: 4px;
+   font-size: 14px;
+
+   @media (max-width: 768px) {
+      position: static;
+      padding: 12px 20px 0;
+   }
+}
+
+.game-nav__link {
+   display: flex;
+   align-items: center;
+   height: 32px;
+   padding: 0 14px;
+   border: 1px solid transparent;
+   border-radius: 6px;
+   color: var(--text);
+   text-decoration: none;
+
+   &:hover {
+      color: var(--text-h);
+   }
+}
+
+.game-nav__link--active {
+   border-color: var(--border);
+   color: var(--text-h);
+}

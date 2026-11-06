@@ -1,0 +1,52 @@
+.dev-nav {
+   position: fixed;
+   bottom: 6px;
+   left: 6px;
+   z-index: 10;
+   display: flex;
+   align-items: center;
+   gap: 2px;
+   padding: 2px;
+   border: 1px solid var(--border);
+   border-radius: 6px;
+   background: var(--bg);
+   font-size: 13px;
+}
+
+.dev-nav__handle {
+   width: 20px;
+   height: 20px;
+   padding: 0;
+   border: none;
+   background: none;
+   color: var(--text);
+   font: inherit;
+   line-height: 1;
+   cursor: pointer;
+}
+
+.dev-nav__links {
+   display: none;
+   gap: 2px;
+
+   .dev-nav:hover &,
+   .dev-nav:focus-within & {
+      display: flex;
+   }
+}
+
+.dev-nav__link {
+   padding: 2px 10px;
+   border-radius: 4px;
+   color: var(--text);
+   text-decoration: none;
+
+   &:hover {
+      color: var(--text-h);
+   }
+}
+
+.dev-nav__link--active {
+   background: var(--border);
+   color: var(--text-h);
+}
