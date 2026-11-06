@@ -2,9 +2,11 @@ import '@components/PenaltyChart/PenaltyChart.css';
 import { useMemo } from 'react';
 import { clsx } from 'clsx';
 import { useGame } from '@context/useGame';
-import { chartMoments, momentClock, momentPeriod } from '@layout/penaltyChart';
+import { axisX } from '@layout/gameAxis';
+import type { GameAxis } from '@layout/gameAxis';
+import { chartMoments, momentClock } from '@layout/penaltyChart';
 import type { PenaltyClock } from '@engine/types';
-import { SIDES } from '@domain/constants';
+import { PERIOD_TYPES, SIDES } from '@domain/constants';
 import { periodLabel } from '@domain/labels';
 import { penaltyDisplayName } from '@domain/penalties';
 import { playerShortName } from '@domain/players';
@@ -15,27 +17,39 @@ const TEAM_ROWS: Side[] = [SIDES.AWAY, SIDES.HOME];
 const laneRow = (side: Side, penaltyClock: PenaltyClock): number =>
    3 + TEAM_ROWS.indexOf(side) * 3 + penaltyClock;
 
-function PenaltyChart() {
+type PenaltyChartProps = {
+   axis: GameAxis;
+};
+
+function PenaltyChart({ axis }: PenaltyChartProps) {
    const { game, penalties, penaltyResult, colors, teamByHomeOrAway, playerById } = useGame();
+   const gameEnd = axis.breakpoints.at(-1) ?? 0;
    const served = useMemo(
-      () => penaltyResult.servedPenalties.filter(({ start, end }) => start < end),
-      [penaltyResult],
+      () =>
+         penaltyResult.servedPenalties.filter(({ start, end }) => start < end && start < gameEnd),
+      [penaltyResult, gameEnd],
    );
    const penaltyById = useMemo(
       () => new Map(penalties.map((play) => [play.eventId, play])),
       [penalties],
    );
 
-   const moments = chartMoments(served);
-   const line = (time: GameElapsed): number => moments.indexOf(time) + 2;
-   const startsPeriod = (i: number): boolean =>
-      i === 0 || momentPeriod(moments[i - 1]) !== momentPeriod(moments[i]);
+   const moments = chartMoments(served, axis.breakpoints);
+   const penaltyMoments = new Set(served.flatMap(({ start, end }) => [start, end]));
+   const line = (time: GameElapsed): number => moments.indexOf(Math.min(time, gameEnd)) + 2;
+   const columns = moments
+      .slice(1)
+      .map((time, i) => `minmax(0, ${axisX(axis, time) - axisX(axis, moments[i])}fr)`);
+   const shootoutColumn = axis.shootout && `minmax(0, ${1 - axisX(axis, gameEnd)}fr)`;
+   const shootoutLine = moments.length + 1;
 
    return (
       <div className="penalty-chart">
          <div
             className="penalty-chart__grid"
-            style={{ '--penalty-chart-interval-count': Math.max(moments.length - 1, 1) }}
+            style={{
+               gridTemplateColumns: ['4rem', ...columns, shootoutColumn, '0'].join(' '),
+            }}
          >
             {TEAM_ROWS.map((side) => (
                <div
@@ -56,38 +70,44 @@ function PenaltyChart() {
                )),
             )}
 
-            {moments.map(
-               (time, i) =>
-                  startsPeriod(i)
-                  && i > 0 && (
-                     <div
-                        key={`break-${time}`}
-                        className="penalty-chart__period-break"
-                        style={{ gridColumn: line(time) - 1 }}
-                     />
-                  ),
-            )}
-            {moments.map(
-               (time, i) =>
-                  startsPeriod(i) && (
-                     <span
-                        key={`period-${time}`}
-                        className="penalty-chart__period"
-                        style={{ gridColumn: line(time) }}
-                     >
-                        {periodLabel(momentPeriod(time), game.regPeriods)}
-                     </span>
-                  ),
-            )}
-            {moments.map((time) => (
-               <time
-                  key={`time-${time}`}
-                  className="penalty-chart__time"
-                  style={{ gridColumn: line(time) }}
-               >
-                  {momentClock(time)}
-               </time>
+            {axis.periods.slice(1).map(({ period, start }) => (
+               <div
+                  key={`break-${period}`}
+                  className="penalty-chart__period-break"
+                  style={{ gridColumn: line(start) }}
+               />
             ))}
+            {axis.periods.map(({ period, start }) => (
+               <span
+                  key={`period-${period}`}
+                  className="penalty-chart__period"
+                  style={{ gridColumn: line(start) }}
+               >
+                  {periodLabel(period, game.regPeriods)}
+               </span>
+            ))}
+            {axis.shootout && (
+               <>
+                  <div
+                     className="penalty-chart__period-break"
+                     style={{ gridColumn: shootoutLine }}
+                  />
+                  <span className="penalty-chart__period" style={{ gridColumn: shootoutLine }}>
+                     {PERIOD_TYPES.SHOOTOUT}
+                  </span>
+               </>
+            )}
+            {moments
+               .filter((time) => penaltyMoments.has(time))
+               .map((time) => (
+                  <time
+                     key={`time-${time}`}
+                     className="penalty-chart__time"
+                     style={{ gridColumn: line(time) }}
+                  >
+                     {momentClock(time)}
+                  </time>
+               ))}
 
             {served.map((penalty) => {
                const play = penaltyById.get(penalty.penaltyEventId);

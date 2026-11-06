@@ -1,11 +1,15 @@
+import { useMemo } from 'react';
 import PenaltyChart from '@components/PenaltyChart';
 import PenaltyTable from '@components/PenaltyTable';
 import { useGame } from '@context/useGame';
+import { gameAxis } from '@layout/gameAxis';
 import type { Team } from '@domain/types';
 
 // The original App body. Its styles are still in App.css, which App imports.
 function GameSummaryView() {
-   const { game } = useGame();
+   const index = useGame();
+   const { game, penaltyResult } = index;
+   const axis = useMemo(() => gameAxis(index, penaltyResult.timeline), [index, penaltyResult]);
 
    const getTeamFullName = (team: Team): string =>
       `${team.placeName.default} ${team.commonName.default}`;
@@ -29,7 +33,7 @@ function GameSummaryView() {
                      <PenaltyTable team="home" />
                   </div>
                </div>
-               <PenaltyChart />
+               <PenaltyChart axis={axis} />
             </section>
          </div>
       </section>

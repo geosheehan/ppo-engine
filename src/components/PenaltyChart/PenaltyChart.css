@@ -1,14 +1,11 @@
 .penalty-chart {
-   overflow-x: auto;
-   padding: 0 24px 8px;
+   padding-bottom: 8px;
 }
 
+/* Columns come from the game axis (set inline). The last one is zero wide, so the final line has a column to sit in. */
 .penalty-chart__grid {
    display: grid;
-   /* The last moment's line closes the grid, so its label sits in a zero-width column. */
-   grid-template-columns: 4rem repeat(var(--penalty-chart-interval-count), minmax(3.5rem, 1fr)) 0;
    grid-template-rows: 1.25rem 1.5rem repeat(2, 1.75rem) 0.75rem repeat(2, 1.75rem);
-   min-width: calc(4rem + var(--penalty-chart-interval-count) * 3.5rem);
    font-size: 13px;
 }
 
@@ -27,7 +24,7 @@
 
 .penalty-chart__period-break {
    grid-row: 1 / -1;
-   justify-self: center;
+   justify-self: start;
    border-left: 1px dashed var(--border);
 }
 

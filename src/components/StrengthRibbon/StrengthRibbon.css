@@ -1,0 +1,60 @@
+/* Same columns as the penalty chart's grid, so both line up on the game axis. */
+.strength-ribbon {
+   display: grid;
+   grid-template-columns: 4rem minmax(0, 1fr) 0;
+   font-size: 13px;
+   --strength-ribbon-overtime: #7f77dd;
+}
+
+.strength-ribbon__labels {
+   position: relative;
+
+   span {
+      position: absolute;
+      inset-inline: 0;
+      translate: 0 -50%;
+      font-weight: 600;
+      color: var(--text-h);
+   }
+}
+
+.strength-ribbon__chart {
+   width: 100%;
+   overflow: visible;
+}
+
+.strength-ribbon__axis {
+   stroke: var(--border);
+}
+
+.strength-ribbon__break {
+   stroke: var(--border);
+   stroke-dasharray: 3 3;
+}
+
+.strength-ribbon__baseline {
+   fill: var(--text);
+   opacity: 0.45;
+}
+
+.strength-ribbon__baseline--overtime {
+   fill: var(--strength-ribbon-overtime);
+   opacity: 1;
+}
+
+.strength-ribbon__even {
+   opacity: 0.4;
+}
+
+.strength-ribbon__goal {
+   stroke: var(--bg);
+   stroke-width: 2;
+}
+
+.strength-ribbon__round {
+   stroke: var(--text);
+}
+
+.strength-ribbon__round--sudden-death {
+   stroke-dasharray: 2 2;
+}

@@ -5,15 +5,17 @@ import type { ServedPenalty } from '@engine/types';
 const served = (start: number, end: number) => ({ start, end }) as ServedPenalty;
 
 describe('chartMoments', () => {
-   it('lists each start and end once, in game order', () => {
+   it('merges each start and end into the breakpoints once, in game order', () => {
       expect(
-         chartMoments([
-            served(1520, 1640),
-            served(1056, 1176),
-            served(1440, 1560),
-            served(1440, 1560),
-         ]),
-      ).toEqual([1056, 1176, 1440, 1520, 1560, 1640]);
+         chartMoments(
+            [served(1520, 1640), served(1056, 1176), served(1440, 1560), served(1440, 1560)],
+            [0, 1056, 1176, 1200, 2400],
+         ),
+      ).toEqual([0, 1056, 1176, 1200, 1440, 1520, 1560, 1640, 2400]);
+   });
+
+   it('drops moments after the game ends', () => {
+      expect(chartMoments([served(3550, 3670)], [0, 3600])).toEqual([0, 3550, 3600]);
    });
 });
 

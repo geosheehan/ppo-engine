@@ -1,0 +1,9 @@
+/* The penalty chart and ribbon scroll together, so they stay lined up on the shared axis. */
+.analysis__strip {
+   overflow-x: auto;
+   padding: 0 24px 16px;
+}
+
+.analysis__strip-content {
+   min-width: 56rem;
+}
