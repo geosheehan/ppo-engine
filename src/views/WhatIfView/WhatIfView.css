@@ -1,0 +1,58 @@
+.what-if {
+   padding: 0 24px 48px;
+}
+
+.what-if__hint {
+   margin-top: 0;
+   font-size: 15px;
+}
+
+.what-if__toolbar {
+   display: flex;
+   flex-wrap: wrap;
+   align-items: center;
+   justify-content: center;
+   gap: 8px 16px;
+   margin-bottom: 16px;
+   font-size: 14px;
+}
+
+.what-if__cursor {
+   font-variant-numeric: tabular-nums;
+   color: var(--text-h);
+}
+
+.what-if__add {
+   display: flex;
+   align-items: center;
+   gap: 4px;
+   padding: 4px 6px;
+   border-left: 4px solid var(--team-color);
+   border-radius: 4px;
+}
+
+.what-if__team {
+   font-weight: 600;
+   color: var(--text-h);
+}
+
+.what-if__builder,
+.what-if__strip {
+   overflow-x: auto;
+}
+
+.what-if__builder > *,
+.what-if__strip-content {
+   min-width: 56rem;
+}
+
+.what-if__totals {
+   display: grid;
+   grid-template-columns: 1fr 1fr;
+   gap: 16px;
+   margin: 24px 0;
+
+   @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+   }
+}

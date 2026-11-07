@@ -1,0 +1,25 @@
+.goal-effect-table {
+   margin: 0 auto;
+   border-collapse: collapse;
+   font-size: 15px;
+   font-variant-numeric: tabular-nums;
+
+   caption {
+      margin-bottom: 8px;
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--text-h);
+      text-align: left;
+   }
+
+   th,
+   td {
+      padding: 4px 12px;
+      border-bottom: 1px solid var(--border);
+   }
+
+   th {
+      font-weight: 500;
+      color: var(--text-h);
+   }
+}

@@ -1,11 +1,12 @@
 import '@components/DevNav/DevNav.css';
 import { clsx } from 'clsx';
 import { NavLink } from 'react-router';
-import { GAMES_PATH } from '@layout/routes';
+import { GAMES_PATH, WHAT_IF_PATH } from '@layout/routes';
 
 const LINKS = [
    { to: '/', label: 'Vote' },
    { to: GAMES_PATH, label: 'Games' },
+   { to: WHAT_IF_PATH, label: 'What if' },
 ];
 
 function DevNav() {

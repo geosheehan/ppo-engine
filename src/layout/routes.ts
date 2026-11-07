@@ -1,5 +1,7 @@
 export const GAMES_PATH = '/games';
 
+export const WHAT_IF_PATH = '/what-if';
+
 export const GAME_VIEWS = {
    REPLAY: 'replay',
    ANALYSIS: 'analysis',

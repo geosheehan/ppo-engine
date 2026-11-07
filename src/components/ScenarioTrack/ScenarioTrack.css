@@ -1,0 +1,126 @@
+/* Real time, not the compressed game axis: every second is the same width, so dragging feels even. */
+.scenario-track {
+   display: grid;
+   grid-template-columns: 4rem minmax(0, 1fr);
+   font-size: 13px;
+   user-select: none;
+}
+
+.scenario-track__ruler,
+.scenario-track__guides {
+   grid-column: 2;
+   position: relative;
+}
+
+.scenario-track__ruler {
+   grid-row: 1;
+}
+
+.scenario-track__guides {
+   grid-row: 2 / -1;
+   pointer-events: none;
+}
+
+.scenario-track__tick {
+   position: absolute;
+   translate: -50% 0;
+   white-space: nowrap;
+   font-variant-numeric: tabular-nums;
+}
+
+.scenario-track__tick--period {
+   font-weight: 600;
+   color: var(--text-h);
+}
+
+.scenario-track__guide,
+.scenario-track__cursor {
+   position: absolute;
+   top: 0;
+   bottom: 0;
+}
+
+.scenario-track__guide {
+   border-left: 1px solid var(--border);
+}
+
+.scenario-track__guide--period {
+   border-left: 1px dashed var(--text);
+}
+
+.scenario-track__cursor {
+   border-left: 2px solid var(--goal-gold);
+}
+
+.scenario-track__label {
+   grid-column: 1;
+   align-self: center;
+   text-align: left;
+   font-weight: 600;
+   color: var(--text-h);
+}
+
+.scenario-track__label--goals {
+   font-weight: 400;
+   color: var(--text);
+}
+
+.scenario-track__lane {
+   grid-column: 2;
+   position: relative;
+   overflow: hidden;
+   border-top: 1px solid var(--border);
+   cursor: crosshair;
+}
+
+.scenario-track__lane--home {
+   background: color-mix(in srgb, var(--border) 25%, transparent);
+}
+
+.scenario-track__penalty {
+   position: absolute;
+   top: 3px;
+   bottom: 3px;
+   box-sizing: border-box;
+   padding: 0 7px 0 3px;
+   border: 1px solid var(--team-color);
+   border-radius: 4px;
+   background: color-mix(in srgb, var(--team-color) 40%, transparent);
+   color: var(--text-h);
+   font: inherit;
+   text-align: left;
+   white-space: nowrap;
+   overflow: hidden;
+   cursor: grab;
+   touch-action: none;
+}
+
+.scenario-track__stretch {
+   position: absolute;
+   top: 0;
+   right: 0;
+   bottom: 0;
+   width: 5px;
+   background: var(--team-color);
+   cursor: ew-resize;
+}
+
+.scenario-track__goal {
+   position: absolute;
+   top: 50%;
+   width: 14px;
+   height: 14px;
+   padding: 0;
+   translate: -50% -50%;
+   border: 2px solid var(--bg);
+   border-radius: 50%;
+   background: var(--team-color);
+   cursor: grab;
+   touch-action: none;
+}
+
+.scenario-track__marker--selected {
+   outline: 2px solid var(--goal-gold);
+   outline-offset: 1px;
+   z-index: 1;
+}
