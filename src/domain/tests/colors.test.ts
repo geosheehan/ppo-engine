@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { areSimilar, gameColors, headshotColor, matchupColors, textColorOn } from '@domain/colors';
+import { areSimilar, gameColors, headshotShade, matchupColors, textColorOn } from '@domain/colors';
 import { DEFAULT_TEAM_COLORS } from '@domain/constants';
 
 const RED = '#C8102E';
@@ -20,6 +20,28 @@ describe('areSimilar', () => {
       expect(areSimilar(NAVY, ROYAL)).toBe(true);
    });
 
+   it('treats NSH gold and VGK gold as similar', () => {
+      expect(areSimilar(GOLD, '#B9975B')).toBe(true);
+   });
+
+   it('takes a different cutoff', () => {
+      const looser = { cutoff: 0.15, darkContrast: 1.3 };
+      expect(areSimilar(GOLD, '#B9975B', looser)).toBe(false);
+      expect(matchupColors([GOLD, NAVY], ['#B9975B', BLACK], looser)).toEqual({
+         home: GOLD,
+         away: '#B9975B',
+      });
+   });
+
+   it('treats two dark colors with little contrast as similar', () => {
+      expect(areSimilar(BLACK, '#001425')).toBe(true);
+      expect(areSimilar(BLACK, '#041E42')).toBe(true);
+   });
+
+   it('tells black from a brighter navy', () => {
+      expect(areSimilar(BLACK, NAVY)).toBe(false);
+   });
+
    it('tells red from navy', () => {
       expect(areSimilar(RED, NAVY)).toBe(false);
    });
@@ -30,24 +52,32 @@ describe('matchupColors', () => {
       expect(matchupColors([RED, BLACK], [NAVY, GREEN])).toEqual({ home: RED, away: NAVY });
    });
 
-   it('uses both second colors when the firsts are similar', () => {
-      expect(matchupColors([NAVY, GREEN], [ROYAL, GOLD])).toEqual({ home: GREEN, away: GOLD });
-   });
-
-   it('gives home its first and away its second when the seconds are similar too', () => {
+   it('switches away to its second color on a clash', () => {
+      expect(matchupColors([NAVY, GREEN], [ROYAL, GOLD])).toEqual({ home: NAVY, away: GOLD });
       expect(matchupColors([BLACK, GOLD], [BLACK, GOLD])).toEqual({ home: BLACK, away: GOLD });
+      expect(matchupColors([RED], [RED, NAVY])).toEqual({ home: RED, away: NAVY });
    });
 
-   it('gives home its first and away its second when home has no second', () => {
-      expect(matchupColors([RED], [RED, ORANGE])).toEqual({ home: RED, away: ORANGE });
+   it("moves on to away's third color when its second clashes too", () => {
+      expect(matchupColors([NAVY], [NAVY, ROYAL, GOLD])).toEqual({ home: NAVY, away: GOLD });
    });
 
-   it('gives home its second when away has no second', () => {
+   it("moves on to home's third color when away can't switch", () => {
+      expect(matchupColors([NAVY, ROYAL, RED], [NAVY])).toEqual({ home: RED, away: NAVY });
+   });
+
+   it('switches home when away has no second color', () => {
       expect(matchupColors([NAVY, GREEN], [NAVY])).toEqual({ home: GREEN, away: NAVY });
    });
 
-   it('keeps both firsts when neither team has a second', () => {
+   it("switches home when away's second color clashes too", () => {
+      expect(matchupColors([NAVY, GREEN], [ROYAL, NAVY])).toEqual({ home: GREEN, away: ROYAL });
+   });
+
+   it('keeps both firsts when no switch avoids the clash', () => {
       expect(matchupColors([NAVY], [ROYAL])).toEqual({ home: NAVY, away: ROYAL });
+      expect(matchupColors([NAVY, ROYAL], [NAVY])).toEqual({ home: NAVY, away: NAVY });
+      expect(matchupColors([RED], [RED, ORANGE])).toEqual({ home: RED, away: RED });
    });
 });
 
@@ -69,7 +99,7 @@ describe('gameColors', () => {
    });
 
    it('leaves two known teams to matchupColors', () => {
-      expect(gameColors([NAVY, GREEN], [ROYAL, GOLD])).toEqual({ home: GREEN, away: GOLD });
+      expect(gameColors([NAVY, GREEN], [ROYAL, GOLD])).toEqual({ home: NAVY, away: GOLD });
    });
 });
 
@@ -87,19 +117,16 @@ describe('textColorOn', () => {
    });
 });
 
-describe('headshotColor', () => {
-   it('keeps a dark team color', () => {
-      expect(headshotColor([NAVY, GOLD], NAVY)).toBe(NAVY);
-      expect(headshotColor([RED], RED)).toBe(RED);
+describe('headshotShade', () => {
+   it('fades dark colors toward white', () => {
+      expect(headshotShade(NAVY)).toBe('white');
+      expect(headshotShade(RED)).toBe('white');
+      expect(headshotShade(BLACK)).toBe('white');
    });
 
-   it("swaps a light color for the team's first dark one", () => {
-      expect(headshotColor([GOLD, NAVY], GOLD)).toBe(NAVY);
-      expect(headshotColor(['#B9975B', '#333F48', RED, BLACK], '#B9975B')).toBe('#333F48');
-   });
-
-   it('falls back to the darkest color when every team color is light', () => {
-      expect(headshotColor(['#FFFFFF', GOLD], '#FFFFFF')).toBe(GOLD);
-      expect(headshotColor([], GOLD)).toBe(GOLD);
+   it('fades light colors toward black', () => {
+      expect(headshotShade(GOLD)).toBe('black');
+      expect(headshotShade('#7AB2E0')).toBe('black');
+      expect(headshotShade('#FFFFFF')).toBe('black');
    });
 });

@@ -24,7 +24,7 @@ export const TEAM_COLORS: Partial<Record<string, string[]>> = {
    SJS: ['#006272', '#010101', '#E57200'],
    SEA: ['#001425', '#9CDBD9', '#3B4F5F', '#639FB6', '#C8102E'],
    STL: ['#006AC6', '#FFB81C'],
-   TBL: ['#00205B'],
+   TBL: ['#00205B', '#000000'],
    TOR: ['#00205B'],
    UTA: ['#010101', '#7AB2E0'],
    VAN: ['#00205B', '#046A38'],
@@ -36,7 +36,6 @@ export const TEAM_COLORS: Partial<Record<string, string[]>> = {
 
 // Additional teams scraped from Wikipedia
 // {
-//    "Winnipeg Jets": ,
 //    "Montreal Wanderers": ['#E4002B'],
 //    "Ottawa Senators (1917–1934)": ['#000000','#C8102E'],
 //    "Quebec Bulldogs": ['#0033A0'],

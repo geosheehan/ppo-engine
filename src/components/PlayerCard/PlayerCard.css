@@ -11,16 +11,46 @@
    text-align: right;
 }
 
-.player-card__headshot {
+.player-card__frame {
    flex: none;
+   position: relative;
    width: 52px;
    height: 52px;
+   overflow: hidden;
    border-radius: 6px;
-   background:
-      linear-gradient(to bottom, rgb(255 255 255 / 12.5%) 1%, rgb(255 255 255 / 25%) 60%),
-      var(--team-color, var(--border));
-   outline: 1px solid var(--text-h);
-   outline-offset: -1px;
+   background: var(--team-color, var(--border));
+}
+
+.player-card__frame::after {
+   content: '';
+   position: absolute;
+   inset: 0;
+   border-radius: inherit;
+   box-shadow: inset 0 0 0 1px var(--text-h);
+   pointer-events: none;
+}
+
+.player-card__frame--shade-white {
+   background: linear-gradient(
+      to bottom,
+      var(--team-color) 20%,
+      color-mix(in oklab, var(--team-color), white 50%)
+   );
+}
+
+.player-card__frame--shade-black {
+   background: linear-gradient(
+      to bottom,
+      var(--team-color) 20%,
+      color-mix(in oklab, var(--team-color), black 55%)
+   );
+}
+
+.player-card__headshot {
+   display: block;
+   width: 100%;
+   height: 100%;
+   filter: drop-shadow(0 1px 2px rgb(0 0 0 / 60%));
 }
 
 .player-card__info {
