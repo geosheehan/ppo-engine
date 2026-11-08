@@ -5,7 +5,6 @@
 /* Columns come from the game axis (set inline). The last one is zero wide, so the final line has a column to sit in. */
 .penalty-chart__grid {
    display: grid;
-   grid-template-rows: 1.25rem 1.5rem repeat(2, 1.75rem) 0.75rem repeat(2, 1.75rem);
    font-size: 13px;
 }
 
@@ -42,8 +41,62 @@
    color: var(--text-h);
 }
 
-.penalty-chart__time {
-   grid-row: 2;
+.penalty-chart__time--goal {
+   align-self: start;
+   border-bottom: 2px solid var(--team-color);
+   font-weight: 600;
+   color: var(--text-h);
+}
+
+.penalty-chart__strength {
+   align-self: center;
+   margin: 0 1px;
+   border-radius: 4px;
+   background: color-mix(in srgb, var(--team-color) 40%, transparent);
+   color: var(--text-h);
+   font-weight: 600;
+   line-height: calc(1.75rem - 8px);
+   text-align: center;
+   overflow: hidden;
+   white-space: nowrap;
+   text-overflow: clip;
+}
+
+.penalty-chart__strength--even {
+   background: color-mix(in srgb, var(--text) 25%, transparent);
+}
+
+.penalty-chart__strength--baseline {
+   height: 2px;
+   margin: 0;
+   border-radius: 0;
+   background: color-mix(in srgb, var(--text) 45%, transparent);
+}
+
+.penalty-chart__goal-lane {
+   grid-column: 2 / -1;
+   align-self: center;
+   border-top: 1px solid var(--border);
+}
+
+.penalty-chart__goal-line {
+   z-index: 2;
+   justify-self: start;
+   height: calc(100% - 0.875rem);
+   border-left: 1px dashed var(--team-color);
+}
+
+.penalty-chart__goal {
+   z-index: 3;
+   justify-self: start;
+   align-self: center;
+   width: 10px;
+   height: 10px;
+   translate: -50% 0;
+   border: 2px solid var(--bg);
+   border-radius: 50%;
+   background: var(--team-color);
+   box-sizing: content-box;
 }
 
 .penalty-chart__box {
