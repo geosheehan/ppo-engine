@@ -6,14 +6,14 @@ import { GAMES_PATH, WHAT_IF_PATH } from '@layout/routes';
 const SHOW_GAME_VIEWS = import.meta.env.VITE_GAME_VIEWS === 'true';
 const GameRoutes = SHOW_GAME_VIEWS ? lazy(() => import('@router/GameRoutes')) : undefined;
 const WhatIfView = SHOW_GAME_VIEWS ? lazy(() => import('@views/WhatIfView')) : undefined;
-const DevNav = SHOW_GAME_VIEWS ? lazy(() => import('@components/DevNav')) : undefined;
+const AppNav = SHOW_GAME_VIEWS ? lazy(() => import('@components/AppNav')) : undefined;
 
 function AppRoutes() {
    return (
       <>
-         {DevNav !== undefined && (
+         {AppNav !== undefined && (
             <Suspense>
-               <DevNav />
+               <AppNav />
             </Suspense>
          )}
          <Routes>

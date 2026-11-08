@@ -1,17 +1,8 @@
 .game-picker {
-   position: absolute;
-   top: 8px;
-   left: 32px;
    display: flex;
    align-items: center;
    gap: 8px;
-   font-size: 14px;
    color: var(--text);
-
-   @media (max-width: 768px) {
-      position: static;
-      padding: 12px 20px 0;
-   }
 }
 
 .game-picker__select {
