@@ -23,7 +23,6 @@ function AppNav() {
    const linkGameId = selected?.id ?? games.at(0)?.id;
 
    const links = [
-      { to: '/', label: 'Vote' },
       ...Object.values(GAME_VIEWS).map((gameView) => ({
          to: linkGameId === undefined ? GAMES_PATH : gamePath(linkGameId, gameView),
          label: GAME_VIEW_LABELS[gameView],
@@ -41,7 +40,6 @@ function AppNav() {
                <NavLink
                   key={label}
                   to={to}
-                  end={to === '/'}
                   className={({ isActive }) =>
                      clsx('app-nav__link', isActive && 'app-nav__link--active')
                   }

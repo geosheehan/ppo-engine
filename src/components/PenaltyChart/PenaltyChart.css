@@ -2,7 +2,6 @@
    padding-bottom: 8px;
 }
 
-/* Columns come from the game axis (set inline). The last one is zero wide, so the final line has a column to sit in. */
 .penalty-chart__grid {
    display: grid;
    font-size: 13px;
