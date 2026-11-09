@@ -1,5 +1,5 @@
 import type { PenaltyEngineResult, PowerPlayCount } from '@engine/types';
-import type { Game, Shift } from '@domain/types';
+import type { Game, ScheduleWeek, Shift } from '@domain/types';
 
 export type GameSummary = {
    id: string;
@@ -18,4 +18,5 @@ export type GamePpo = {
 export type PpoApi = {
    listGames: () => Promise<GameSummary[]>;
    getGamePpo: (id: string) => Promise<GamePpo>;
+   getSchedule: (weekStart: string) => Promise<ScheduleWeek>;
 };

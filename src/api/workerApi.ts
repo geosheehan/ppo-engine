@@ -1,7 +1,7 @@
 import defaultGames from '@api/defaultGames.json';
 import { buildGamePpo } from '@api/gamePpo';
 import type { GameSummary, PpoApi } from '@api/types';
-import type { Game, ShiftChart } from '@domain/types';
+import type { Game, ScheduleWeek, ShiftChart } from '@domain/types';
 
 type WorkerGame = { game: Game; shifts: ShiftChart };
 
@@ -28,6 +28,12 @@ export function createWorkerApi(baseUrl: string): PpoApi {
          if (!response.ok) throw new Error(await errorMessage(response));
          const { game, shifts } = (await response.json()) as WorkerGame;
          return buildGamePpo(game, shifts.data);
+      },
+
+      async getSchedule(weekStart) {
+         const response = await fetch(`${baseUrl}/schedule/${encodeURIComponent(weekStart)}`);
+         if (!response.ok) throw new Error(await errorMessage(response));
+         return (await response.json()) as ScheduleWeek;
       },
    };
 }

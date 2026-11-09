@@ -16,6 +16,21 @@ export const GAME_TYPES = {
    PLAYOFFS: 3,
 } as const;
 
+export const GAME_STATES = {
+   FUTURE: 'FUT',
+   PREGAME: 'PRE',
+   LIVE: 'LIVE',
+   CRITICAL: 'CRIT',
+   FINAL: 'FINAL',
+   OFF: 'OFF',
+} as const;
+
+export const GAME_SCHEDULE_STATES = {
+   OK: 'OK',
+   POSTPONED: 'PPD',
+   CANCELLED: 'CNCL',
+} as const;
+
 export const PLAY_TYPES = {
    BLOCKED_SHOT: 'blocked-shot',
    DELAYED_PENALTY: 'delayed-penalty',

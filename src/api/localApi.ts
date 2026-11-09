@@ -1,6 +1,8 @@
 import { buildGamePpo } from '@api/gamePpo';
 import type { GameSummary, PpoApi } from '@api/types';
-import type { Game, ShiftChart } from '@domain/types';
+import { addDays } from '@layout/gamePicker';
+import { GAME_SCHEDULE_STATES, GAME_STATES, GAME_TYPES } from '@domain/constants';
+import type { Game, ScheduleDay, ShiftChart } from '@domain/types';
 
 const LATENCY_MS = 300;
 const FILE_NAME = /^(\d{4})(\d{2})(\d{2})-([A-Z]+)v([A-Z]+)$/;
@@ -32,6 +34,24 @@ for (const [path, load] of Object.entries(gameFiles)) {
    if (summary !== undefined) savedGames.set(summary.id, { summary, load, file });
 }
 
+export function scheduleFromSummaries(summaries: GameSummary[], weekStart: string): ScheduleDay[] {
+   return Array.from({ length: 7 }, (_, offset) => {
+      const date = addDays(weekStart, offset);
+      const games = summaries
+         .filter((summary) => summary.date === date)
+         .map((summary) => ({
+            id: Number(summary.id),
+            gameType: GAME_TYPES.REGULAR_SEASON,
+            gameState: GAME_STATES.OFF,
+            gameScheduleState: GAME_SCHEDULE_STATES.OK,
+            startTimeUTC: `${date}T00:00:00Z`,
+            awayTeam: { abbrev: summary.away },
+            homeTeam: { abbrev: summary.home },
+         }));
+      return { date, games };
+   });
+}
+
 const latency = () => new Promise((resolve) => setTimeout(resolve, LATENCY_MS));
 
 // Dev only (VITE_GAME_SOURCE=local): reads the gitignored games in src/data instead of the Worker.
@@ -52,5 +72,11 @@ export const localApi: PpoApi = {
          latency(),
       ]);
       return buildGamePpo(game, shiftChart?.data ?? []);
+   },
+
+   async getSchedule(weekStart) {
+      await latency();
+      const summaries = [...savedGames.values()].map(({ summary }) => summary);
+      return { weekStart, days: scheduleFromSummaries(summaries, weekStart) };
    },
 };

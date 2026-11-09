@@ -174,6 +174,7 @@ export type ShiftChart = {
 export type Game = {
    season: number;
    gameType: GameType;
+   gameDate: string;
    regPeriods: number;
    homeTeam: Team;
    awayTeam: Team;
@@ -223,4 +224,31 @@ export type GameIndex = {
    teamByHomeOrAway: (side: Side) => Team;
    sideOf: (teamId: number) => Side;
    teamColor: (teamId: number) => string;
+};
+
+export type ScheduleTeam = { abbrev: string; score?: number };
+
+// The Worker's trimmed form of the NHL schedule.
+export type ScheduleGame = {
+   id: number;
+   gameType: GameType;
+   gameState: string;
+   gameScheduleState: string;
+   startTimeUTC: string;
+   awayTeam: ScheduleTeam;
+   homeTeam: ScheduleTeam;
+   lastPeriodType?: PeriodType;
+};
+
+export type ScheduleDay = { date: string; games: ScheduleGame[] };
+
+export type ScheduleWeek = {
+   weekStart: string;
+   previousStartDate?: string;
+   nextStartDate?: string;
+   preSeasonStartDate?: string;
+   regularSeasonStartDate?: string;
+   regularSeasonEndDate?: string;
+   playoffEndDate?: string;
+   days: ScheduleDay[];
 };

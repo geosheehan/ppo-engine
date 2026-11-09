@@ -1,33 +1,32 @@
 import '@components/AppNav/AppNav.css';
-import { use } from 'react';
 import { clsx } from 'clsx';
 import { Link, NavLink, useMatch, useNavigate } from 'react-router';
 import GamePicker from '@components/GamePicker';
-import { ppoApi } from '@api/ppoApi';
+import { useGameSummary } from '@hooks/useGameSummary';
 import {
    GAME_VIEW_LABELS,
    GAME_VIEW_PATTERN,
    GAME_VIEWS,
    gamePath,
-   GAMES_PATH,
    isGameView,
    WHAT_IF_PATH,
 } from '@layout/routes';
 
 function AppNav() {
-   const games = use(ppoApi.listGames());
    const match = useMatch(GAME_VIEW_PATTERN);
+   const atHome = useMatch('/') !== null;
    const navigate = useNavigate();
-   const selected = games.find((game) => game.id === match?.params.gameId);
-   const view = isGameView(match?.params.view) ? match.params.view : undefined;
-   const linkGameId = selected?.id ?? games.at(0)?.id;
+   const gameId = match?.params.gameId;
+   const view = isGameView(match?.params.view) ? match.params.view : GAME_VIEWS.REPLAY;
+   const selected = useGameSummary(gameId);
 
    const links = [
       ...Object.values(GAME_VIEWS).map((gameView) => ({
-         to: linkGameId === undefined ? GAMES_PATH : gamePath(linkGameId, gameView),
+         to: gameId === undefined ? '/' : gamePath(gameId, gameView),
          label: GAME_VIEW_LABELS[gameView],
+         activeHere: gameId !== undefined || gameView === GAME_VIEWS.REPLAY,
       })),
-      { to: WHAT_IF_PATH, label: 'What if' },
+      { to: WHAT_IF_PATH, label: 'What if', activeHere: true },
    ];
 
    return (
@@ -36,24 +35,25 @@ function AppNav() {
             PPO Engine
          </Link>
          <nav className="app-nav__links" aria-label="Pages">
-            {links.map(({ to, label }) => (
+            {links.map(({ to, label, activeHere }) => (
                <NavLink
                   key={label}
                   to={to}
+                  end
                   className={({ isActive }) =>
-                     clsx('app-nav__link', isActive && 'app-nav__link--active')
+                     clsx('app-nav__link', isActive && activeHere && 'app-nav__link--active')
                   }
                >
                   {label}
                </NavLink>
             ))}
          </nav>
-         {selected !== undefined && view !== undefined && (
+         {(atHome || gameId !== undefined) && (
             <div className="app-nav__game">
                <GamePicker
-                  games={games}
-                  selectedId={selected.id}
-                  onSelect={(id) => navigate(gamePath(id, view))}
+                  selected={selected}
+                  autoOpen={atHome}
+                  onPick={(id) => navigate(gamePath(id, view))}
                />
             </div>
          )}

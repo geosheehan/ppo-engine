@@ -232,6 +232,7 @@ export function scenarioGame(events: ScenarioEvent[]): Game {
    return {
       season: 20262027,
       gameType: GAME_TYPES.REGULAR_SEASON,
+      gameDate: '2026-10-01',
       regPeriods: SCENARIO_PERIODS,
       awayTeam: SCENARIO_TEAMS.away,
       homeTeam: SCENARIO_TEAMS.home,

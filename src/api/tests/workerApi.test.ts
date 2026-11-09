@@ -46,3 +46,19 @@ describe('workerApi.getGamePpo', () => {
       await expect(api.getGamePpo('2026020046')).rejects.toThrow('The game server answered 502');
    });
 });
+
+describe('workerApi.getSchedule', () => {
+   it('asks the Worker for the week', async () => {
+      const fetch = respond('{"weekStart":"2026-11-02","days":[]}');
+      await expect(api.getSchedule('2026-11-02')).resolves.toEqual({
+         weekStart: '2026-11-02',
+         days: [],
+      });
+      expect(fetch).toHaveBeenCalledWith('https://worker.test/schedule/2026-11-02');
+   });
+
+   it("rejects with the Worker's error message", async () => {
+      respond('{"error":"Too many new NHL requests right now, try again in a minute"}', 503);
+      await expect(api.getSchedule('2026-11-02')).rejects.toThrow('Too many new NHL requests');
+   });
+});

@@ -7,6 +7,9 @@ const SHOW_GAME_VIEWS = import.meta.env.VITE_GAME_VIEWS === 'true';
 const GameRoutes = SHOW_GAME_VIEWS ? lazy(() => import('@router/GameRoutes')) : undefined;
 const WhatIfView = SHOW_GAME_VIEWS ? lazy(() => import('@views/WhatIfView')) : undefined;
 const AppNav = SHOW_GAME_VIEWS ? lazy(() => import('@components/AppNav')) : undefined;
+const EmptyRink = SHOW_GAME_VIEWS
+   ? lazy(() => import('@views/ReplayView/ReplayScreen'))
+   : undefined;
 
 function AppRoutes() {
    return (
@@ -17,9 +20,16 @@ function AppRoutes() {
             </Suspense>
          )}
          <Routes>
-            {SHOW_GAME_VIEWS ? (
+            {EmptyRink !== undefined ? (
                <>
-                  <Route index element={<Navigate to={GAMES_PATH} replace />} />
+                  <Route
+                     index
+                     element={
+                        <Suspense>
+                           <EmptyRink emptyTitle="Pick a game" />
+                        </Suspense>
+                     }
+                  />
                   <Route path={VOTE_PATH} element={<HeadshotDebug />} />
                </>
             ) : (

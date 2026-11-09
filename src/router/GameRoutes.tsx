@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { Route, Routes } from 'react-router';
+import { Navigate, Route, Routes } from 'react-router';
 import AnalysisView from '@views/AnalysisView';
 import GameLayout from '@views/GameLayout';
 import ReplayView from '@views/ReplayView';
@@ -10,7 +10,7 @@ function GameRoutes() {
    return (
       <Suspense fallback={<ReplayScreen />}>
          <Routes>
-            <Route index element={<GameLayout />} />
+            <Route index element={<Navigate to="/" replace />} />
             <Route path=":gameId" element={<GameLayout />}>
                <Route path={GAME_VIEWS.REPLAY} element={<ReplayView />} />
                <Route path={GAME_VIEWS.ANALYSIS} element={<AnalysisView />} />

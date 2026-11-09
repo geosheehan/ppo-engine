@@ -1,29 +1,55 @@
 import '@components/GamePicker/GamePicker.css';
+import { useEffect, useId, useRef, useState } from 'react';
+import GameWeek from '@components/GameWeek';
 import type { GameSummary } from '@api/types';
-import { gameLabel } from '@layout/gameLabel';
 
 type GamePickerProps = {
-   games: GameSummary[];
-   selectedId: string;
-   onSelect: (id: string) => void;
+   selected?: GameSummary;
+   autoOpen: boolean;
+   onPick: (id: string) => void;
 };
 
-function GamePicker({ games, selectedId, onSelect }: GamePickerProps) {
+function GamePicker({ selected, autoOpen, onPick }: GamePickerProps) {
+   const popoverId = useId();
+   const popoverRef = useRef<HTMLDivElement>(null);
+   const [open, setOpen] = useState(false);
+
+   useEffect(() => {
+      const popover = popoverRef.current;
+      if (autoOpen && popover !== null && !popover.matches(':popover-open')) popover.showPopover();
+   }, [autoOpen]);
+
+   const pick = (id: string) => {
+      popoverRef.current?.hidePopover();
+      onPick(id);
+   };
+
    return (
-      <label className="game-picker">
-         Game
-         <select
-            className="game-picker__select"
-            value={selectedId}
-            onChange={(event) => onSelect(event.target.value)}
+      <>
+         <button type="button" className="game-picker__trigger" popoverTarget={popoverId}>
+            Game
+            {selected !== undefined && (
+               <span className="game-picker__current">
+                  {' · '}
+                  {selected.away} @ {selected.home}
+               </span>
+            )}
+            <span aria-hidden="true">▾</span>
+         </button>
+         <div
+            ref={popoverRef}
+            id={popoverId}
+            popover="auto"
+            role="dialog"
+            aria-label="Pick a game"
+            className="game-picker"
+            onToggle={(event) => setOpen(event.newState === 'open')}
          >
-            {games.map((game) => (
-               <option key={game.id} value={game.id}>
-                  {gameLabel(game)}
-               </option>
-            ))}
-         </select>
-      </label>
+            {open && (
+               <GameWeek initialDate={selected?.date} selectedId={selected?.id} onPick={pick} />
+            )}
+         </div>
+      </>
    );
 }
 

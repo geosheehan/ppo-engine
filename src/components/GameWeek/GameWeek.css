@@ -1,0 +1,160 @@
+.game-week {
+   display: flex;
+   flex-direction: column;
+   gap: 16px;
+   text-align: left;
+}
+
+.game-week__header {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   gap: 16px;
+}
+
+.game-week__range {
+   min-width: 12ch;
+   margin: 0;
+   font-size: 18px;
+   text-align: center;
+}
+
+.game-week__arrow {
+   width: 32px;
+   height: 32px;
+   border: 1px solid var(--border);
+   border-radius: 6px;
+   background: transparent;
+   color: var(--text-h);
+   font: inherit;
+   font-size: 20px;
+   line-height: 1;
+   cursor: pointer;
+
+   &:hover {
+      border-color: var(--text);
+   }
+}
+
+.game-week__days {
+   display: grid;
+   grid-template-columns: repeat(7, minmax(0, 1fr));
+   gap: 6px;
+   margin: 0;
+   padding: 0;
+   list-style: none;
+}
+
+.game-week__day {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   width: 100%;
+   padding: 6px 2px;
+   border: 1px solid var(--border);
+   border-radius: 6px;
+   background: transparent;
+   color: var(--text);
+   font: inherit;
+   font-size: 13px;
+   line-height: 1.3;
+   cursor: pointer;
+
+   &:hover {
+      border-color: var(--text);
+   }
+}
+
+.game-week__day--selected {
+   border-color: var(--text-h);
+   background: var(--text-h);
+   color: var(--bg);
+
+   &:hover {
+      border-color: var(--text-h);
+   }
+}
+
+.game-week__day--empty:not(.game-week__day--selected) {
+   opacity: 0.55;
+}
+
+.game-week__weekday {
+   font-weight: 600;
+}
+
+.game-week__count {
+   font-size: 12px;
+
+   @media (max-width: 768px) {
+      display: none;
+   }
+}
+
+.game-week__message {
+   margin: 8px 0;
+   text-align: center;
+}
+
+.game-week__cards {
+   display: grid;
+   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+   gap: 8px;
+   margin: 0;
+   padding: 0;
+   list-style: none;
+}
+
+.game-card {
+   display: flex;
+   flex-direction: column;
+   gap: 4px;
+   width: 100%;
+   padding: 10px 12px;
+   border: 1px solid var(--border);
+   border-radius: 8px;
+   background: transparent;
+   color: var(--text-h);
+   font: inherit;
+   font-size: 15px;
+   text-align: left;
+   cursor: pointer;
+
+   &:hover:enabled {
+      border-color: var(--text);
+   }
+
+   &:disabled {
+      color: var(--text);
+      opacity: 0.6;
+      cursor: default;
+   }
+}
+
+.game-card--selected {
+   border-color: var(--text-h);
+   box-shadow: inset 0 0 0 1px var(--text-h);
+}
+
+.game-card__team {
+   display: flex;
+   align-items: center;
+   gap: 8px;
+   padding-left: 8px;
+   border-left: 4px solid var(--team-color);
+}
+
+.game-card__team--won {
+   font-weight: 700;
+}
+
+.game-card__score {
+   margin-left: auto;
+   font-variant-numeric: tabular-nums;
+}
+
+.game-card__status {
+   margin-top: 2px;
+   color: var(--text);
+   font-size: 13px;
+}

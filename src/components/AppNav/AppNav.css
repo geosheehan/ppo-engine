@@ -8,6 +8,7 @@
    padding: 0 32px;
    border-bottom: 1px solid var(--border);
    font-size: 15px;
+   anchor-name: --app-nav;
 
    @media (max-width: 768px) {
       column-gap: 16px;

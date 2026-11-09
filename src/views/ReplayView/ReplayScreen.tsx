@@ -18,13 +18,14 @@ import type { Side } from '@domain/types';
 type ReplayScreenProps = {
    game?: GameContextValue;
    replay?: Replay;
+   emptyTitle?: string;
 };
 
 const AWAY_HOME: [Side, Side] = [SIDES.AWAY, SIDES.HOME];
 const NEUTRAL_END = 'var(--border)';
 
 // Without a game and replay, every part draws its empty state. That is the page shown while a game loads.
-function ReplayScreen({ game, replay }: ReplayScreenProps) {
+function ReplayScreen({ game, replay, emptyTitle = 'Loading game' }: ReplayScreenProps) {
    const sides = replay?.sides ?? AWAY_HOME;
    const [left, right] = sides;
    const play = replay?.play;
@@ -57,7 +58,7 @@ function ReplayScreen({ game, replay }: ReplayScreenProps) {
          }}
       >
          <title>
-            {game ? `${game.game.awayTeam.abbrev} @ ${game.game.homeTeam.abbrev}` : 'Loading game'}
+            {game ? `${game.game.awayTeam.abbrev} @ ${game.game.homeTeam.abbrev}` : emptyTitle}
          </title>
          <header className="replay__header">
             <Scoreboard

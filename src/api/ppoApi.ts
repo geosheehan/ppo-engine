@@ -14,4 +14,5 @@ async function loadApi(): Promise<PpoApi> {
 export const ppoApi = withCache({
    listGames: async () => (await loadApi()).listGames(),
    getGamePpo: async (id) => (await loadApi()).getGamePpo(id),
+   getSchedule: async (weekStart) => (await loadApi()).getSchedule(weekStart),
 });
