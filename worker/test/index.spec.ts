@@ -1,24 +1,36 @@
-import worker from '../src/index';
-import { createExecutionContext, env, SELF, waitOnExecutionContext } from 'cloudflare:test';
+import { SELF } from 'cloudflare:test';
 import { describe, expect, it } from 'vitest';
 
-// For now, you'll need to do something like this to get a correctly-typed
-// `Request` to pass to `worker.fetch()`.
-const IncomingRequest = Request<unknown, IncomingRequestCfProperties>;
+const get = (path: string, init?: RequestInit) => SELF.fetch(`https://example.com${path}`, init);
 
-describe('Hello World worker', () => {
-   it('responds with Hello World! (unit style)', async () => {
-      const request = new IncomingRequest('http://example.com');
-      // Create an empty context to pass to `worker.fetch()`.
-      const ctx = createExecutionContext();
-      const response = await worker.fetch(request, env, ctx);
-      // Wait for all `Promise`s passed to `ctx.waitUntil()` to settle before running test assertions
-      await waitOnExecutionContext(ctx);
-      expect(await response.text()).toMatchInlineSnapshot(`"Hello World!"`);
+describe('GET /game/:id', () => {
+   it('accepts a regular season game', async () => {
+      const response = await get('/game/2026020046');
+      expect(response.status).toBe(200);
+      expect(await response.json()).toEqual({ id: '2026020046' });
    });
 
-   it('responds with Hello World! (integration style)', async () => {
-      const response = await SELF.fetch('https://example.com');
-      expect(await response.text()).toMatchInlineSnapshot(`"Hello World!"`);
+   it.each(['2026010046', '2025030411'])('accepts preseason and playoff game %s', async (id) => {
+      expect((await get(`/game/${id}`)).status).toBe(200);
+   });
+
+   it.each(['abc', '202602004', '20260200466', '2026000046', '2026040001'])(
+      'rejects game ID %s',
+      async (id) => {
+         expect((await get(`/game/${id}`)).status).toBe(400);
+      },
+   );
+
+   it.each(['/', '/game', '/game/', '/game/2026020046/extra', '/games/2026020046'])(
+      'has nothing at %s',
+      async (path) => {
+         expect((await get(path)).status).toBe(404);
+      },
+   );
+
+   it('only allows GET', async () => {
+      const response = await get('/game/2026020046', { method: 'POST' });
+      expect(response.status).toBe(405);
+      expect(response.headers.get('Allow')).toBe('GET');
    });
 });

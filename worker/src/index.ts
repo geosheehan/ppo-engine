@@ -1,18 +1,24 @@
-/**
- * Welcome to Cloudflare Workers! This is your first worker.
- *
- * - Run `npm run dev` in your terminal to start a development server
- * - Open a browser tab at http://localhost:8787/ to see your worker in action
- * - Run `npm run deploy` to publish your worker
- *
- * Bind resources to your worker in `wrangler.jsonc`. After adding bindings, a type definition for the
- * `Env` object can be regenerated with `npm run cf-typegen`.
- *
- * Learn more at https://developers.cloudflare.com/workers/
- */
+const GAME_PATH = /^\/game\/([^/]+)$/;
+// Season start year, game type (01 preseason, 02 regular season, 03 playoffs), game number.
+const GAME_ID = /^\d{4}0[123]\d{4}$/;
+
+const json = (body: unknown, status = 200, headers?: HeadersInit) =>
+   Response.json(body, { status, headers });
 
 export default {
-   async fetch(request, env, ctx): Promise<Response> {
-      return new Response('Hello World!');
+   async fetch(request): Promise<Response> {
+      if (request.method !== 'GET') {
+         return json({ error: 'Method not allowed' }, 405, { Allow: 'GET' });
+      }
+
+      const match = GAME_PATH.exec(new URL(request.url).pathname);
+      if (match === null) return json({ error: 'Not found' }, 404);
+
+      const [, id] = match;
+      if (!GAME_ID.test(id)) {
+         return json({ error: `Not a preseason, regular season or playoff game ID: ${id}` }, 400);
+      }
+
+      return json({ id });
    },
 } satisfies ExportedHandler<Env>;
