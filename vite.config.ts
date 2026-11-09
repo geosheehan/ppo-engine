@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import type { Plugin } from 'vite';
+import { configDefaults } from 'vitest/config';
 
 // GitHub Pages has no SPA fallback but serves 404.html for unknown paths, so a copy of index.html lets the router
 // handle deep links.
@@ -21,5 +22,8 @@ export default defineConfig(({ command, isPreview }) => ({
    plugins: [react(), pagesFallback()],
    resolve: {
       tsconfigPaths: true,
+   },
+   test: {
+      exclude: [...configDefaults.exclude, 'worker/**'],
    },
 }));
