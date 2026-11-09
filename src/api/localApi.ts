@@ -1,57 +1,56 @@
-import { loadHeadshot } from '@api/headshots';
+import { buildGamePpo } from '@api/gamePpo';
 import type { GameSummary, PpoApi } from '@api/types';
-import { runPenaltyEngine } from '@engine/penaltyEngine';
-import { countPowerPlays } from '@engine/powerPlayCounter';
-import { indexGame } from '@domain/game';
 import type { Game, ShiftChart } from '@domain/types';
 
 const LATENCY_MS = 300;
-const GAME_ID = /^(\d{4})(\d{2})(\d{2})-([A-Z]+)v([A-Z]+)$/;
+const FILE_NAME = /^(\d{4})(\d{2})(\d{2})-([A-Z]+)v([A-Z]+)$/;
 
-const fileId = (path: string): string =>
+const fileName = (path: string): string =>
    path.slice(path.lastIndexOf('/') + 1).replace(/(-shifts)?\.json$/, '');
 
-const byId = <T>(files: Record<string, () => Promise<T>>) =>
-   new Map(Object.entries(files).map(([path, load]) => [fileId(path), load]));
-
-// Not eager: each file becomes its own chunk, loaded only when its game is asked for.
-const gameFiles = byId(import.meta.glob<Game>('@data/games/*.json', { import: 'default' }));
-const shiftFiles = byId(
-   import.meta.glob<ShiftChart>('@data/shifts/*-shifts.json', { import: 'default' }),
+const nhlIds = import.meta.glob<number>('@data/games/*.json', { import: 'id', eager: true });
+const gameFiles = import.meta.glob<Game>('@data/games/*.json', { import: 'default' });
+const shiftFiles = new Map(
+   Object.entries(
+      import.meta.glob<ShiftChart>('@data/shifts/*-shifts.json', { import: 'default' }),
+   ).map(([path, load]) => [fileName(path), load]),
 );
 
-const latency = () => new Promise((resolve) => setTimeout(resolve, LATENCY_MS));
+type SavedGame = { summary: GameSummary; load: () => Promise<Game>; file: string };
 
-export function gameSummaryFromId(id: string): GameSummary | undefined {
-   const match = GAME_ID.exec(id);
+export function gameSummaryFromFile(file: string, id: string): GameSummary | undefined {
+   const match = FILE_NAME.exec(file);
    if (match === null) return undefined;
    const [, year, month, day, home, away] = match;
    return { id, date: `${year}-${month}-${day}`, home, away };
 }
 
+const savedGames = new Map<string, SavedGame>();
+for (const [path, load] of Object.entries(gameFiles)) {
+   const file = fileName(path);
+   const summary = gameSummaryFromFile(file, String(nhlIds[path]));
+   if (summary !== undefined) savedGames.set(summary.id, { summary, load, file });
+}
+
+const latency = () => new Promise((resolve) => setTimeout(resolve, LATENCY_MS));
+
+// Dev only (VITE_GAME_SOURCE=local): reads the gitignored games in src/data instead of the Worker.
 export const localApi: PpoApi = {
    async listGames() {
       await latency();
-      return [...gameFiles.keys()]
-         .map((id) => gameSummaryFromId(id))
-         .filter((summary) => summary !== undefined)
+      return [...savedGames.values()]
+         .map(({ summary }) => summary)
          .toSorted((a, b) => b.date.localeCompare(a.date));
    },
 
    async getGamePpo(id) {
-      const loadGame = gameFiles.get(id);
-      if (loadGame === undefined) throw new Error(`No saved game ${id}`);
-      const loadShifts = shiftFiles.get(id);
-      const [game, shiftChart] = await Promise.all([loadGame(), loadShifts?.(), latency()]);
-      // Wait for every headshot so cards never flash the placeholder; a failed one doesn't block.
-      await Promise.all(game.rosterSpots.map((player) => loadHeadshot(player.headshot)));
-      const shifts = shiftChart?.data ?? [];
-      const penaltyResult = runPenaltyEngine(indexGame(game, shifts));
-      return {
-         game,
-         shifts,
-         penaltyResult,
-         powerPlays: countPowerPlays(penaltyResult.timeline),
-      };
+      const saved = savedGames.get(id);
+      if (saved === undefined) throw new Error(`No saved game ${id}`);
+      const [game, shiftChart] = await Promise.all([
+         saved.load(),
+         shiftFiles.get(saved.file)?.(),
+         latency(),
+      ]);
+      return buildGamePpo(game, shiftChart?.data ?? []);
    },
 };

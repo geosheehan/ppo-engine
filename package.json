@@ -12,7 +12,8 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:run": "vitest run",
-    "prepare": "husky"
+    "prepare": "husky",
+    "dev:worker": "vite --mode worker"
   },
   "dependencies": {
     "clsx": "^2.1.1",
