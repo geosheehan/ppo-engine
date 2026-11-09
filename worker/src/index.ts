@@ -1,4 +1,8 @@
+import { fetchFromNhl, loadOnce, NhlError } from './nhl';
+import { handleSchedule } from './schedule';
+
 const GAME_PATH = /^\/game\/([^/]+)$/;
+const SCHEDULE_PATH = /^\/schedule\/([^/]+)$/;
 // Season start year, game type (01 preseason, 02 regular season, 03 playoffs), game number.
 const GAME_ID = /^\d{4}0[123]\d{4}$/;
 
@@ -6,8 +10,6 @@ const FINISHED = /"gameState"\s*:\s*"(OFF|FINAL)"/;
 const SHIFT_TOTAL = /"total"\s*:\s*(\d+)\s*}\s*$/;
 
 const DAY_SECONDS = 24 * 60 * 60;
-const NHL_TIMEOUT_MS = 10_000;
-const USER_AGENT = 'ppo-engine';
 
 const allowedOrigins = (env: Env) =>
    new Set(env.ALLOWED_ORIGINS.split(',').map((origin) => origin.trim()));
@@ -30,38 +32,13 @@ const gameResponse = (body: BodyInit) =>
 // The v1 prefix lets a future change to the stored shape use fresh keys instead of migrating old ones.
 const gameKey = (id: string) => `v1:${id}`;
 
-class NhlError extends Error {
-   constructor(
-      readonly status: number,
-      message: string,
-   ) {
-      super(message);
-   }
-}
-
-async function fetchFromNhl(url: string, env: Env): Promise<string> {
-   const { success } = await env.TO_NHL.limit({ key: 'nhl' });
-   if (!success) throw new NhlError(503, 'Too many new games right now, try again in a minute');
-
-   let response: Response;
-   try {
-      response = await fetch(url, {
-         headers: { 'User-Agent': USER_AGENT },
-         signal: AbortSignal.timeout(NHL_TIMEOUT_MS),
-      });
-   } catch {
-      throw new NhlError(502, 'The NHL did not answer');
-   }
-   if (response.status === 404) throw new NhlError(404, 'The NHL has no such game');
-   if (!response.ok) throw new NhlError(502, `The NHL answered ${response.status}`);
-   return response.text();
-}
+const NO_SUCH_GAME = 'The NHL has no such game';
 
 async function loadGame(id: string, env: Env): Promise<string> {
-   const playByPlay = await fetchFromNhl(playByPlayUrl(id), env);
+   const playByPlay = await fetchFromNhl(playByPlayUrl(id), env, NO_SUCH_GAME);
    if (!FINISHED.test(playByPlay)) throw new NhlError(409, `Game ${id} has not finished`);
 
-   const shifts = await fetchFromNhl(shiftsUrl(id), env);
+   const shifts = await fetchFromNhl(shiftsUrl(id), env, NO_SUCH_GAME);
    const total = SHIFT_TOTAL.exec(shifts)?.[1];
    if (total === undefined || Number(total) === 0) {
       throw new NhlError(502, `The NHL has no shifts for game ${id} yet`);
@@ -76,17 +53,15 @@ async function loadGame(id: string, env: Env): Promise<string> {
    return body;
 }
 
-const loading = new Map<string, Promise<string>>();
-
-function loadGameOnce(id: string, env: Env, ctx: ExecutionContext): Promise<string> {
-   let load = loading.get(id);
-   if (load === undefined) {
-      load = loadGame(id, env).finally(() => loading.delete(id));
-      loading.set(id, load);
-      // The load runs in the first request's context; keep it alive if that visitor leaves.
-      ctx.waitUntil(load.catch(() => undefined));
+async function handleGame(id: string, env: Env, ctx: ExecutionContext): Promise<Response> {
+   if (!GAME_ID.test(id)) {
+      return json({ error: `Not a preseason, regular season or playoff game ID: ${id}` }, 400);
    }
-   return load;
+
+   const stored = await env.GAMES.get(gameKey(id), { type: 'stream', cacheTtl: DAY_SECONDS });
+   if (stored !== null) return gameResponse(stored);
+
+   return gameResponse(await loadOnce(gameKey(id), ctx, () => loadGame(id, env)));
 }
 
 async function handleGet(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
@@ -95,24 +70,18 @@ async function handleGet(request: Request, env: Env, ctx: ExecutionContext): Pro
    const { success } = await env.PER_VISITOR.limit({ key: visitor });
    if (!success) return json({ error: 'Too many requests' }, 429, { 'Retry-After': '60' });
 
-   const match = GAME_PATH.exec(new URL(request.url).pathname);
-   if (match === null) return json({ error: 'Not found' }, 404);
-
-   const [, id] = match;
-   if (!GAME_ID.test(id)) {
-      return json({ error: `Not a preseason, regular season or playoff game ID: ${id}` }, 400);
-   }
-
-   const stored = await env.GAMES.get(gameKey(id), { type: 'stream', cacheTtl: DAY_SECONDS });
-   if (stored !== null) return gameResponse(stored);
-
+   const { pathname } = new URL(request.url);
+   const game = GAME_PATH.exec(pathname);
+   const schedule = SCHEDULE_PATH.exec(pathname);
    try {
-      return gameResponse(await loadGameOnce(id, env, ctx));
+      if (game !== null) return await handleGame(game[1], env, ctx);
+      if (schedule !== null) return await handleSchedule(schedule[1], env, ctx);
    } catch (error) {
       if (!(error instanceof NhlError)) throw error;
       const headers = error.status === 503 ? { 'Retry-After': '60' } : undefined;
       return json({ error: error.message }, error.status, headers);
    }
+   return json({ error: 'Not found' }, 404);
 }
 
 function withCors(request: Request, env: Env, response: Response): Response {

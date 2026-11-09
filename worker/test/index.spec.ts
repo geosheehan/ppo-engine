@@ -9,7 +9,9 @@ beforeAll(async () => {
    await Promise.all(STORED.map((id) => env.GAMES.put(`v1:${id}`, storedBody(id))));
 });
 
-type NhlRoutes = Partial<Record<'playByPlay' | 'shifts', () => Response | Promise<Response>>>;
+type NhlRoutes = Partial<
+   Record<'playByPlay' | 'shifts' | 'schedule', () => Response | Promise<Response>>
+>;
 let nhlRoutes: NhlRoutes = {};
 const nhlRequests: Request[] = [];
 
@@ -23,7 +25,9 @@ beforeEach(() => {
          ? nhlRoutes.playByPlay
          : request.url.includes('/shiftcharts')
            ? nhlRoutes.shifts
-           : undefined;
+           : request.url.includes('/schedule/')
+             ? nhlRoutes.schedule
+             : undefined;
       if (route === undefined) throw new Error(`Unexpected request: ${request.url}`);
       return route();
    });
@@ -287,5 +291,95 @@ describe('loading a game from the NHL', () => {
          expect((await get('/game/2026020109')).status).toBe(200);
          expect(nhlRequests).toHaveLength(3);
       });
+   });
+});
+
+describe('GET /schedule/:date', () => {
+   const game = (id: number, gameState: string, startTimeUTC: string) => ({
+      id,
+      gameType: 2,
+      gameState,
+      gameScheduleState: 'OK',
+      startTimeUTC,
+      tvBroadcasts: [{ network: 'TV' }],
+      awayTeam: { abbrev: 'AAA', score: 1, odds: [{ value: '+120' }] },
+      homeTeam: { abbrev: 'BBB', score: 2, odds: [{ value: '-140' }] },
+   });
+   const nhlWeek = (games: unknown[]) =>
+      JSON.stringify({
+         previousStartDate: '2025-10-27',
+         nextStartDate: '2025-11-10',
+         oddsPartners: [{ name: 'Bookmaker' }],
+         gameWeek: [{ date: '2025-11-03', games }],
+      });
+   const settledWeek = nhlWeek([game(2025020200, 'OFF', '2025-11-04T00:00:00Z')]);
+
+   let scheduleNhlCap: MockInstance<RateLimit['limit']>;
+   beforeEach(() => {
+      scheduleNhlCap = vi.spyOn(env.TO_NHL, 'limit').mockResolvedValue({ success: true });
+   });
+
+   it('fetches the Monday of the week, trims it, stores it, and serves it', async () => {
+      nhlRoutes = { schedule: () => new Response(settledWeek) };
+      const response = await get('/schedule/2025-11-05');
+      expect(response.status).toBe(200);
+      expect(response.headers.get('Cache-Control')).toBe('public, max-age=86400');
+      expect(nhlRequests.map((request) => request.url)).toEqual([
+         'https://api-web.nhle.com/v1/schedule/2025-11-03',
+      ]);
+      const week = await response.json<Record<string, unknown>>();
+      expect(week).toMatchObject({ weekStart: '2025-11-03', previousStartDate: '2025-10-27' });
+      expect(JSON.stringify(week)).not.toMatch(/odds|Bookmaker|tvBroadcasts/);
+
+      const stored = await env.GAMES.getWithMetadata('schedule:v1:2025-11-03');
+      expect(stored.value).toBe(JSON.stringify(week));
+   });
+
+   it('serves any day of a stored week without asking the NHL', async () => {
+      nhlRoutes = { schedule: () => new Response(settledWeek) };
+      await get('/schedule/2025-11-03');
+      nhlRequests.length = 0;
+      const response = await get('/schedule/2025-11-09');
+      expect(response.status).toBe(200);
+      expect(await response.json()).toMatchObject({ weekStart: '2025-11-03' });
+      expect(nhlRequests).toHaveLength(0);
+   });
+
+   it('keeps a week with unfinished games for a short time', async () => {
+      const soon = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+      nhlRoutes = { schedule: () => new Response(nhlWeek([game(2025020300, 'FUT', soon)])) };
+      const response = await get('/schedule/2025-12-01');
+      expect(response.headers.get('Cache-Control')).toBe('public, max-age=300');
+      const stored = await env.GAMES.getWithMetadata('schedule:v1:2025-12-01');
+      expect(stored.metadata).toEqual({ lifetime: 300 });
+
+      nhlRequests.length = 0;
+      const again = await get('/schedule/2025-12-02');
+      expect(again.headers.get('Cache-Control')).toBe('public, max-age=300');
+      expect(nhlRequests).toHaveLength(0);
+   });
+
+   it.each(['2025-02-30', 'yesterday', '1900-01-01'])('answers 400 for %s', async (date) => {
+      const response = await get(`/schedule/${date}`);
+      expect(response.status).toBe(400);
+      expect(nhlRequests).toHaveLength(0);
+   });
+
+   it('answers 502 and stores nothing when the NHL sends something unexpected', async () => {
+      nhlRoutes = { schedule: () => new Response('{"weeks":[]}') };
+      const response = await get('/schedule/2025-12-08');
+      expect(response.status).toBe(502);
+      expect(await response.json()).toEqual({
+         error: 'The NHL sent a schedule this app does not recognize',
+      });
+      expect(await env.GAMES.get('schedule:v1:2025-12-08')).toBeNull();
+   });
+
+   it('answers 503 without asking the NHL once the NHL cap is reached', async () => {
+      scheduleNhlCap.mockResolvedValue({ success: false });
+      const response = await get('/schedule/2025-12-15');
+      expect(response.status).toBe(503);
+      expect(response.headers.get('Retry-After')).toBe('60');
+      expect(nhlRequests).toHaveLength(0);
    });
 });
