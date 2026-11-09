@@ -24,16 +24,7 @@ jobs:
               node-version: 24
               cache: npm
          - run: npm ci
-         - uses: actions/cache@v4
-           with:
-              path: |
-                 src/data/games
-                 src/data/shifts
-              key: default-games-${{ hashFiles('scripts/fetch-default-games.mjs') }}
-         - run: node scripts/fetch-default-games.mjs
          - run: npm run build
-           env:
-              VITE_GAME_VIEWS: true
          - uses: actions/configure-pages@v5
          - uses: actions/upload-pages-artifact@v3
            with:
