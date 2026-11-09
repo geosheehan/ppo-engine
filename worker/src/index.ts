@@ -9,6 +9,9 @@ const DAY_SECONDS = 24 * 60 * 60;
 const NHL_TIMEOUT_MS = 10_000;
 const USER_AGENT = 'ppo-engine';
 
+const allowedOrigins = (env: Env) =>
+   new Set(env.ALLOWED_ORIGINS.split(',').map((origin) => origin.trim()));
+
 const playByPlayUrl = (id: string) => `https://api-web.nhle.com/v1/gamecenter/${id}/play-by-play`;
 const shiftsUrl = (id: string) =>
    `https://api.nhle.com/stats/rest/en/shiftcharts?cayenneExp=gameId=${id}`;
@@ -73,34 +76,65 @@ async function loadGame(id: string, env: Env): Promise<Response> {
    return gameResponse(body);
 }
 
+async function handleGet(request: Request, env: Env): Promise<Response> {
+   // Counted before routing so bad paths and IDs can't be probed for free.
+   const visitor = request.headers.get('CF-Connecting-IP') ?? 'unknown';
+   const { success } = await env.PER_VISITOR.limit({ key: visitor });
+   if (!success) return json({ error: 'Too many requests' }, 429, { 'Retry-After': '60' });
+
+   const match = GAME_PATH.exec(new URL(request.url).pathname);
+   if (match === null) return json({ error: 'Not found' }, 404);
+
+   const [, id] = match;
+   if (!GAME_ID.test(id)) {
+      return json({ error: `Not a preseason, regular season or playoff game ID: ${id}` }, 400);
+   }
+
+   const stored = await env.GAMES.get(gameKey(id), { type: 'stream', cacheTtl: DAY_SECONDS });
+   if (stored !== null) return gameResponse(stored);
+
+   try {
+      return await loadGame(id, env);
+   } catch (error) {
+      if (!(error instanceof NhlError)) throw error;
+      const headers = error.status === 503 ? { 'Retry-After': '60' } : undefined;
+      return json({ error: error.message }, error.status, headers);
+   }
+}
+
+function withCors(request: Request, env: Env, response: Response): Response {
+   const withHeaders = new Response(response.body, response);
+   const origin = request.headers.get('Origin');
+   if (origin !== null && allowedOrigins(env).has(origin)) {
+      withHeaders.headers.set('Access-Control-Allow-Origin', origin);
+      withHeaders.headers.set('Access-Control-Expose-Headers', 'Retry-After');
+   }
+   withHeaders.headers.append('Vary', 'Origin');
+   return withHeaders;
+}
+
 export default {
    async fetch(request, env): Promise<Response> {
+      if (request.method === 'OPTIONS') {
+         return withCors(
+            request,
+            env,
+            new Response(null, {
+               status: 204,
+               headers: {
+                  'Access-Control-Allow-Methods': 'GET',
+                  'Access-Control-Max-Age': '86400',
+               },
+            }),
+         );
+      }
       if (request.method !== 'GET') {
-         return json({ error: 'Method not allowed' }, 405, { Allow: 'GET' });
+         return withCors(
+            request,
+            env,
+            json({ error: 'Method not allowed' }, 405, { Allow: 'GET, OPTIONS' }),
+         );
       }
-
-      // Counted before routing so bad paths and IDs can't be probed for free.
-      const visitor = request.headers.get('CF-Connecting-IP') ?? 'unknown';
-      const { success } = await env.PER_VISITOR.limit({ key: visitor });
-      if (!success) return json({ error: 'Too many requests' }, 429, { 'Retry-After': '60' });
-
-      const match = GAME_PATH.exec(new URL(request.url).pathname);
-      if (match === null) return json({ error: 'Not found' }, 404);
-
-      const [, id] = match;
-      if (!GAME_ID.test(id)) {
-         return json({ error: `Not a preseason, regular season or playoff game ID: ${id}` }, 400);
-      }
-
-      const stored = await env.GAMES.get(gameKey(id), { type: 'stream', cacheTtl: DAY_SECONDS });
-      if (stored !== null) return gameResponse(stored);
-
-      try {
-         return await loadGame(id, env);
-      } catch (error) {
-         if (!(error instanceof NhlError)) throw error;
-         const headers = error.status === 503 ? { 'Retry-After': '60' } : undefined;
-         return json({ error: error.message }, error.status, headers);
-      }
+      return withCors(request, env, await handleGet(request, env));
    },
 } satisfies ExportedHandler<Env>;

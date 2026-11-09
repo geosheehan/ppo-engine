@@ -69,7 +69,52 @@ describe('GET /game/:id', () => {
    it('only allows GET', async () => {
       const response = await get('/game/2026020046', { method: 'POST' });
       expect(response.status).toBe(405);
-      expect(response.headers.get('Allow')).toBe('GET');
+      expect(response.headers.get('Allow')).toBe('GET, OPTIONS');
+   });
+});
+
+describe('CORS', () => {
+   const fromOrigin = (origin: string, path = '/game/2026020046', method = 'GET') =>
+      get(path, { method, headers: { Origin: origin } });
+
+   it.each(['https://geosheehan.github.io', 'http://localhost:5173', 'http://localhost:4173'])(
+      'lets %s read responses',
+      async (origin) => {
+         const response = await fromOrigin(origin);
+         expect(response.status).toBe(200);
+         expect(response.headers.get('Access-Control-Allow-Origin')).toBe(origin);
+         expect(response.headers.get('Access-Control-Expose-Headers')).toBe('Retry-After');
+         expect(response.headers.get('Vary')).toBe('Origin');
+      },
+   );
+
+   it.each([
+      'https://example.com',
+      'https://geosheehan.github.io.evil.test',
+      'http://localhost:3000',
+   ])('gives %s no access', async (origin) => {
+      const response = await fromOrigin(origin);
+      expect(response.headers.get('Access-Control-Allow-Origin')).toBeNull();
+      expect(response.headers.get('Vary')).toBe('Origin');
+   });
+
+   it('lets the app read error responses too', async () => {
+      const response = await fromOrigin('https://geosheehan.github.io', '/game/abc');
+      expect(response.status).toBe(400);
+      expect(response.headers.get('Access-Control-Allow-Origin')).toBe(
+         'https://geosheehan.github.io',
+      );
+   });
+
+   it('answers a preflight without counting it against the visitor', async () => {
+      const visitor = { 'CF-Connecting-IP': '203.0.113.50', 'Origin': 'http://localhost:5173' };
+      for (let i = 0; i < 31; i++) {
+         const response = await get('/game/2026020046', { method: 'OPTIONS', headers: visitor });
+         expect(response.status).toBe(204);
+         expect(response.headers.get('Access-Control-Allow-Origin')).toBe('http://localhost:5173');
+         expect(response.headers.get('Access-Control-Allow-Methods')).toBe('GET');
+      }
+      expect((await get('/game/2026020046', { headers: visitor })).status).toBe(200);
    });
 });
 

@@ -5,6 +5,12 @@ export default defineConfig({
    plugins: [
       cloudflareTest({
          wrangler: { configPath: './wrangler.jsonc' },
+         miniflare: {
+            bindings: {
+               ALLOWED_ORIGINS:
+                  'https://geosheehan.github.io,http://localhost:5173,http://localhost:4173',
+            },
+         },
       }),
    ],
 });
