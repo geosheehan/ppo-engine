@@ -3,3 +3,4 @@ dist/
 package-lock.json
 .claude/
 worker/worker-configuration.d.ts
+worker/.wrangler/
