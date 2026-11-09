@@ -20,6 +20,17 @@ export default defineConfig(({ command, isPreview }) => ({
    // GitHub Pages serves the site from /ppo-engine/; `vite preview` must match it, the dev server stays at the root.
    base: command === 'build' || isPreview === true ? '/ppo-engine/' : '/',
    plugins: [react(), pagesFallback()],
+   // The deployed Worker only allows the Pages origin, so a local preview reaches it through this
+   // server-side proxy instead (build with --mode pages-preview, see npm run preview:pages).
+   preview: {
+      proxy: {
+         '/ppo-engine/api': {
+            target: 'https://ppo-engine-api.geosheehan.workers.dev',
+            changeOrigin: true,
+            rewrite: (path) => path.replace(/^\/ppo-engine\/api/, ''),
+         },
+      },
+   },
    resolve: {
       tsconfigPaths: true,
    },
