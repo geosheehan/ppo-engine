@@ -243,4 +243,49 @@ describe('loading a game from the NHL', () => {
       expect(nhlCap).toHaveBeenCalledTimes(2);
       expect(nhlCap).toHaveBeenCalledWith({ key: 'nhl' });
    });
+
+   describe('requests for the same game that arrive together', () => {
+      const heldPlayByPlay = (body: () => Response) => {
+         const { promise, resolve } = Promise.withResolvers<void>();
+         return {
+            route: async () => {
+               await promise;
+               return body();
+            },
+            release: resolve,
+         };
+      };
+
+      it('share one NHL load', async () => {
+         const held = heldPlayByPlay(ok(playByPlay('2026020108')));
+         nhlRoutes = { playByPlay: held.route, shifts: ok(shifts(1)) };
+         const first = get('/game/2026020108');
+         const second = get('/game/2026020108');
+         await vi.waitUntil(() => nhlRequests.length === 1);
+         held.release();
+
+         const responses = await Promise.all([first, second]);
+         expect(responses.map((response) => response.status)).toEqual([200, 200]);
+         const [firstBody, secondBody] = await Promise.all(responses.map((r) => r.text()));
+         expect(secondBody).toBe(firstBody);
+         expect(nhlRequests).toHaveLength(2);
+      });
+
+      it('share a failure, and a later request tries again', async () => {
+         const held = heldPlayByPlay(() => new Response('', { status: 500 }));
+         nhlRoutes = { playByPlay: held.route };
+         const first = get('/game/2026020109');
+         const second = get('/game/2026020109');
+         await vi.waitUntil(() => nhlRequests.length === 1);
+         held.release();
+
+         const responses = await Promise.all([first, second]);
+         expect(responses.map((response) => response.status)).toEqual([502, 502]);
+         expect(nhlRequests).toHaveLength(1);
+
+         nhlRoutes = { playByPlay: ok(playByPlay('2026020109')), shifts: ok(shifts(1)) };
+         expect((await get('/game/2026020109')).status).toBe(200);
+         expect(nhlRequests).toHaveLength(3);
+      });
+   });
 });

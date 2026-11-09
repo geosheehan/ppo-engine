@@ -1,6 +1,7 @@
 import { Suspense, use } from 'react';
 import { Navigate, Outlet, useMatch, useParams } from 'react-router';
 import ReplayScreen from '@views/ReplayView/ReplayScreen';
+import ErrorBoundary from '@components/ErrorBoundary';
 import GameProvider from '@context/GameProvider';
 import { ppoApi } from '@api/ppoApi';
 import { GAME_VIEW_PATTERN, GAME_VIEWS, gamePath, isGameView } from '@layout/routes';
@@ -19,11 +20,28 @@ function GameLayout() {
    }
 
    return (
-      <Suspense fallback={view === GAME_VIEWS.REPLAY ? <ReplayScreen /> : null}>
-         <GameProvider key={selected.id} gameId={selected.id}>
-            <Outlet />
-         </GameProvider>
-      </Suspense>
+      <ErrorBoundary
+         key={selected.id}
+         fallback={gameLoadError}
+         onRetry={() => ppoApi.forgetGamePpo(selected.id)}
+      >
+         <Suspense fallback={view === GAME_VIEWS.REPLAY ? <ReplayScreen /> : null}>
+            <GameProvider gameId={selected.id}>
+               <Outlet />
+            </GameProvider>
+         </Suspense>
+      </ErrorBoundary>
+   );
+}
+
+function gameLoadError(error: Error, retry: () => void) {
+   return (
+      <div className="app__message" role="alert">
+         <p>Couldn't load this game. {error.message}</p>
+         <button type="button" onClick={retry}>
+            Try again
+         </button>
+      </div>
    );
 }
 

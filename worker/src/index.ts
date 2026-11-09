@@ -57,7 +57,7 @@ async function fetchFromNhl(url: string, env: Env): Promise<string> {
    return response.text();
 }
 
-async function loadGame(id: string, env: Env): Promise<Response> {
+async function loadGame(id: string, env: Env): Promise<string> {
    const playByPlay = await fetchFromNhl(playByPlayUrl(id), env);
    if (!FINISHED.test(playByPlay)) throw new NhlError(409, `Game ${id} has not finished`);
 
@@ -73,10 +73,23 @@ async function loadGame(id: string, env: Env): Promise<Response> {
    } catch (error) {
       console.error(`Could not store game ${id}`, error);
    }
-   return gameResponse(body);
+   return body;
 }
 
-async function handleGet(request: Request, env: Env): Promise<Response> {
+const loading = new Map<string, Promise<string>>();
+
+function loadGameOnce(id: string, env: Env, ctx: ExecutionContext): Promise<string> {
+   let load = loading.get(id);
+   if (load === undefined) {
+      load = loadGame(id, env).finally(() => loading.delete(id));
+      loading.set(id, load);
+      // The load runs in the first request's context; keep it alive if that visitor leaves.
+      ctx.waitUntil(load.catch(() => undefined));
+   }
+   return load;
+}
+
+async function handleGet(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
    // Counted before routing so bad paths and IDs can't be probed for free.
    const visitor = request.headers.get('CF-Connecting-IP') ?? 'unknown';
    const { success } = await env.PER_VISITOR.limit({ key: visitor });
@@ -94,7 +107,7 @@ async function handleGet(request: Request, env: Env): Promise<Response> {
    if (stored !== null) return gameResponse(stored);
 
    try {
-      return await loadGame(id, env);
+      return gameResponse(await loadGameOnce(id, env, ctx));
    } catch (error) {
       if (!(error instanceof NhlError)) throw error;
       const headers = error.status === 503 ? { 'Retry-After': '60' } : undefined;
@@ -114,7 +127,7 @@ function withCors(request: Request, env: Env, response: Response): Response {
 }
 
 export default {
-   async fetch(request, env): Promise<Response> {
+   async fetch(request, env, ctx): Promise<Response> {
       if (request.method === 'OPTIONS') {
          return withCors(
             request,
@@ -135,6 +148,6 @@ export default {
             json({ error: 'Method not allowed' }, 405, { Allow: 'GET, OPTIONS' }),
          );
       }
-      return withCors(request, env, await handleGet(request, env));
+      return withCors(request, env, await handleGet(request, env, ctx));
    },
 } satisfies ExportedHandler<Env>;

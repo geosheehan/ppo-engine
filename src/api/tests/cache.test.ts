@@ -23,4 +23,17 @@ describe('withCache', () => {
       expect(cached.getGamePpo('a')).not.toBe(cached.getGamePpo('b'));
       expect(api.getGamePpo).toHaveBeenCalledTimes(2);
    });
+
+   it('keeps a failed game until it is forgotten, then requests it again', async () => {
+      const api = fakeApi();
+      vi.mocked(api.getGamePpo).mockRejectedValueOnce(new Error('down'));
+      const cached = withCache(api);
+      const failed = cached.getGamePpo('a');
+      await expect(failed).rejects.toThrow('down');
+      expect(cached.getGamePpo('a')).toBe(failed);
+
+      cached.forgetGamePpo('a');
+      await expect(cached.getGamePpo('a')).resolves.toEqual({});
+      expect(api.getGamePpo).toHaveBeenCalledTimes(2);
+   });
 });

@@ -1,7 +1,8 @@
 import type { GamePpo, GameSummary, PpoApi } from '@api/types';
 
-// React's use() needs the same promise on every render, so each request is made once and kept.
-export function withCache(api: PpoApi): PpoApi {
+export type CachedPpoApi = PpoApi & { forgetGamePpo: (id: string) => void };
+
+export function withCache(api: PpoApi): CachedPpoApi {
    let games: Promise<GameSummary[]> | undefined;
    const gamePpos = new Map<string, Promise<GamePpo>>();
    return {
@@ -13,6 +14,9 @@ export function withCache(api: PpoApi): PpoApi {
             gamePpos.set(id, gamePpo);
          }
          return gamePpo;
+      },
+      forgetGamePpo: (id) => {
+         gamePpos.delete(id);
       },
    };
 }
