@@ -2,8 +2,13 @@ const GAME_PATH = /^\/game\/([^/]+)$/;
 // Season start year, game type (01 preseason, 02 regular season, 03 playoffs), game number.
 const GAME_ID = /^\d{4}0[123]\d{4}$/;
 
+const DAY_SECONDS = 24 * 60 * 60;
+
 const json = (body: unknown, status = 200, headers?: HeadersInit) =>
    Response.json(body, { status, headers });
+
+// The v1 prefix lets a future change to the stored shape use fresh keys instead of migrating old ones.
+const gameKey = (id: string) => `v1:${id}`;
 
 export default {
    async fetch(request, env): Promise<Response> {
@@ -24,6 +29,16 @@ export default {
          return json({ error: `Not a preseason, regular season or playoff game ID: ${id}` }, 400);
       }
 
-      return json({ id });
+      const stored = await env.GAMES.get(gameKey(id), { type: 'stream', cacheTtl: DAY_SECONDS });
+      if (stored !== null) {
+         return new Response(stored, {
+            headers: {
+               'Content-Type': 'application/json',
+               'Cache-Control': `public, max-age=${DAY_SECONDS}`,
+            },
+         });
+      }
+
+      return json({ error: `Game ${id} is not stored yet` }, 404);
    },
 } satisfies ExportedHandler<Env>;

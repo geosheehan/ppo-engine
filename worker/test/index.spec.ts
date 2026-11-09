@@ -1,5 +1,12 @@
-import { exports } from 'cloudflare:workers';
-import { describe, expect, it } from 'vitest';
+import { env, exports } from 'cloudflare:workers';
+import { beforeAll, describe, expect, it } from 'vitest';
+
+const STORED = ['2026020046', '2026010046', '2025030411'];
+const storedBody = (id: string) => `{"game":{"id":${id}},"shifts":{"data":[],"total":0}}`;
+
+beforeAll(async () => {
+   await Promise.all(STORED.map((id) => env.GAMES.put(`v1:${id}`, storedBody(id))));
+});
 
 let visitors = 0;
 // A fresh visitor per request unless a test sets one, so only the rate limit tests hit the limit.
@@ -12,14 +19,18 @@ const get = (path: string, init?: RequestInit) => {
 };
 
 describe('GET /game/:id', () => {
-   it('accepts a regular season game', async () => {
-      const response = await get('/game/2026020046');
+   it.each(STORED)('returns stored game %s exactly as stored', async (id) => {
+      const response = await get(`/game/${id}`);
       expect(response.status).toBe(200);
-      expect(await response.json()).toEqual({ id: '2026020046' });
+      expect(response.headers.get('Content-Type')).toBe('application/json');
+      expect(response.headers.get('Cache-Control')).toBe('public, max-age=86400');
+      expect(await response.text()).toBe(storedBody(id));
    });
 
-   it.each(['2026010046', '2025030411'])('accepts preseason and playoff game %s', async (id) => {
-      expect((await get(`/game/${id}`)).status).toBe(200);
+   it('answers 404 for a valid game that is not stored', async () => {
+      const response = await get('/game/2026020047');
+      expect(response.status).toBe(404);
+      expect(await response.json()).toEqual({ error: 'Game 2026020047 is not stored yet' });
    });
 
    it.each(['abc', '202602004', '20260200466', '2026000046', '2026040001'])(
