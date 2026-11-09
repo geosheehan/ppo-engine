@@ -1,1 +1,2 @@
+node scripts/check-wrangler.mjs
 npx lint-staged --relative --max-arg-length 7000

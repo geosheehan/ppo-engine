@@ -14,7 +14,8 @@
     "test": "vitest",
     "test:run": "vitest run",
     "prepare": "husky",
-    "dev:worker": "concurrently -k -n worker,app -c yellow,cyan \"npm --prefix worker run dev\" \"vite --mode worker --strictPort\""
+    "check:wrangler": "node scripts/check-wrangler.mjs",
+    "dev:worker": "npm run check:wrangler && vite --mode worker"
   },
   "dependencies": {
     "clsx": "^2.1.1",
@@ -23,12 +24,12 @@
     "react-router": "^8.5.1"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "1.68.0",
     "@ianvs/prettier-plugin-sort-imports": "^4.7.1",
     "@types/node": "^24.19.2",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
-    "concurrently": "^10.0.7",
     "husky": "^9.1.7",
     "lint-staged": "^17.6.0",
     "oxlint": "^1.89.0",

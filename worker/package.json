@@ -3,17 +3,17 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "deploy": "wrangler deploy",
+    "deploy": "node ../scripts/check-wrangler.mjs && wrangler deploy",
     "dev": "wrangler dev",
     "start": "wrangler dev",
     "test": "vitest",
     "cf-typegen": "wrangler types"
   },
   "devDependencies": {
-    "@cloudflare/vitest-plugin": "^1.4.3",
+    "@cloudflare/vitest-plugin": "1.5.1",
     "@types/node": "^26.6.6",
     "typescript": "^5.5.2",
     "vitest": "~5.0.3",
-    "wrangler": "^4.159.0"
+    "wrangler": "4.157.0"
   }
 }
