@@ -6,10 +6,15 @@ const json = (body: unknown, status = 200, headers?: HeadersInit) =>
    Response.json(body, { status, headers });
 
 export default {
-   async fetch(request): Promise<Response> {
+   async fetch(request, env): Promise<Response> {
       if (request.method !== 'GET') {
          return json({ error: 'Method not allowed' }, 405, { Allow: 'GET' });
       }
+
+      // Counted before routing so bad paths and IDs can't be probed for free.
+      const visitor = request.headers.get('CF-Connecting-IP') ?? 'unknown';
+      const { success } = await env.PER_VISITOR.limit({ key: visitor });
+      if (!success) return json({ error: 'Too many requests' }, 429, { 'Retry-After': '60' });
 
       const match = GAME_PATH.exec(new URL(request.url).pathname);
       if (match === null) return json({ error: 'Not found' }, 404);
