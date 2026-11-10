@@ -31,6 +31,7 @@ function ReplayScreen({ game, replay, emptyTitle = 'Loading game' }: ReplayScree
    const play = replay?.play;
    const isLineChange = replay?.changedTeamId !== undefined;
    const team = (side: Side) => game?.teamByHomeOrAway(side);
+   const title = game ? `${game.game.awayTeam.abbrev} @ ${game.game.homeTeam.abbrev}` : emptyTitle;
    const teamIds = game && {
       away: game.teamByHomeOrAway(SIDES.AWAY).id,
       home: game.teamByHomeOrAway(SIDES.HOME).id,
@@ -50,16 +51,15 @@ function ReplayScreen({ game, replay, emptyTitle = 'Loading game' }: ReplayScree
       && play.details.yCoord !== undefined;
 
    return (
-      <section
+      <main
          className="replay"
          style={{
             '--rink-left-end-color': game?.colors[left] ?? NEUTRAL_END,
             '--rink-right-end-color': game?.colors[right] ?? NEUTRAL_END,
          }}
       >
-         <title>
-            {game ? `${game.game.awayTeam.abbrev} @ ${game.game.homeTeam.abbrev}` : emptyTitle}
-         </title>
+         <title>{title}</title>
+         <h1 className="visually-hidden">{title}</h1>
          <header className="replay__header">
             <Scoreboard
                play={play}
@@ -146,7 +146,7 @@ function ReplayScreen({ game, replay, emptyTitle = 'Loading game' }: ReplayScree
                />
             ))}
          </div>
-      </section>
+      </main>
    );
 }
 

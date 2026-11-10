@@ -131,6 +131,7 @@ function ScenarioTrack({
    const markerProps = (event: ScenarioEvent) => ({
       'type': 'button' as const,
       'title': eventTitle(event, teams[event.side]),
+      'aria-label': eventTitle(event, teams[event.side]),
       'aria-pressed': event.id === selectedId,
       'onPointerDown': startDrag(event, 'move'),
       'onFocus': () => onSelect(event.id),
@@ -184,7 +185,6 @@ function ScenarioTrack({
                <button
                   key={goal.id}
                   {...markerProps(goal)}
-                  aria-label={eventTitle(goal, teams[side])}
                   className={clsx(
                      'scenario-track__goal',
                      goal.id === selectedId && 'scenario-track__marker--selected',

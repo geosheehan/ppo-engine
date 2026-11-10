@@ -12,6 +12,7 @@ type GamePickerProps = {
 function GamePicker({ selected, autoOpen, onPick }: GamePickerProps) {
    const popoverId = useId();
    const popoverRef = useRef<HTMLDivElement>(null);
+   const triggerRef = useRef<HTMLButtonElement>(null);
    const [open, setOpen] = useState(false);
 
    useEffect(() => {
@@ -21,12 +22,18 @@ function GamePicker({ selected, autoOpen, onPick }: GamePickerProps) {
 
    const pick = (id: string) => {
       popoverRef.current?.hidePopover();
+      triggerRef.current?.focus();
       onPick(id);
    };
 
    return (
       <>
-         <button type="button" className="game-picker__trigger" popoverTarget={popoverId}>
+         <button
+            ref={triggerRef}
+            type="button"
+            className="game-picker__trigger"
+            popoverTarget={popoverId}
+         >
             Game
             {selected !== undefined && (
                <span className="game-picker__current">

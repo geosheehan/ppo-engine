@@ -73,7 +73,7 @@ function WhatIfView() {
    };
 
    return (
-      <section className="what-if">
+      <main className="what-if">
          <h1>What if?</h1>
          <p className="what-if__hint">
             Click the track to place the cursor, then add events there. Drag to move, and drag a
@@ -88,6 +88,8 @@ function WhatIfView() {
             {SIDE_ORDER.map((side) => (
                <div
                   key={side}
+                  role="group"
+                  aria-label={`Add for ${teams[side]}`}
                   className="what-if__add"
                   style={{ '--team-color': scenario.colors[side] }}
                >
@@ -154,7 +156,7 @@ function WhatIfView() {
             </div>
             <GoalEffectTable />
          </GameContext>
-      </section>
+      </main>
    );
 }
 

@@ -11,7 +11,7 @@ function AnalysisView() {
    const axis = useMemo(() => gameAxis(index, penaltyResult.timeline), [index, penaltyResult]);
 
    return (
-      <section className="analysis">
+      <main className="analysis">
          <h1>
             {game.awayTeam.abbrev} @ {game.homeTeam.abbrev}
          </h1>
@@ -21,7 +21,7 @@ function AnalysisView() {
                <StrengthRibbon axis={axis} />
             </div>
          </div>
-      </section>
+      </main>
    );
 }
 

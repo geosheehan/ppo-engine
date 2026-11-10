@@ -15,6 +15,10 @@
    gap: 8px 16px;
    margin-bottom: 16px;
    font-size: 14px;
+
+   & button {
+      font-family: inherit;
+   }
 }
 
 .what-if__cursor {

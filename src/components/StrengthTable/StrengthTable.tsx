@@ -57,13 +57,15 @@ function StrengthTable({
             <caption>{team && <TeamChip teamId={team.id} />} POWER PLAYS</caption>
             <thead>
                <tr>
-                  <th />
+                  <th scope="col">
+                     <span className="visually-hidden">Stat</span>
+                  </th>
                   {STRENGTHS.map((label) => (
                      <th key={label} scope="col" className={liveClass(label)}>
                         {label}
                      </th>
                   ))}
-                  <th>TOT</th>
+                  <th scope="col">TOT</th>
                </tr>
             </thead>
             <tbody>

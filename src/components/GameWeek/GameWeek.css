@@ -47,8 +47,11 @@
    @supports (position-area: bottom) {
       position-anchor: --game-week-range;
       position-area: bottom;
-      position-try-fallbacks: flip-block;
       margin: 6px 0 0;
+
+      &:popover-open {
+         position-try-fallbacks: flip-block;
+      }
    }
 }
 
@@ -109,7 +112,7 @@
 }
 
 .game-week__day--empty:not(.game-week__day--selected) {
-   opacity: 0.55;
+   opacity: 0.9;
 }
 
 .game-week__weekday {
