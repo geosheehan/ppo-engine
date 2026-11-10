@@ -3,6 +3,7 @@ import { clsx } from 'clsx';
 import { Link, NavLink, useMatch, useNavigate } from 'react-router';
 import GamePicker from '@components/GamePicker';
 import { useGameSummary } from '@hooks/useGameSummary';
+import { useSelectedGame } from '@context/useSelectedGame';
 import {
    GAME_VIEW_LABELS,
    GAME_VIEW_PATTERN,
@@ -16,15 +17,20 @@ function AppNav() {
    const match = useMatch(GAME_VIEW_PATTERN);
    const atHome = useMatch('/') !== null;
    const navigate = useNavigate();
-   const gameId = match?.params.gameId;
+   const { gameId, selectGame } = useSelectedGame();
    const view = isGameView(match?.params.view) ? match.params.view : GAME_VIEWS.REPLAY;
    const selected = useGameSummary(gameId);
+
+   const pick = (id: string) => {
+      if (match !== null || atHome) void navigate(gamePath(id, view));
+      else selectGame(id);
+   };
 
    const links = [
       ...Object.values(GAME_VIEWS).map((gameView) => ({
          to: gameId === undefined ? '/' : gamePath(gameId, gameView),
          label: GAME_VIEW_LABELS[gameView],
-         activeHere: gameId !== undefined || gameView === GAME_VIEWS.REPLAY,
+         activeHere: match !== null || gameView === GAME_VIEWS.REPLAY,
       })),
       { to: WHAT_IF_PATH, label: 'What if', activeHere: true },
    ];
@@ -48,15 +54,9 @@ function AppNav() {
                </NavLink>
             ))}
          </nav>
-         {(atHome || gameId !== undefined) && (
-            <div className="app-nav__game">
-               <GamePicker
-                  selected={selected}
-                  autoOpen={atHome}
-                  onPick={(id) => navigate(gamePath(id, view))}
-               />
-            </div>
-         )}
+         <div className="app-nav__game">
+            <GamePicker selected={selected} autoOpen={atHome} onPick={pick} />
+         </div>
       </header>
    );
 }

@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useGame } from '@context/useGame';
+import { useReplayPosition } from '@context/useSelectedGame';
 import { playParticipantLayout } from '@layout/participantLayout';
 import { totalsAt } from '@engine/powerPlayCounter';
 import { snapshotAt } from '@engine/snapshot';
@@ -47,12 +48,8 @@ export function useReplay() {
       [plays, shifts, game],
    );
 
-   // The only replay state: which play we're on, and the game time. Between plays a live replay runs the clock on
-   // from the play's time toward the next one. Everything below is derived from it.
-   const [position, setPosition] = useState<ReplayPosition>(() => ({
-      index: 0,
-      time: playTime(plays[0]),
-   }));
+   const { position: saved, setPosition } = useReplayPosition();
+   const position: ReplayPosition = saved ?? { index: 0, time: playTime(plays[0]) };
    const { index, time } = position;
    const play = plays[index];
 
