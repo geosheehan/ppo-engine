@@ -1,7 +1,8 @@
 import '@components/GameWeek/GameWeek.css';
-import { Suspense, use, useEffect, useState } from 'react';
+import { Suspense, use, useEffect, useId, useRef, useState } from 'react';
 import { clsx } from 'clsx';
 import ErrorBoundary from '@components/ErrorBoundary';
+import SeasonCalendar from '@components/SeasonCalendar';
 import { ppoApi } from '@api/ppoApi';
 import {
    addDays,
@@ -36,6 +37,9 @@ function GameWeek({ initialDate, selectedId, onPick }: GameWeekProps) {
          : { weekStart: weekStartOf(initialDate), day: initialDate },
    );
    const [fetchedWeek, setFetchedWeek] = useState(shown.weekStart);
+   const jumpId = useId();
+   const jumpRef = useRef<HTMLDivElement>(null);
+   const [jumpOpen, setJumpOpen] = useState(false);
 
    useEffect(() => {
       const timer = setTimeout(() => setFetchedWeek(shown.weekStart), FETCH_DELAY_MS);
@@ -48,6 +52,10 @@ function GameWeek({ initialDate, selectedId, onPick }: GameWeekProps) {
          day: day === undefined ? undefined : addDays(day, 7 * weeks),
       }));
    const pickDay = (day: string) => setShown({ weekStart: shown.weekStart, day });
+   const jumpTo = (day: string) => {
+      jumpRef.current?.hidePopover();
+      setShown({ weekStart: weekStartOf(day), day });
+   };
    const waiting = (
       <>
          <DayStrip weekStart={shown.weekStart} selectedDay={shown.day} onDay={pickDay} />
@@ -66,7 +74,21 @@ function GameWeek({ initialDate, selectedId, onPick }: GameWeekProps) {
             >
                ‹
             </button>
-            <h2 className="game-week__range">{weekRangeLabel(shown.weekStart)}</h2>
+            <button type="button" className="game-week__range" popoverTarget={jumpId}>
+               {weekRangeLabel(shown.weekStart)}
+               <span aria-hidden="true">▾</span>
+            </button>
+            <div
+               ref={jumpRef}
+               id={jumpId}
+               popover="auto"
+               role="dialog"
+               aria-label="Jump to a date"
+               className="game-week__jump"
+               onToggle={(event) => setJumpOpen(event.newState === 'open')}
+            >
+               {jumpOpen && <SeasonCalendar date={shown.day ?? shown.weekStart} onPick={jumpTo} />}
+            </div>
             <button
                type="button"
                className="game-week__arrow"

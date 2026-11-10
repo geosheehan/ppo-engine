@@ -1,5 +1,3 @@
-// Builds the headshot debug page's sample list, so the hosted page doesn't need the gitignored
-// game files. Headshots still load from the NHL.
 // Run: node scripts/headshot-samples.mjs
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';

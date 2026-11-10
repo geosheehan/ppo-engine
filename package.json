@@ -45,5 +45,9 @@
       "oxlint"
     ],
     "*.{css,json,html,md}": "prettier --write"
+  },
+  "allowScripts": {
+    "workerd@1.20261103.1": true,
+    "esbuild@0.28.2": true
   }
 }

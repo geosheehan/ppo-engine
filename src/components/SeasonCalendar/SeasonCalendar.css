@@ -1,0 +1,89 @@
+.season-calendar {
+   display: flex;
+   flex-direction: column;
+   gap: 12px;
+   font-size: 14px;
+}
+
+.season-calendar__season {
+   display: flex;
+   align-items: center;
+   gap: 8px;
+
+   select {
+      flex: 1;
+      height: 32px;
+      padding: 0 8px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg);
+      color: var(--text-h);
+      font: inherit;
+   }
+}
+
+.season-calendar__months {
+   display: grid;
+   grid-template-columns: repeat(6, 1fr);
+   gap: 4px;
+}
+
+.season-calendar__month,
+.season-calendar__day {
+   border: 1px solid transparent;
+   border-radius: 6px;
+   background: transparent;
+   color: var(--text-h);
+   font: inherit;
+   cursor: pointer;
+
+   &:hover {
+      border-color: var(--text);
+   }
+}
+
+.season-calendar__month {
+   padding: 4px 0;
+   border-color: var(--border);
+}
+
+.season-calendar__month--selected,
+.season-calendar__day--selected {
+   border-color: var(--text-h);
+   background: var(--text-h);
+   color: var(--bg);
+}
+
+.season-calendar__days {
+   width: 100%;
+   border-collapse: collapse;
+   text-align: center;
+
+   caption {
+      padding-bottom: 6px;
+      color: var(--text-h);
+      font-weight: 600;
+   }
+
+   th {
+      padding-bottom: 4px;
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 500;
+   }
+
+   td {
+      padding: 1px;
+   }
+}
+
+.season-calendar__day {
+   width: 100%;
+   height: 32px;
+   font-variant-numeric: tabular-nums;
+}
+
+.season-calendar__day--today:not(.season-calendar__day--selected) {
+   border-color: var(--border);
+   font-weight: 700;
+}

@@ -1,9 +1,11 @@
 import { lazy, Suspense } from 'react';
+import type { ComponentType } from 'react';
 import { Navigate, Route, Routes } from 'react-router';
-import HeadshotDebugView from '@views/HeadshotDebugView';
 import { GAMES_PATH, VOTE_PATH, WHAT_IF_PATH } from '@layout/routes';
 
 const SHOW_GAME_VIEWS = import.meta.env.VITE_GAME_VIEWS === 'true';
+const SHOW_VOTE = import.meta.env.DEV || !SHOW_GAME_VIEWS;
+const HeadshotDebugView = SHOW_VOTE ? lazy(() => import('@views/HeadshotDebugView')) : undefined;
 const GameRoutes = SHOW_GAME_VIEWS ? lazy(() => import('@router/GameRoutes')) : undefined;
 const WhatIfView = SHOW_GAME_VIEWS ? lazy(() => import('@views/WhatIfView')) : undefined;
 const AppNav = SHOW_GAME_VIEWS ? lazy(() => import('@components/AppNav')) : undefined;
@@ -30,10 +32,14 @@ function AppRoutes() {
                         </Suspense>
                      }
                   />
-                  <Route path={VOTE_PATH} element={<HeadshotDebug />} />
+                  {HeadshotDebugView !== undefined && (
+                     <Route path={VOTE_PATH} element={<HeadshotDebug view={HeadshotDebugView} />} />
+                  )}
                </>
             ) : (
-               <Route index element={<HeadshotDebug />} />
+               HeadshotDebugView !== undefined && (
+                  <Route index element={<HeadshotDebug view={HeadshotDebugView} />} />
+               )
             )}
             {GameRoutes !== undefined && (
                <Route
@@ -61,10 +67,10 @@ function AppRoutes() {
    );
 }
 
-function HeadshotDebug() {
+function HeadshotDebug({ view: View }: { view: ComponentType }) {
    return (
       <Suspense fallback={<p className="app__message">Loading headshots…</p>}>
-         <HeadshotDebugView />
+         <View />
       </Suspense>
    );
 }

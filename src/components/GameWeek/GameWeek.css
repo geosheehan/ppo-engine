@@ -13,10 +13,43 @@
 }
 
 .game-week__range {
-   min-width: 12ch;
-   margin: 0;
+   display: flex;
+   align-items: center;
+   gap: 8px;
+   height: 32px;
+   padding: 0 12px;
+   border: 1px solid var(--border);
+   border-radius: 6px;
+   background: transparent;
+   color: var(--text-h);
+   font: inherit;
    font-size: 18px;
-   text-align: center;
+   font-weight: 600;
+   anchor-name: --game-week-range;
+   cursor: pointer;
+
+   &:hover {
+      border-color: var(--text);
+   }
+}
+
+.game-week__jump {
+   box-sizing: border-box;
+   width: min(300px, calc(100vw - 32px));
+   padding: 12px;
+   border: 1px solid var(--border);
+   border-radius: 8px;
+   background: var(--bg);
+   color: var(--text);
+   text-align: left;
+   box-shadow: 0 12px 24px rgb(0 0 0 / 22%);
+
+   @supports (position-area: bottom) {
+      position-anchor: --game-week-range;
+      position-area: bottom;
+      position-try-fallbacks: flip-block;
+      margin: 6px 0 0;
+   }
 }
 
 .game-week__arrow {

@@ -6,8 +6,6 @@ export type HeadshotSample = {
    players: Player[];
 };
 
-// Built by scripts/headshot-samples.mjs into public/, so the hosted page doesn't need the
-// gitignored game files. Headshot URLs point at the NHL.
 const SAMPLES_URL = `${import.meta.env.BASE_URL}headshot-debug/samples.json`;
 
 async function loadSamples(): Promise<HeadshotSample[]> {

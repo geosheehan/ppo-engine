@@ -1,2 +1,0 @@
-# Copy to .dev.vars (gitignored) for `wrangler dev`. Adds the app's dev (5173) and preview (4173) servers.
-ALLOWED_ORIGINS="https://geosheehan.github.io,http://localhost:5173,http://localhost:4173"

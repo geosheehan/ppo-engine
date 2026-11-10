@@ -43,7 +43,9 @@ function GamePicker({ selected, autoOpen, onPick }: GamePickerProps) {
             role="dialog"
             aria-label="Pick a game"
             className="game-picker"
-            onToggle={(event) => setOpen(event.newState === 'open')}
+            onToggle={(event) => {
+               if (event.target === event.currentTarget) setOpen(event.newState === 'open');
+            }}
          >
             {open && (
                <GameWeek initialDate={selected?.date} selectedId={selected?.id} onPick={pick} />
