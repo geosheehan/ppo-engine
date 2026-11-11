@@ -79,6 +79,7 @@ function ReplayScreen({ game, replay, emptyTitle = 'Loading game' }: ReplayScree
                player={replay?.featuredPlayer}
                goalEffect={replay?.goalEffect}
                changedTeamId={replay?.changedTeamId}
+               participants={replay?.participants}
             />
          </header>
          <PlayParticipants layout={replay?.participants} />

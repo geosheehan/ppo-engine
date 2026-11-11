@@ -1,8 +1,10 @@
+import type { ParticipantCard, ParticipantLayout } from '@layout/types';
 import type { GoalSituation } from '@engine/types';
 import { LINE_CHANGE } from '@domain/constants';
 import { isGoal, isPenalty } from '@domain/plays';
 import '@components/CurrentPlay/CurrentPlay.css';
 import TeamChip from '@components/TeamChip';
+import { participantRoles, rolesLine } from '@layout/participantRoles';
 import { goalSituation } from '@engine/powerPlayCounter';
 import type { GoalEffect } from '@engine/types';
 import { penaltyDisplayName } from '@domain/penalties';
@@ -15,6 +17,7 @@ type CurrentPlayProps = {
    player?: Player;
    goalEffect?: GoalEffect;
    changedTeamId?: number;
+   participants?: ParticipantLayout<ParticipantCard>;
 };
 
 const SITUATION_LABELS: Record<GoalSituation, string> = {
@@ -22,7 +25,13 @@ const SITUATION_LABELS: Record<GoalSituation, string> = {
    'shorthanded': 'Short Handed',
 };
 
-function CurrentPlay({ play, player, goalEffect, changedTeamId }: CurrentPlayProps) {
+function CurrentPlay({ play, player, goalEffect, changedTeamId, participants }: CurrentPlayProps) {
+   const roles = (
+      <div className="current-play__roles">
+         {participants && rolesLine(participantRoles(participants))}
+      </div>
+   );
+
    if (changedTeamId !== undefined) {
       return (
          <div className="current-play">
@@ -31,6 +40,7 @@ function CurrentPlay({ play, player, goalEffect, changedTeamId }: CurrentPlayPro
                {stepTypeLabel(LINE_CHANGE)}
             </div>
             <div className="current-play__detail" />
+            {roles}
          </div>
       );
    }
@@ -40,6 +50,7 @@ function CurrentPlay({ play, player, goalEffect, changedTeamId }: CurrentPlayPro
          <div className="current-play">
             <div className="current-play__what" />
             <div className="current-play__detail" />
+            {roles}
          </div>
       );
    }
@@ -62,6 +73,7 @@ function CurrentPlay({ play, player, goalEffect, changedTeamId }: CurrentPlayPro
             {stepTypeLabel(play.typeDescKey)}
          </div>
          <div className="current-play__detail">{detail}</div>
+         {roles}
       </div>
    );
 }

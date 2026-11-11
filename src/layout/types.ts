@@ -18,6 +18,7 @@ export type ParticipantLayout<C extends LayoutCard> = {
    closeAtCenter: boolean;
 };
 export type ParticipantCard = LayoutCard & {
+   order: number;
    role: string;
    player: Player;
    team: Team;

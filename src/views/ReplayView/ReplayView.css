@@ -28,7 +28,7 @@
    }
 
    @media (max-height: 500px) and (min-width: 641px) {
-      --replay-chrome: 158px;
+      --replay-chrome: 178px;
    }
 }
 

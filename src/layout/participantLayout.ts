@@ -83,14 +83,16 @@ export function playParticipantLayout(
 ): ParticipantLayout<ParticipantCard> {
    const cardsFor = (
       participants: { field: string; role: string; playerId: number }[],
+      firstOrder = 0,
    ): ParticipantCard[] =>
-      participants.flatMap(({ field, role, playerId }) => {
+      participants.flatMap(({ field, role, playerId }, i) => {
          const player = lookups.playerById(playerId);
          const team = player && lookups.teamById(player.teamId);
          return player && team
             ? [
                  {
                     field,
+                    order: firstOrder + i,
                     role,
                     player,
                     team,
@@ -102,16 +104,22 @@ export function playParticipantLayout(
       });
 
    if (lineChange) {
-      const changeCards = (ids: number[], role: string, mirrored: boolean) =>
-         cardsFor(ids.map((playerId) => ({ field: role, role, playerId }))).map((card) => ({
+      const changeCards = (ids: number[], role: string, mirrored: boolean, firstOrder: number) =>
+         cardsFor(
+            ids.map((playerId) => ({ field: role, role, playerId })),
+            firstOrder,
+         ).map((card) => ({
             ...card,
             mirrored,
             apart: false,
          }));
       return {
          lists: [
-            { position: 'left', cards: changeCards(lineChange.off, 'Off', true) },
-            { position: 'right', cards: changeCards(lineChange.on, 'On', false) },
+            { position: 'left', cards: changeCards(lineChange.off, 'Off', true, 0) },
+            {
+               position: 'right',
+               cards: changeCards(lineChange.on, 'On', false, lineChange.off.length),
+            },
          ],
          closeAtCenter: false,
       };
