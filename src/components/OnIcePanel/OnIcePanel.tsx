@@ -62,19 +62,21 @@ function OnIcePanel({ position, team, color, players }: OnIcePanelProps) {
          aria-label={team && `${team.abbrev} on the ice`}
          style={color !== undefined ? { '--team-color': color } : undefined}
       >
-         <ol className="on-ice__column">
-            {players ? skaters.map(card) : emptyCards(SKATER_SLOTS)}
-         </ol>
-         <ol className="on-ice__column">
-            {players ? (
-               <>
-                  {goalies.map(card)}
-                  {goalies.length === 0 && <li className="on-ice__empty-net">Empty net</li>}
-               </>
-            ) : (
-               emptyCards(1)
-            )}
-         </ol>
+         <div className="on-ice__lines">
+            <ol className="on-ice__column">
+               {players ? skaters.map(card) : emptyCards(SKATER_SLOTS)}
+            </ol>
+            <ol className="on-ice__column">
+               {players ? (
+                  <>
+                     {goalies.map(card)}
+                     {goalies.length === 0 && <li className="on-ice__empty-net">Empty net</li>}
+                  </>
+               ) : (
+                  emptyCards(1)
+               )}
+            </ol>
+         </div>
       </div>
    );
 }

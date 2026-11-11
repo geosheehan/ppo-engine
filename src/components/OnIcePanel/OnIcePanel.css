@@ -1,6 +1,6 @@
 .on-ice {
+   container: on-ice / inline-size;
    display: flex;
-   gap: 8px;
    min-height: calc(6 * 52px + 5 * 4px);
 
    @media (max-width: 768px) {
@@ -9,10 +9,21 @@
 }
 
 .on-ice--left {
+   justify-content: flex-end;
+}
+
+.on-ice__lines {
+   display: flex;
+   gap: 8px;
+   min-width: 0;
+}
+
+.on-ice--left .on-ice__lines {
    flex-direction: row-reverse;
 }
 
 .on-ice__column {
+   container: on-ice-line / inline-size;
    display: flex;
    flex-direction: column;
    justify-content: center;
@@ -26,6 +37,61 @@
       width: auto;
       min-width: 0;
       flex: 1;
+   }
+}
+
+@container on-ice (width < 328px) {
+   .on-ice__lines,
+   .on-ice--left .on-ice__lines {
+      flex-direction: column;
+      justify-content: center;
+      gap: 4px;
+   }
+
+   .on-ice__column {
+      width: min(160px, 100cqw);
+   }
+
+   .on-ice__lines:has(.on-ice__empty-net) {
+      flex: 1;
+      flex-direction: row;
+   }
+
+   .on-ice--left .on-ice__lines:has(.on-ice__empty-net) {
+      flex-direction: row-reverse;
+   }
+
+   .on-ice__lines:has(.on-ice__empty-net) .on-ice__column:first-child {
+      flex: none;
+      width: min(160px, 100cqw - 24px);
+   }
+
+   .on-ice__lines:has(.on-ice__empty-net) .on-ice__column:last-child {
+      flex: 1;
+      min-width: 0;
+   }
+
+   .on-ice__lines:has(.on-ice__empty-net) .on-ice__empty-net {
+      flex: 1;
+      height: auto;
+   }
+}
+
+@container on-ice (width < 124px) {
+   .on-ice__column {
+      width: 52px;
+   }
+}
+
+@container on-ice (width < 148px) {
+   .on-ice__lines:has(.on-ice__empty-net) .on-ice__column:first-child {
+      width: 52px;
+   }
+}
+
+@container on-ice-line (width < 48px) {
+   .on-ice__empty-net {
+      writing-mode: vertical-rl;
    }
 }
 
