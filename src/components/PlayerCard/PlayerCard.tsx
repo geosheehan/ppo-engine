@@ -25,6 +25,16 @@ function PlayerCard({ player, team, color, mirrored = false }: PlayerCardProps) 
             style={{ '--team-color': color }}
          >
             <img className="player-card__headshot" src={headshot ?? placeholderHeadshot} alt="" />
+            {player && (
+               <>
+                  <span className="player-card__badge player-card__badge--number">
+                     {player.sweaterNumber}
+                  </span>
+                  <span className="player-card__badge player-card__badge--position">
+                     {player.positionCode}
+                  </span>
+               </>
+            )}
          </div>
          <div className="player-card__info">
             <div className="player-card__meta">

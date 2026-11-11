@@ -79,3 +79,55 @@
    font-weight: 600;
    color: var(--text-h);
 }
+
+.player-card__badge {
+   position: absolute;
+   bottom: 2px;
+   z-index: 1;
+   display: none;
+   padding: 0 3px;
+   border-radius: 3px;
+   background: rgb(0 0 0 / 72%);
+   color: #fff;
+   font-size: 11px;
+   font-weight: 700;
+   line-height: 14px;
+   font-variant-numeric: tabular-nums;
+}
+
+.player-card__badge--number {
+   right: 2px;
+}
+
+.player-card__badge--position {
+   left: 2px;
+}
+
+.player-card--mirrored {
+   .player-card__badge--number {
+      right: auto;
+      left: 2px;
+   }
+
+   .player-card__badge--position {
+      right: 2px;
+      left: auto;
+   }
+}
+
+@container on-ice (width < 150px) {
+   .player-card__meta,
+   .player-card__first {
+      display: none;
+   }
+
+   .player-card__badge {
+      display: block;
+   }
+}
+
+@container on-ice (width < 112px) {
+   .player-card__info {
+      display: none;
+   }
+}
