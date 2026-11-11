@@ -9,6 +9,7 @@ import Rink from '@components/Rink';
 import Scoreboard from '@components/Scoreboard';
 import ShotLine from '@components/ShotLine';
 import StrengthTable from '@components/StrengthTable';
+import StrengthTableMerged from '@components/StrengthTable/StrengthTableMerged';
 import type { Replay } from '@hooks/types';
 import type { GameContextValue } from '@context/types';
 import { SIDES } from '@domain/constants';
@@ -22,6 +23,7 @@ type ReplayScreenProps = {
 };
 
 const AWAY_HOME: [Side, Side] = [SIDES.AWAY, SIDES.HOME];
+const HOME_AWAY: [Side, Side] = [SIDES.HOME, SIDES.AWAY];
 const NEUTRAL_END = 'var(--border)';
 
 // Without a game and replay, every part draws its empty state. That is the page shown while a game loads.
@@ -85,6 +87,7 @@ function ReplayScreen({ game, replay, emptyTitle = 'Loading game' }: ReplayScree
                <OnIcePanel
                   key={left}
                   position="left"
+                  side={left}
                   team={team(left)}
                   color={game?.colors[left]}
                   players={replay?.onIcePlayers[left]}
@@ -123,6 +126,7 @@ function ReplayScreen({ game, replay, emptyTitle = 'Loading game' }: ReplayScree
                <OnIcePanel
                   key={right}
                   position="right"
+                  side={right}
                   team={team(right)}
                   color={game?.colors[right]}
                   players={replay?.onIcePlayers[right]}
@@ -150,6 +154,15 @@ function ReplayScreen({ game, replay, emptyTitle = 'Loading game' }: ReplayScree
                   strength={liveStrength}
                />
             ))}
+            <StrengthTableMerged
+               teams={HOME_AWAY.map((side) => ({
+                  side,
+                  team: team(side),
+                  color: game?.colors[side],
+                  totals: replay?.totals[side],
+               }))}
+               strength={liveStrength}
+            />
          </div>
       </main>
    );

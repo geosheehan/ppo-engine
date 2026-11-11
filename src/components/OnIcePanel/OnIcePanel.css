@@ -126,6 +126,10 @@
       display: flex;
    }
 
+   @media (max-width: 640px) {
+      justify-content: center;
+   }
+
    @media (max-height: 500px) and (min-width: 641px) {
       flex-direction: column;
    }
@@ -153,6 +157,13 @@
    font-size: 13px;
    font-weight: 700;
    font-variant-numeric: tabular-nums;
+
+   @media (max-width: 640px) {
+      flex: none;
+      width: 34px;
+      height: 34px;
+      font-size: 14px;
+   }
 
    @media (max-height: 500px) and (min-width: 641px) {
       flex: none;

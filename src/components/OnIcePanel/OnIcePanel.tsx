@@ -5,10 +5,11 @@ import PlayerCard from '@components/PlayerCard';
 import { textColorOn } from '@domain/colors';
 import { POSITION_CODES } from '@domain/constants';
 import { byPosition, keepSlots } from '@domain/lineup';
-import type { Player, Team } from '@domain/types';
+import type { Player, Side, Team } from '@domain/types';
 
 type OnIcePanelProps = {
    position: 'left' | 'right';
+   side: Side;
    team?: Team;
    color?: string;
    players?: Player[];
@@ -27,7 +28,14 @@ const idsOf = (players: Player[]): string =>
       .toSorted((a, b) => a - b)
       .join();
 
-function OnIcePanel({ position, team, color, players, highlighted = NO_IDS }: OnIcePanelProps) {
+function OnIcePanel({
+   position,
+   side,
+   team,
+   color,
+   players,
+   highlighted = NO_IDS,
+}: OnIcePanelProps) {
    const onIce = players ?? NO_PLAYERS;
    const goalies = onIce.filter(isGoalie);
    const onIceSkaters = onIce.filter((player) => !isGoalie(player));
@@ -75,7 +83,7 @@ function OnIcePanel({ position, team, color, players, highlighted = NO_IDS }: On
 
    return (
       <div
-         className={`on-ice on-ice--${position}`}
+         className={`on-ice on-ice--${position} on-ice--${side}`}
          aria-label={team && `${team.abbrev} on the ice`}
          style={
             color !== undefined

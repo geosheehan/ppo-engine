@@ -18,17 +18,17 @@
 
    @media (max-width: 640px), (max-height: 500px) {
       --rink-cap: calc((100svh - var(--replay-chrome)) * 202 / 87);
-      flex: none;
+      flex: 1 0 auto;
       gap: 8px;
       padding: 8px 16px 0;
    }
 
    @media (max-width: 640px) {
-      --replay-chrome: 440px;
+      --replay-chrome: 490px;
    }
 
    @media (max-height: 500px) and (min-width: 641px) {
-      --replay-chrome: 184px;
+      --replay-chrome: 158px;
    }
 }
 
@@ -99,10 +99,19 @@
    @media (max-width: 640px) {
       grid-template-columns: repeat(2, minmax(0, 1fr));
       grid-template-areas:
+         'home home'
          'rink rink'
-         'left right'
+         'away away'
          'clocks-left clocks-right';
       gap: 8px 16px;
+
+      > .on-ice--home {
+         grid-area: home;
+      }
+
+      > .on-ice--away {
+         grid-area: away;
+      }
    }
 
    @media (max-height: 500px) and (min-width: 641px) {

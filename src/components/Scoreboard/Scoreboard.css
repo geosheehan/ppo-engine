@@ -15,16 +15,18 @@
    font-variant-numeric: tabular-nums;
 
    @media (max-height: 500px) and (min-width: 641px) {
-      display: grid;
-      grid-template-columns: repeat(4, auto);
-      align-items: center;
-      gap: 0 10px;
+      gap: 10px;
+      font-size: 20px;
    }
 
    strong {
       font-size: 36px;
       font-weight: 500;
       line-height: 1;
+
+      @media (max-height: 500px) and (min-width: 641px) {
+         font-size: 28px;
+      }
    }
 }
 
@@ -35,10 +37,8 @@
    text-align: center;
 
    @media (max-height: 500px) and (min-width: 641px) {
-      grid-row: 2;
-      grid-column: 1 / -1;
+      min-width: 5em;
       font-size: 14px;
-      line-height: 1.3;
    }
 }
 

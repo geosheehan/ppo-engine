@@ -8,9 +8,8 @@
 
    @media (max-height: 500px) and (min-width: 641px) {
       flex: 1;
-      flex-direction: column;
       flex-wrap: nowrap;
-      align-items: stretch;
+      justify-content: flex-start;
       min-width: 0;
       text-align: left;
    }
@@ -25,8 +24,8 @@
    color: var(--text-h);
 
    @media (max-height: 500px) and (min-width: 641px) {
+      flex: none;
       gap: 8px;
-      min-width: 0;
       font-size: 16px;
       white-space: nowrap;
    }
@@ -37,7 +36,8 @@
    min-height: 1lh;
 
    @media (max-height: 500px) and (min-width: 641px) {
-      flex-basis: auto;
+      flex: 1 1 0;
+      min-width: 0;
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
