@@ -42,8 +42,10 @@
 
 .replay__ice {
    --rink-width: calc((100cqh - 72px - 12px) * 202 / 87);
+   --rink-floor: min(560px, var(--rink-width));
+   --panel-width: clamp(76px, (100cqw - var(--rink-floor) - 2 * 16px) / 2, 328px);
    display: grid;
-   grid-template-columns: auto minmax(0, var(--rink-width)) auto;
+   grid-template-columns: var(--panel-width) minmax(0, var(--rink-width)) var(--panel-width);
    grid-template-areas: 'left center right';
    justify-content: center;
    align-items: center;
