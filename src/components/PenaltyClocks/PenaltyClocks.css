@@ -13,6 +13,7 @@
 .penalty-clocks__slot {
    flex: 0 1 140px;
    min-width: 0;
+   container: penalty-slot / inline-size;
 }
 
 .penalty-clocks__empty {
