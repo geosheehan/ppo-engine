@@ -63,6 +63,12 @@ function ReplayControls({
    return (
       <div className="replay-controls">
          <div className="replay-controls__essentials">
+            <span className="replay-controls__count">
+               <span className="visually-hidden">Play </span>
+               <span>{disabled ? '–' : index + 1}</span>
+               <span className="visually-hidden"> of </span>
+               <span className="replay-controls__count-total">{disabled ? '–' : plays.length}</span>
+            </span>
             <ReplayTrack
                stepIndex={stepIndex}
                lastStep={lastStep}
@@ -82,8 +88,8 @@ function ReplayControls({
                ref={jumpToggle}
                type="button"
                className="replay-controls__jump-toggle"
-               aria-label="Jump to event"
-               title="Jump to event"
+               aria-label="More options"
+               title="More options"
                aria-expanded={jumpOpen}
                aria-controls={jumpId}
                onClick={() => setJumpOpen((open) => !open)}
@@ -103,6 +109,14 @@ function ReplayControls({
                   disabled={disabled}
                   onJump={goTo}
                />
+               <div className="replay-controls__speed">
+                  <span aria-hidden="true">Speed</span>
+                  <PlaybackSelect
+                     value={playbackKey}
+                     disabled={disabled}
+                     onChange={setPlaybackKey}
+                  />
+               </div>
             </div>
          </div>
          <div className="replay-controls__extras">
