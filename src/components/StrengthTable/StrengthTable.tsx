@@ -1,11 +1,14 @@
 import type { OpportunityTotal } from '@engine/types';
 import '@components/StrengthTable/StrengthTable.css';
 import { clsx } from 'clsx';
+import { record, STRENGTHS } from '@components/StrengthTable/rows';
 import TeamChip from '@components/TeamChip';
 import { strengthLabel } from '@engine/strength';
+import { sumTotals } from '@engine/totals';
 import type { Strength } from '@engine/types';
 import { secondsToClock } from '@domain/clock';
 import { textColorOn } from '@domain/colors';
+import { SIDES } from '@domain/constants';
 import type { Side, Team } from '@domain/types';
 
 type StrengthTableProps = {
@@ -17,10 +20,7 @@ type StrengthTableProps = {
    strength?: Strength;
 };
 
-const STRENGTHS = ['5v4', '5v3', '4v3'] as const;
 const NO_TOTALS: OpportunityTotal[] = [];
-
-const record = (goals: number, opportunities: number): string => `${goals}/${opportunities}`;
 
 function StrengthTable({
    side,
@@ -35,17 +35,16 @@ function StrengthTable({
    const liveLabel = strength && strengthLabel(strength, side);
    const liveClass = (label: string): string | undefined =>
       label === liveLabel ? 'strength-table__live' : undefined;
-   const total = totals.reduce(
-      (sum, row) => ({
-         goals: sum.goals + row.goals,
-         opportunities: sum.opportunities + row.opportunities,
-         seconds: sum.seconds + row.seconds,
-      }),
-      { goals: 0, opportunities: 0, seconds: 0 },
-   );
+   const total = sumTotals(totals);
 
    return (
-      <div className={`strength-table__card strength-table__card--${position}`}>
+      <div
+         className={clsx(
+            'strength-table__card',
+            `strength-table__card--${position}`,
+            side === SIDES.HOME && 'strength-table__card--home',
+         )}
+      >
          <table
             className="strength-table"
             style={

@@ -18,6 +18,26 @@
    @media (max-width: 880px) {
       justify-self: center;
    }
+
+   @media (max-width: 640px) {
+      display: none;
+   }
+}
+
+.strength-table__card--home {
+   @media (max-width: 880px) {
+      order: -1;
+   }
+}
+
+.strength-table__card--merged {
+   display: none;
+   width: auto;
+   padding: 10px 8px;
+
+   @media (max-width: 640px) {
+      display: block;
+   }
 }
 
 .strength-table {
@@ -122,4 +142,42 @@
    th {
       font-weight: 500;
    }
+}
+
+@media (max-width: 880px) {
+   .strength-table th,
+   .strength-table td {
+      padding-inline: 8px;
+   }
+}
+
+.strength-table--merged {
+   width: 100%;
+   table-layout: fixed;
+   font-size: 14px;
+
+   th,
+   td {
+      padding-inline: 4px;
+   }
+
+   thead th:not(:first-child) {
+      width: auto;
+   }
+
+   thead th:first-child {
+      width: 48px;
+   }
+
+   thead th:nth-child(2) {
+      width: 50px;
+   }
+
+   .strength-table__time::before {
+      margin-right: 3px;
+   }
+}
+
+.strength-table__team {
+   vertical-align: middle;
 }
