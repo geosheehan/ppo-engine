@@ -115,19 +115,12 @@
    }
 }
 
-@container on-ice (width < 150px) {
-   .player-card__meta,
-   .player-card__first {
+@container on-ice-line (width < 124px) {
+   .player-card__info {
       display: none;
    }
 
    .player-card__badge {
       display: block;
-   }
-}
-
-@container on-ice (width < 112px) {
-   .player-card__info {
-      display: none;
    }
 }

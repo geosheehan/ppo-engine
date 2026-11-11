@@ -6,6 +6,24 @@
    text-align: left;
 }
 
+.penalty-card__player {
+   display: flex;
+   align-items: center;
+   gap: 8px;
+   min-width: 0;
+}
+
+.penalty-card__name {
+   display: none;
+   min-width: 0;
+   font-size: 13px;
+   font-weight: 600;
+   color: var(--text-h);
+   overflow: hidden;
+   white-space: nowrap;
+   text-overflow: ellipsis;
+}
+
 .penalty-card__penalty {
    display: flex;
    align-items: baseline;
@@ -28,4 +46,83 @@
    overflow: hidden;
    white-space: nowrap;
    text-overflow: ellipsis;
+}
+
+@container penalty-slot (width < 128px) {
+   .penalty-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+         'player'
+         'name'
+         'penalty';
+      justify-items: center;
+      gap: 2px;
+      line-height: 16px;
+   }
+
+   .penalty-card__player {
+      display: contents;
+   }
+
+   .penalty-card .player-card {
+      grid-area: player;
+   }
+
+   .penalty-card .player-card__info {
+      display: none;
+   }
+
+   .penalty-card .player-card__badge {
+      display: block;
+   }
+
+   .penalty-card__name {
+      grid-area: name;
+      display: block;
+      max-width: 100%;
+   }
+
+   .penalty-card__penalty {
+      grid-area: penalty;
+      max-width: 100%;
+   }
+}
+
+@container penalty-slot (width < 104px) {
+   .penalty-card {
+      grid-template-areas:
+         'player'
+         'time'
+         'infraction';
+   }
+
+   .penalty-card__penalty {
+      display: contents;
+   }
+
+   .penalty-card__name {
+      display: none;
+   }
+
+   .penalty-card__time {
+      grid-area: time;
+   }
+
+   .penalty-card__infraction {
+      grid-area: infraction;
+      max-width: 100%;
+   }
+}
+
+@container penalty-slot (width < 90px) {
+   .penalty-card {
+      grid-template-areas:
+         'player'
+         'time';
+   }
+
+   .penalty-card__infraction {
+      display: none;
+   }
 }
