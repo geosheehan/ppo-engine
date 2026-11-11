@@ -2,6 +2,7 @@ import '@components/OnIcePanel/OnIcePanel.css';
 import { useState } from 'react';
 import { clsx } from 'clsx';
 import PlayerCard from '@components/PlayerCard';
+import { textColorOn } from '@domain/colors';
 import { POSITION_CODES } from '@domain/constants';
 import { byPosition, keepSlots } from '@domain/lineup';
 import type { Player, Team } from '@domain/types';
@@ -11,10 +12,12 @@ type OnIcePanelProps = {
    team?: Team;
    color?: string;
    players?: Player[];
+   highlighted?: number[];
 };
 
 const SKATER_SLOTS = 5;
 const NO_PLAYERS: Player[] = [];
+const NO_IDS: number[] = [];
 
 const isGoalie = (player: Player): boolean => player.positionCode === POSITION_CODES.GOALIE;
 
@@ -24,7 +27,7 @@ const idsOf = (players: Player[]): string =>
       .toSorted((a, b) => a - b)
       .join();
 
-function OnIcePanel({ position, team, color, players }: OnIcePanelProps) {
+function OnIcePanel({ position, team, color, players, highlighted = NO_IDS }: OnIcePanelProps) {
    const onIce = players ?? NO_PLAYERS;
    const goalies = onIce.filter(isGoalie);
    const onIceSkaters = onIce.filter((player) => !isGoalie(player));
@@ -55,12 +58,30 @@ function OnIcePanel({ position, team, color, players }: OnIcePanelProps) {
             <PlayerCard mirrored={mirrored} />
          </li>
       ));
+   const chip = (player: Player) => (
+      <li
+         key={player.playerId}
+         className={clsx(
+            'on-ice__number',
+            isGoalie(player) && 'on-ice__number--goalie',
+            highlighted.includes(player.playerId) && 'on-ice__number--highlighted',
+            arrivals.includes(player.playerId) && 'on-ice__arrival',
+         )}
+      >
+         <span className="visually-hidden">{player.lastName.default} </span>
+         {player.sweaterNumber}
+      </li>
+   );
 
    return (
       <div
          className={`on-ice on-ice--${position}`}
          aria-label={team && `${team.abbrev} on the ice`}
-         style={color !== undefined ? { '--team-color': color } : undefined}
+         style={
+            color !== undefined
+               ? { '--team-color': color, '--team-text-color': textColorOn(color) }
+               : undefined
+         }
       >
          <div className="on-ice__lines">
             <ol className="on-ice__column">
@@ -77,6 +98,23 @@ function OnIcePanel({ position, team, color, players }: OnIcePanelProps) {
                )}
             </ol>
          </div>
+         <ol className="on-ice__numbers">
+            {players ? (
+               <>
+                  {skaters.map(chip)}
+                  {goalies.map(chip)}
+                  {goalies.length === 0 && (
+                     <li className="on-ice__number on-ice__number--goalie on-ice__number--empty-net">
+                        <abbr title="Empty net">EN</abbr>
+                     </li>
+                  )}
+               </>
+            ) : (
+               Array.from({ length: SKATER_SLOTS + 1 }, (_, i) => (
+                  <li key={i} className="on-ice__number on-ice__number--blank" />
+               ))
+            )}
+         </ol>
       </div>
    );
 }

@@ -1,7 +1,9 @@
 .replay-controls {
    display: flex;
-   flex-direction: column;
-   gap: 8px;
+   flex-wrap: wrap;
+   justify-content: center;
+   align-items: center;
+   gap: 8px 32px;
 
    button,
    select {
@@ -24,15 +26,23 @@
    }
 }
 
-.replay-controls__bar {
-   display: flex;
-   flex-wrap: wrap;
-   justify-content: center;
-   align-items: center;
-   gap: 8px 32px;
+.replay-controls__essentials,
+.replay-controls__extras,
+.replay-controls__jump {
+   display: contents;
+}
+
+.replay-controls .replay-track {
+   flex: 1 1 100%;
+   order: -2;
+}
+
+.replay-controls .replay-controls__jump-toggle {
+   display: none;
 }
 
 .replay-controls__group {
+   order: -1;
    display: flex;
    align-items: center;
    gap: 4px;

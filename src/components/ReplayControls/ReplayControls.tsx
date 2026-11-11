@@ -1,7 +1,10 @@
 import '@components/ReplayControls/ReplayControls.css';
-import { useMemo, useState } from 'react';
+import { useId, useMemo, useRef, useState } from 'react';
+import type { KeyboardEvent } from 'react';
+import { clsx } from 'clsx';
 import { PLAYBACKS } from '@components/constants';
 import EventJump from '@components/EventJump';
+import MoreIcon from '@components/icons/replay/MoreIcon';
 import PlaybackSelect from '@components/PlaybackSelect';
 import ReplayTrack from '@components/ReplayTrack';
 import StepButtons from '@components/StepButtons';
@@ -39,6 +42,9 @@ function ReplayControls({
    );
 
    const [playbackKey, setPlaybackKey] = useState('live-1');
+   const [jumpOpen, setJumpOpen] = useState(false);
+   const jumpId = useId();
+   const jumpToggle = useRef<HTMLButtonElement>(null);
    const { playing, togglePlaying } = useReplayPlayback({
       playback: PLAYBACKS[playbackKey],
       plays,
@@ -48,22 +54,22 @@ function ReplayControls({
       onChange,
    });
 
+   const closeJumpOnEscape = (event: KeyboardEvent<HTMLDivElement>) => {
+      if (event.key !== 'Escape' || !jumpOpen) return;
+      setJumpOpen(false);
+      jumpToggle.current?.focus();
+   };
+
    return (
       <div className="replay-controls">
-         <ReplayTrack
-            stepIndex={stepIndex}
-            lastStep={lastStep}
-            goalSteps={goalSteps}
-            disabled={disabled}
-            onSeek={goTo}
-         />
-         <div className="replay-controls__bar">
-            <div className="replay-controls__group">
-               <span className="replay-controls__position">
-                  {disabled ? 'Play – / –' : `Play ${index + 1} / ${plays.length}`}
-               </span>
-               <PlaybackSelect value={playbackKey} disabled={disabled} onChange={setPlaybackKey} />
-            </div>
+         <div className="replay-controls__essentials">
+            <ReplayTrack
+               stepIndex={stepIndex}
+               lastStep={lastStep}
+               goalSteps={goalSteps}
+               disabled={disabled}
+               onSeek={goTo}
+            />
             <StepButtons
                stepIndex={stepIndex}
                lastStep={lastStep}
@@ -72,14 +78,40 @@ function ReplayControls({
                onStep={goTo}
                onTogglePlaying={togglePlaying}
             />
-            <EventJump
-               plays={plays}
-               steps={steps}
-               stepIndex={stepIndex}
-               playing={playing}
-               disabled={disabled}
-               onJump={goTo}
-            />
+            <button
+               ref={jumpToggle}
+               type="button"
+               className="replay-controls__jump-toggle"
+               aria-label="Jump to event"
+               title="Jump to event"
+               aria-expanded={jumpOpen}
+               aria-controls={jumpId}
+               onClick={() => setJumpOpen((open) => !open)}
+            >
+               <MoreIcon />
+            </button>
+            <div
+               id={jumpId}
+               className={clsx('replay-controls__jump', jumpOpen && 'replay-controls__jump--open')}
+               onKeyDown={closeJumpOnEscape}
+            >
+               <EventJump
+                  plays={plays}
+                  steps={steps}
+                  stepIndex={stepIndex}
+                  playing={playing}
+                  disabled={disabled}
+                  onJump={goTo}
+               />
+            </div>
+         </div>
+         <div className="replay-controls__extras">
+            <div className="replay-controls__group">
+               <span className="replay-controls__position">
+                  {disabled ? 'Play – / –' : `Play ${index + 1} / ${plays.length}`}
+               </span>
+               <PlaybackSelect value={playbackKey} disabled={disabled} onChange={setPlaybackKey} />
+            </div>
          </div>
       </div>
    );

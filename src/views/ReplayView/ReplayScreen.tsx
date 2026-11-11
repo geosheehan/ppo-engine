@@ -44,6 +44,9 @@ function ReplayScreen({ game, replay, emptyTitle = 'Loading game' }: ReplayScree
       play && isGoal(play) && !isLineChange
          ? game?.sideOf(play.details.eventOwnerTeamId)
          : undefined;
+   const participantIds = replay?.participants.lists.flatMap(({ cards }) =>
+      cards.map(({ player }) => player.playerId),
+   );
    const shotLocated =
       play !== undefined
       && isGoal(play)
@@ -85,6 +88,7 @@ function ReplayScreen({ game, replay, emptyTitle = 'Loading game' }: ReplayScree
                   team={team(left)}
                   color={game?.colors[left]}
                   players={replay?.onIcePlayers[left]}
+                  highlighted={participantIds}
                />
                <div className="replay__center">
                   <Rink className="replay__rink">
@@ -122,6 +126,7 @@ function ReplayScreen({ game, replay, emptyTitle = 'Loading game' }: ReplayScree
                   team={team(right)}
                   color={game?.colors[right]}
                   players={replay?.onIcePlayers[right]}
+                  highlighted={participantIds}
                />
             </div>
          </div>
@@ -133,7 +138,7 @@ function ReplayScreen({ game, replay, emptyTitle = 'Loading game' }: ReplayScree
             stepIndex={replay?.stepIndex}
             onChange={replay?.setPosition}
          />
-         <div className="replay__clocks">
+         <div className="replay__tables">
             {sides.map((side, i) => (
                <StrengthTable
                   key={side}

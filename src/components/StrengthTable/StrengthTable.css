@@ -3,10 +3,6 @@
    padding: 12px 16px;
    border: 1px solid var(--border);
    border-radius: 8px;
-
-   @media (max-width: 768px) {
-      justify-self: center;
-   }
 }
 
 .strength-table__card--left {
@@ -15,6 +11,13 @@
 
 .strength-table__card--right {
    justify-self: start;
+}
+
+.strength-table__card--left,
+.strength-table__card--right {
+   @media (max-width: 880px) {
+      justify-self: center;
+   }
 }
 
 .strength-table {

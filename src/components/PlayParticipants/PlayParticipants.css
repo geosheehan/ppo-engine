@@ -7,6 +7,10 @@
    column-gap: var(--gap-facing);
    flex: none;
    height: 72px;
+
+   @media (max-width: 640px), (max-height: 500px) {
+      display: none;
+   }
 }
 
 .play-participants--close {

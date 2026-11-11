@@ -4,16 +4,30 @@
    margin: 0;
    padding: 0;
    list-style: none;
+
+   @media (max-height: 500px) and (min-width: 641px) {
+      flex-direction: column;
+      justify-content: center;
+   }
 }
 
 .penalty-clocks--left {
    flex-direction: row-reverse;
+
+   @media (max-height: 500px) and (min-width: 641px) {
+      flex-direction: column;
+   }
 }
 
 .penalty-clocks__slot {
    flex: 0 1 140px;
    min-width: 0;
    container: penalty-slot / inline-size;
+
+   @media (max-height: 500px) and (min-width: 641px) {
+      flex: none;
+      width: 64px;
+   }
 }
 
 .penalty-clocks__empty {
@@ -21,4 +35,22 @@
    box-sizing: border-box;
    border: 1px dashed var(--border);
    border-radius: 6px;
+}
+
+@container penalty-slot (width < 128px) {
+   .penalty-clocks__empty {
+      height: 90px;
+   }
+}
+
+@container penalty-slot (width < 104px) {
+   .penalty-clocks__empty {
+      height: 92px;
+   }
+}
+
+@container penalty-slot (width < 90px) {
+   .penalty-clocks__empty {
+      height: 72px;
+   }
 }
