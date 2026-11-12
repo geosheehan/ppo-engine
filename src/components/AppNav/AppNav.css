@@ -57,3 +57,108 @@
    padding-block: 8px;
    font-size: 14px;
 }
+
+.app-nav__menu {
+   display: none;
+   place-items: center;
+   width: 44px;
+   height: 44px;
+   margin-left: -12px;
+   padding: 0;
+   border: none;
+   border-radius: 6px;
+   background: transparent;
+   color: var(--text-h);
+   cursor: pointer;
+}
+
+@media (max-width: 640px), (max-height: 500px) {
+   .app-nav {
+      flex-wrap: nowrap;
+      column-gap: 4px;
+      padding: 0 16px;
+   }
+
+   .app-nav__menu {
+      display: grid;
+   }
+
+   .app-nav__links {
+      display: none;
+   }
+
+   .app-nav__game {
+      min-width: 0;
+   }
+}
+
+.app-nav__drawer {
+   position: fixed;
+   inset: 0 auto 0 0;
+   width: min(280px, 85vw);
+   height: 100dvh;
+   max-height: none;
+   box-sizing: border-box;
+   margin: 0;
+   padding: 0;
+   overflow: auto;
+   border: none;
+   border-right: 1px solid var(--border);
+   background: var(--bg);
+   color: var(--text);
+   font-size: 16px;
+   text-align: left;
+   translate: -100% 0;
+   transition:
+      translate 0.2s ease-out,
+      overlay 0.2s allow-discrete,
+      display 0.2s allow-discrete;
+
+   &:popover-open {
+      translate: 0 0;
+
+      @starting-style {
+         translate: -100% 0;
+      }
+   }
+
+   &::backdrop {
+      background: rgb(0 0 0 / 45%);
+   }
+
+   @media (prefers-reduced-motion: reduce) {
+      transition: none;
+   }
+}
+
+.app-nav__drawer-head {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   min-height: 48px;
+   padding: 0 4px 0 20px;
+   border-bottom: 1px solid var(--border);
+
+   .app-nav__close {
+      display: grid;
+      margin: 0;
+   }
+}
+
+.app-nav__drawer-links {
+   display: flex;
+   flex-direction: column;
+   padding: 8px 0;
+
+   .app-nav__link {
+      min-height: 48px;
+      padding: 0 20px;
+      border-block: none;
+      border-left: 3px solid transparent;
+   }
+
+   .app-nav__link--active {
+      border-left-color: var(--text-h);
+      background: color-mix(in srgb, var(--text-h) 6%, transparent);
+   }
+}
