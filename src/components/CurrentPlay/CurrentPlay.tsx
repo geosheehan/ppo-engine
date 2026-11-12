@@ -1,7 +1,7 @@
 import type { ParticipantCard, ParticipantLayout } from '@layout/types';
 import type { GoalSituation } from '@engine/types';
 import { LINE_CHANGE } from '@domain/constants';
-import { isGoal, isPenalty } from '@domain/plays';
+import { isGoal, isPenalty, isStoppage } from '@domain/plays';
 import '@components/CurrentPlay/CurrentPlay.css';
 import TeamChip from '@components/TeamChip';
 import { participantRoles, rolesLine } from '@layout/participantRoles';
@@ -10,7 +10,8 @@ import type { GoalEffect } from '@engine/types';
 import { penaltyDisplayName } from '@domain/penalties';
 import { playerShortName } from '@domain/players';
 import { stepTypeLabel } from '@domain/steps';
-import type { Play, Player } from '@domain/types';
+import { stoppageDetail } from '@domain/stoppages';
+import type { Play, Player, Side } from '@domain/types';
 
 type CurrentPlayProps = {
    play?: Play;
@@ -18,6 +19,7 @@ type CurrentPlayProps = {
    goalEffect?: GoalEffect;
    changedTeamId?: number;
    participants?: ParticipantLayout<ParticipantCard>;
+   abbrevs?: Record<Side, string>;
 };
 
 const SITUATION_LABELS: Record<GoalSituation, string> = {
@@ -25,7 +27,14 @@ const SITUATION_LABELS: Record<GoalSituation, string> = {
    'shorthanded': 'Short Handed',
 };
 
-function CurrentPlay({ play, player, goalEffect, changedTeamId, participants }: CurrentPlayProps) {
+function CurrentPlay({
+   play,
+   player,
+   goalEffect,
+   changedTeamId,
+   participants,
+   abbrevs,
+}: CurrentPlayProps) {
    const roles = (
       <div className="current-play__roles">
          {participants && (
@@ -72,6 +81,8 @@ function CurrentPlay({ play, player, goalEffect, changedTeamId, participants }: 
       detail = `${penaltyDisplayName(play.details.descKey)} | ${play.details.duration} min | ${playerShortName(player)}`;
    } else if (isGoal(play)) {
       detail = playerShortName(player);
+   } else if (isStoppage(play)) {
+      detail = stoppageDetail(play.details, abbrevs);
    }
 
    return (

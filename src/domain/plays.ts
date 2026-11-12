@@ -1,6 +1,6 @@
 import { clockToSeconds, gameSeconds } from '@domain/clock';
 import { PERIOD_SECONDS, PLAY_TYPES } from '@domain/constants';
-import type { GameElapsed, GoalPlay, PenaltyPlay, Play, Side } from '@domain/types';
+import type { GameElapsed, GoalPlay, PenaltyPlay, Play, Side, StoppagePlay } from '@domain/types';
 
 export const playTime = (play: Play): GameElapsed =>
    gameSeconds(play.periodDescriptor.number, play.timeInPeriod);
@@ -40,6 +40,8 @@ export function runningScores(plays: Play[]): Score[] {
 export const isPenalty = (play: Play): play is PenaltyPlay =>
    play.typeDescKey === PLAY_TYPES.PENALTY;
 export const isGoal = (play: Play): play is GoalPlay => play.typeDescKey === PLAY_TYPES.GOAL;
+export const isStoppage = (play: Play): play is StoppagePlay =>
+   play.typeDescKey === PLAY_TYPES.STOPPAGE;
 
 export function featuredPlayerId(play: Play): number | undefined {
    if (isPenalty(play)) return play.details.committedByPlayerId ?? play.details.servedByPlayerId;

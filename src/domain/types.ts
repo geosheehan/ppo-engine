@@ -121,6 +121,7 @@ type PlayWithout<T extends PlayType> = PlayBase & { typeDescKey: T; details?: un
 
 export type GoalPlay = PlayWith<typeof PLAY_TYPES.GOAL, GoalDetails>;
 export type PenaltyPlay = PlayWith<typeof PLAY_TYPES.PENALTY, PenaltyDetails>;
+export type StoppagePlay = PlayWith<typeof PLAY_TYPES.STOPPAGE, StoppageDetails>;
 
 export type Play =
    | PlayWith<typeof PLAY_TYPES.BLOCKED_SHOT, BlockedShotDetails>
@@ -132,7 +133,7 @@ export type Play =
    | PlayWith<typeof PLAY_TYPES.MISSED_SHOT, MissedShotDetails>
    | PenaltyPlay
    | PlayWith<typeof PLAY_TYPES.SHOT_ON_GOAL, ShotOnGoalDetails>
-   | PlayWith<typeof PLAY_TYPES.STOPPAGE, StoppageDetails>
+   | StoppagePlay
    | PlayWith<typeof PLAY_TYPES.TAKEAWAY, TurnoverDetails>
    | PlayWithout<
         typeof PLAY_TYPES.GAME_END | typeof PLAY_TYPES.PERIOD_END | typeof PLAY_TYPES.PERIOD_START
