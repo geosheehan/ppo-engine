@@ -3,7 +3,7 @@
    flex-wrap: wrap;
    justify-content: center;
    align-items: baseline;
-   column-gap: 12px;
+   column-gap: calc(12 * var(--text-unit));
    row-gap: 2px;
 
    @media (max-height: 500px) and (min-width: 641px) {
@@ -19,9 +19,9 @@
 .current-play__what {
    display: flex;
    align-items: center;
-   gap: 12px;
+   gap: calc(12 * var(--text-unit));
    min-height: 1.25em;
-   font-size: 24px;
+   font-size: calc(24 * var(--text-unit));
    color: var(--text-h);
 
    @media (max-width: 640px) {
@@ -107,17 +107,17 @@
 
 .current-play__effects {
    display: flex;
-   gap: 8px;
+   gap: calc(8 * var(--text-unit));
    margin: 0;
    padding: 0;
    list-style: none;
 
    li {
-      padding: 0 10px;
+      padding: 0 calc(10 * var(--text-unit));
       line-height: 1.6;
       border-radius: 999px;
       background: #c2410c;
       color: #fff;
-      font-size: 14px;
+      font-size: calc(14 * var(--text-unit));
    }
 }

@@ -1,11 +1,11 @@
 .game-picker__trigger {
    display: flex;
    align-items: center;
-   gap: 6px;
-   height: 32px;
-   padding: 0 14px;
+   gap: calc(6 * var(--text-unit));
+   height: calc(32 * var(--text-unit));
+   padding: 0 calc(14 * var(--text-unit));
    border: 1px solid var(--border);
-   border-radius: 6px;
+   border-radius: calc(6 * var(--text-unit));
    background: transparent;
    color: var(--text-h);
    font: inherit;
@@ -33,7 +33,7 @@
    box-sizing: border-box;
    max-height: calc(100svh - 64px);
    margin: 0;
-   padding: 16px 32px 24px;
+   padding: calc(16 * var(--text-unit)) calc(32 * var(--text-unit)) calc(24 * var(--text-unit));
    overflow: auto;
    border: 1px solid var(--border);
    border-top: none;

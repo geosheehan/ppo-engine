@@ -1,7 +1,7 @@
 .player-card {
    display: flex;
    align-items: center;
-   gap: 8px;
+   gap: calc(8 * var(--text-unit));
    min-width: 0;
    text-align: left;
 }
@@ -14,10 +14,10 @@
 .player-card__frame {
    flex: none;
    position: relative;
-   width: 52px;
-   height: 52px;
+   width: var(--headshot-size, 52px);
+   height: var(--headshot-size, 52px);
    overflow: hidden;
-   border-radius: 6px;
+   border-radius: calc(6 * var(--graphic-unit));
    background: var(--team-color, var(--border));
 }
 
@@ -55,8 +55,8 @@
 
 .player-card__info {
    min-width: 0;
-   font-size: 13px;
-   line-height: 16px;
+   font-size: calc(13 * var(--text-unit));
+   line-height: calc(16 * var(--text-unit));
 
    > div {
       overflow: hidden;
@@ -66,7 +66,7 @@
 }
 
 .player-card__meta {
-   font-size: 11px;
+   font-size: calc(11 * var(--text-unit));
    letter-spacing: 0.4px;
    font-variant-numeric: tabular-nums;
 }
@@ -82,35 +82,35 @@
 
 .player-card__badge {
    position: absolute;
-   bottom: 2px;
+   bottom: calc(2 * var(--text-unit));
    z-index: 1;
    display: none;
-   padding: 0 3px;
-   border-radius: 3px;
+   padding: 0 calc(3 * var(--text-unit));
+   border-radius: calc(3 * var(--text-unit));
    background: rgb(0 0 0 / 72%);
    color: #fff;
-   font-size: 11px;
+   font-size: calc(11 * var(--text-unit));
    font-weight: 700;
-   line-height: 14px;
+   line-height: calc(14 * var(--text-unit));
    font-variant-numeric: tabular-nums;
 }
 
 .player-card__badge--number {
-   right: 2px;
+   right: calc(2 * var(--text-unit));
 }
 
 .player-card__badge--position {
-   left: 2px;
+   left: calc(2 * var(--text-unit));
 }
 
 .player-card--mirrored {
    .player-card__badge--number {
       right: auto;
-      left: 2px;
+      left: calc(2 * var(--text-unit));
    }
 
    .player-card__badge--position {
-      right: 2px;
+      right: calc(2 * var(--text-unit));
       left: auto;
    }
 }

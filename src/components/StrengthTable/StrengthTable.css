@@ -1,8 +1,8 @@
 .strength-table__card {
    width: fit-content;
-   padding: 12px 16px;
+   padding: calc(12 * var(--text-unit)) calc(16 * var(--text-unit));
    border: 1px solid var(--border);
-   border-radius: 8px;
+   border-radius: calc(8 * var(--text-unit));
 }
 
 .strength-table__card--left {
@@ -45,8 +45,8 @@
    font-variant-numeric: tabular-nums;
 
    caption {
-      margin-bottom: 8px;
-      font-size: 18px;
+      margin-bottom: calc(8 * var(--text-unit));
+      font-size: calc(18 * var(--text-unit));
       font-weight: 500;
       color: var(--text-h);
       text-align: left;
@@ -54,7 +54,7 @@
 
    th,
    td {
-      padding: 4px 12px;
+      padding: calc(4 * var(--text-unit)) calc(12 * var(--text-unit));
       text-align: right;
    }
 
@@ -108,13 +108,12 @@
    white-space: nowrap;
 }
 
-/* Every strength's time keeps an invisible dot, so lighting one up doesn't change the column widths. */
 .strength-table__time::before {
    content: '';
    display: inline-block;
-   width: 6px;
-   height: 6px;
-   margin-right: 6px;
+   width: calc(6 * var(--text-unit));
+   height: calc(6 * var(--text-unit));
+   margin-right: calc(6 * var(--text-unit));
    vertical-align: middle;
    border-radius: 50%;
 }

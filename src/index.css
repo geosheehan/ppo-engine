@@ -23,6 +23,18 @@
    }
 }
 
+@property --text-unit {
+   syntax: '<length>';
+   inherits: true;
+   initial-value: 1px;
+}
+
+@property --graphic-unit {
+   syntax: '<length>';
+   inherits: true;
+   initial-value: 1px;
+}
+
 @media (prefers-color-scheme: dark) {
    :root {
       --text: #9ca3af;

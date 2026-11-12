@@ -1,6 +1,10 @@
 #root:has(.replay) {
+   --text-unit: clamp(1px, 0.5px + min(100vw / 3840, 100svh / 2160), 2px);
+   --graphic-unit: calc(2 * var(--text-unit) - 1px);
    width: 100%;
    height: 100svh;
+   font-size: calc(1rem + 18 * (var(--text-unit) - 1px));
+   line-height: 145%;
 
    @media (max-width: 640px), (max-height: 500px) {
       height: auto;
@@ -10,11 +14,11 @@
 .replay {
    display: flex;
    flex-direction: column;
-   gap: 9px;
+   gap: calc(9 * var(--graphic-unit));
    flex: 1 1 0;
    min-height: 0;
    box-sizing: border-box;
-   padding: 8px 32px;
+   padding: calc(8 * var(--graphic-unit)) calc(32 * var(--graphic-unit));
 
    @media (max-width: 640px), (max-height: 500px) {
       --rink-cap: calc((100svh - var(--replay-chrome)) * 202 / 87);
@@ -35,7 +39,7 @@
 .replay__header {
    display: flex;
    flex-direction: column;
-   gap: 6px;
+   gap: calc(6 * var(--text-unit));
 
    @media (max-height: 500px) and (min-width: 641px) {
       flex-direction: row;
@@ -174,7 +178,7 @@
 .replay__tables {
    display: grid;
    grid-template-columns: repeat(2, minmax(0, 1fr));
-   gap: 16px 32px;
+   gap: calc(16 * var(--graphic-unit)) calc(32 * var(--graphic-unit));
 
    @media (max-width: 880px) {
       grid-template-columns: 1fr;

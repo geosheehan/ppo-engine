@@ -4,14 +4,14 @@
    flex-wrap: wrap;
    justify-content: center;
    align-items: center;
-   gap: 8px 32px;
+   gap: calc(8 * var(--text-unit)) calc(32 * var(--text-unit));
 
    button,
    select {
       font: inherit;
-      padding: 6px 14px;
+      padding: calc(6 * var(--text-unit)) calc(14 * var(--text-unit));
       border: 1px solid var(--border);
-      border-radius: 6px;
+      border-radius: calc(6 * var(--text-unit));
       background: transparent;
       color: var(--text-h);
       cursor: pointer;
@@ -24,6 +24,11 @@
 
    option {
       background: var(--bg);
+   }
+
+   svg {
+      width: calc(18 * var(--text-unit));
+      height: calc(18 * var(--text-unit));
    }
 }
 
@@ -46,19 +51,19 @@
    order: -1;
    display: flex;
    align-items: center;
-   gap: 4px;
+   gap: calc(4 * var(--text-unit));
 }
 
 .replay-controls button,
 .replay-controls select {
-   height: 32px;
+   height: calc(32 * var(--text-unit));
    padding-block: 0;
 }
 
 .replay-controls button {
    display: grid;
    place-items: center;
-   padding-inline: 8px;
+   padding-inline: calc(8 * var(--text-unit));
 }
 
 .replay-controls__position {
@@ -84,8 +89,6 @@
    content: ' / ' / '';
 }
 
-/* The essentials are last in the page's column, so sticking them to the bottom keeps them pinned for the
-   whole scroll. */
 @media (max-width: 640px), (max-height: 500px) {
    .replay-controls {
       display: contents;

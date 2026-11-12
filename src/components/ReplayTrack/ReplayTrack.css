@@ -1,12 +1,10 @@
 .replay-track {
-   --thumb-width: 16px;
+   --thumb-width: calc(16 * var(--text-unit));
    position: relative;
    display: flex;
    flex: 1;
 }
 
-/* Styled by hand so the thumb has a known width: the browser's own thumb differs in size between browsers,
-   and the goal marks need to line up under its center. */
 .replay-track__slider {
    --fill: calc(
       var(--thumb-width) / 2 + var(--replay-track-progress) * (100% - var(--thumb-width))
@@ -19,7 +17,7 @@
    cursor: pointer;
 
    &::-webkit-slider-runnable-track {
-      height: 4px;
+      height: calc(4 * var(--text-unit));
       border-radius: 2px;
       background: linear-gradient(to right, var(--text-h) var(--fill), var(--border) var(--fill));
    }
@@ -28,13 +26,13 @@
       appearance: none;
       width: var(--thumb-width);
       height: var(--thumb-width);
-      margin-top: calc(2px - var(--thumb-width) / 2);
+      margin-top: calc(2 * var(--text-unit) - var(--thumb-width) / 2);
       border-radius: 50%;
       background: var(--text-h);
    }
 
    &::-moz-range-track {
-      height: 4px;
+      height: calc(4 * var(--text-unit));
       border-radius: 2px;
       background: linear-gradient(to right, var(--text-h) var(--fill), var(--border) var(--fill));
    }
@@ -48,15 +46,14 @@
    }
 }
 
-/* The thumb's center travels from half a thumb in from each end, so the marks do too. */
 .replay-track__goal-mark {
    position: absolute;
-   top: calc(50% + 6px);
+   top: calc(50% + 6 * var(--text-unit));
    left: calc(
       var(--thumb-width) / 2 + var(--replay-track-goal-position) * (100% - var(--thumb-width))
    );
-   width: 3px;
-   height: 7px;
+   width: calc(3 * var(--text-unit));
+   height: calc(7 * var(--text-unit));
    translate: -50% 0;
    border-radius: 1px;
    background: var(--goal-gold);

@@ -2,12 +2,12 @@
    display: flex;
    align-items: center;
    flex-wrap: wrap;
-   column-gap: 32px;
-   min-height: 48px;
+   column-gap: calc(32 * var(--text-unit));
+   min-height: calc(48 * var(--text-unit));
    flex-shrink: 0;
-   padding: 0 32px;
+   padding: 0 calc(32 * var(--text-unit));
    border-bottom: 1px solid var(--border);
-   font-size: 15px;
+   font-size: calc(15 * var(--text-unit));
    anchor-name: --app-nav;
 
    @media (max-width: 768px) {
@@ -26,8 +26,8 @@
 .app-nav__links {
    display: flex;
    align-self: stretch;
-   min-height: 48px;
-   gap: 24px;
+   min-height: calc(48 * var(--text-unit));
+   gap: calc(24 * var(--text-unit));
 
    @media (max-width: 768px) {
       gap: 16px;
@@ -54,8 +54,8 @@
 
 .app-nav__game {
    margin-left: auto;
-   padding-block: 8px;
-   font-size: 14px;
+   padding-block: calc(8 * var(--text-unit));
+   font-size: calc(14 * var(--text-unit));
 }
 
 .app-nav__menu {

@@ -1,12 +1,13 @@
 .play-participants {
-   --gap-facing: 32px;
-   --gap-together: 8px;
+   --gap-facing: calc(32 * var(--graphic-unit));
+   --gap-together: calc(8 * var(--graphic-unit));
+   --headshot-size: calc(52 * var(--graphic-unit));
 
    display: grid;
    grid-template-columns: repeat(2, minmax(0, 1fr));
    column-gap: var(--gap-facing);
    flex: none;
-   height: 72px;
+   height: calc(52 * var(--graphic-unit) + 2px + 18 * var(--text-unit));
 
    @media (max-width: 640px), (max-height: 500px) {
       display: none;
@@ -48,7 +49,7 @@
    display: flex;
    flex-direction: column;
    gap: 2px;
-   flex: 0 1 140px;
+   flex: 0 1 calc(52 * var(--graphic-unit) + 88 * var(--text-unit));
    min-width: 0;
    text-align: left;
 }
@@ -58,10 +59,10 @@
 }
 
 .play-participants__role {
-   height: 18px;
+   height: calc(18 * var(--text-unit));
    padding: 0 2px;
-   font-size: 13px;
-   line-height: 18px;
+   font-size: calc(13 * var(--text-unit));
+   line-height: calc(18 * var(--text-unit));
    overflow: hidden;
    white-space: nowrap;
    text-overflow: ellipsis;

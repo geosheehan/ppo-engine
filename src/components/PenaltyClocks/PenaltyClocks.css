@@ -1,6 +1,6 @@
 .penalty-clocks {
    display: flex;
-   gap: 8px;
+   gap: calc(8 * var(--graphic-unit));
    margin: 0;
    padding: 0;
    list-style: none;
@@ -20,7 +20,7 @@
 }
 
 .penalty-clocks__slot {
-   flex: 0 1 140px;
+   flex: 0 1 calc(52 * var(--graphic-unit) + 88 * var(--text-unit));
    min-width: 0;
    container: penalty-slot / inline-size;
 
@@ -31,10 +31,10 @@
 }
 
 .penalty-clocks__empty {
-   height: 72px;
+   height: calc(52 * var(--graphic-unit) + 2px + 18 * var(--text-unit));
    box-sizing: border-box;
    border: 1px dashed var(--border);
-   border-radius: 6px;
+   border-radius: calc(6 * var(--graphic-unit));
 }
 
 @container penalty-slot (width < 128px) {

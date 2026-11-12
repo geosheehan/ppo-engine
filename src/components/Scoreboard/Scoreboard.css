@@ -2,14 +2,14 @@
    display: flex;
    flex-direction: column;
    align-items: center;
-   gap: 8px;
+   gap: calc(8 * var(--text-unit));
 }
 
 .scoreboard__score {
    display: flex;
    align-items: center;
-   gap: 16px;
-   font-size: 24px;
+   gap: calc(16 * var(--text-unit));
+   font-size: calc(24 * var(--text-unit));
    line-height: 1.2;
    color: var(--text-h);
    font-variant-numeric: tabular-nums;
@@ -20,7 +20,7 @@
    }
 
    strong {
-      font-size: 36px;
+      font-size: calc(36 * var(--text-unit));
       font-weight: 500;
       line-height: 1;
 
@@ -32,7 +32,7 @@
 
 .scoreboard__clock {
    min-width: 5.5em;
-   font-size: 16px;
+   font-size: calc(16 * var(--text-unit));
    color: var(--text);
    text-align: center;
 

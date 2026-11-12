@@ -1,11 +1,11 @@
 .step-buttons {
    display: flex;
    align-items: center;
-   gap: 4px;
+   gap: calc(4 * var(--text-unit));
 }
 
 .step-buttons .step-buttons__play {
-   padding-inline: 16px;
+   padding-inline: calc(16 * var(--text-unit));
    background: var(--text-h);
    color: var(--bg);
 }
