@@ -124,3 +124,25 @@
       display: block;
    }
 }
+
+@media (min-width: 1760px) and (min-height: 880px) {
+   :is(.on-ice, .play-participants) {
+      .player-card {
+         flex-direction: column;
+         gap: calc(2 * var(--text-unit));
+         text-align: center;
+      }
+
+      .player-card__info {
+         width: 100%;
+      }
+
+      .player-card__meta {
+         display: none;
+      }
+
+      .player-card__badge {
+         display: block;
+      }
+   }
+}
