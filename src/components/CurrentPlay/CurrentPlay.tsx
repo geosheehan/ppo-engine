@@ -28,7 +28,16 @@ const SITUATION_LABELS: Record<GoalSituation, string> = {
 function CurrentPlay({ play, player, goalEffect, changedTeamId, participants }: CurrentPlayProps) {
    const roles = (
       <div className="current-play__roles">
-         {participants && rolesLine(participantRoles(participants))}
+         {participants && (
+            <>
+               <span className="current-play__roles-full">
+                  {rolesLine(participantRoles(participants))}
+               </span>
+               <span className="current-play__roles-short">
+                  {rolesLine(participantRoles(participants, { combineAssists: true }))}
+               </span>
+            </>
+         )}
       </div>
    );
 

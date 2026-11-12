@@ -56,6 +56,39 @@
    @media (max-width: 640px), (max-height: 500px) {
       display: block;
    }
+
+   @media (max-height: 500px) and (min-width: 641px) {
+      position: relative;
+      display: flex;
+      flex-wrap: wrap;
+      height: 1lh;
+
+      &::before {
+         content: '\200b' / '';
+      }
+   }
+}
+
+.current-play__roles-full {
+   @media (max-width: 640px) {
+      display: none;
+   }
+
+   @media (max-height: 500px) and (min-width: 641px) {
+      position: relative;
+      z-index: 1;
+      flex: none;
+      background: var(--bg);
+   }
+}
+
+.current-play__roles-short {
+   @media (max-height: 500px) and (min-width: 641px) {
+      position: absolute;
+      inset: 0 0 auto;
+      overflow: hidden;
+      text-overflow: ellipsis;
+   }
 }
 
 .current-play__detail {

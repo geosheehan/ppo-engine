@@ -42,6 +42,18 @@ describe('participantRoles', () => {
       );
    });
 
+   it('can combine the assists under one label, 1st assist first', () => {
+      const goal = {
+         typeDescKey: 'goal',
+         details: { scoringPlayerId: 1, assist1PlayerId: 2, assist2PlayerId: 3, goalieInNetId: 4 },
+      } as unknown as Play;
+      const layout = playParticipantLayout(lookups, goal, undefined, homeOnLeft);
+
+      expect(rolesLine(participantRoles(layout, { combineAssists: true }))).toBe(
+         'Goal #7 · Assist #88 #8 · Goalie #31',
+      );
+   });
+
    it('names Off and On once each in a line change, with everyone coming off first', () => {
       const faceoff = { typeDescKey: 'faceoff', details: {} } as unknown as Play;
       const layout = playParticipantLayout(
