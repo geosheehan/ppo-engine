@@ -15,36 +15,47 @@ describe('stoppageDetail', () => {
       expect(stoppageDetail(details('icing'))).toBe('Icing');
    });
 
-   it("names a team's timeout by its tricode", () => {
-      expect(stoppageDetail(details('visitor-timeout'), abbrevs)).toBe('TOR timeout');
-      expect(stoppageDetail(details('home-timeout'), abbrevs)).toBe('CHI timeout');
+   it("names a team's time-out by its tricode", () => {
+      expect(stoppageDetail(details('visitor-timeout'), abbrevs)).toBe('TOR time-out');
+      expect(stoppageDetail(details('home-timeout'), abbrevs)).toBe('CHI time-out');
+   });
+
+   it("names a team's coach's challenge by its tricode", () => {
+      expect(stoppageDetail(details('chlg-vis-goal-interference'), abbrevs)).toBe(
+         'TOR Challenge: Goalkeeper interference',
+      );
+      expect(stoppageDetail(details('chlg-hm-puck-over-glass'), abbrevs)).toBe(
+         'CHI Challenge: Puck over the glass',
+      );
    });
 
    it('hides a secondary reason that repeats the main one', () => {
       expect(stoppageDetail(details('visitor-timeout', 'visitor-timeout'), abbrevs)).toBe(
-         'TOR timeout',
+         'TOR time-out',
       );
    });
 
-   it('never shows a TV timeout as the secondary reason', () => {
+   it('never shows a TV time-out as the secondary reason', () => {
       expect(stoppageDetail(details('goalie-stopped-after-sog', 'tv-timeout'))).toBe(
          'Goalkeeper froze the puck',
       );
    });
 
-   it("always shows a team's timeout as the secondary reason", () => {
+   it("always shows a team's time-out as the secondary reason", () => {
       expect(stoppageDetail(details('icing', 'visitor-timeout'), abbrevs)).toBe(
-         'Icing | TOR timeout',
+         'Icing | TOR time-out',
       );
    });
 
    it('hides other secondary reasons after a normal stoppage', () => {
-      expect(stoppageDetail(details('high-stick', 'video-review'))).toBe('High stick');
+      expect(stoppageDetail(details('high-stick', 'video-review'))).toBe('High-sticking the puck');
    });
 
    it('shows the secondary reason in place of referee or linesman', () => {
-      expect(stoppageDetail(details('referee-or-linesman', 'player-injury'))).toBe('Player injury');
-      expect(stoppageDetail(details('referee-or-linesman', 'tv-timeout'))).toBe('TV timeout');
+      expect(stoppageDetail(details('referee-or-linesman', 'player-injury'))).toBe(
+         'Injured player',
+      );
+      expect(stoppageDetail(details('referee-or-linesman', 'tv-timeout'))).toBe('TV time-out');
    });
 
    it('shows nothing for referee or linesman without a secondary reason', () => {
