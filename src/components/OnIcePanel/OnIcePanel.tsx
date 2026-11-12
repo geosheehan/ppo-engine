@@ -81,6 +81,8 @@ function OnIcePanel({
       </li>
    );
 
+   const emptyNet = players !== undefined && goalies.length === 0;
+
    return (
       <div
          className={`on-ice on-ice--${position} on-ice--${side}`}
@@ -123,6 +125,9 @@ function OnIcePanel({
                ))
             )}
          </ol>
+         <div className={clsx('on-ice__net', emptyNet && 'on-ice__net--empty')}>
+            {emptyNet && 'Empty net'}
+         </div>
       </div>
    );
 }

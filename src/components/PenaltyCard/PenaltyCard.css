@@ -126,3 +126,39 @@
       display: none;
    }
 }
+
+.penalty-card__chip {
+   display: none;
+}
+
+@container penalty-slot (width < 64px) {
+   .penalty-card {
+      grid-template-areas:
+         'chip'
+         'time';
+   }
+
+   .penalty-card .player-card {
+      display: none;
+   }
+
+   .penalty-card__chip {
+      grid-area: chip;
+      display: grid;
+      place-items: center;
+      width: 36px;
+      height: 28px;
+      box-sizing: border-box;
+      border: 1px solid var(--text-h);
+      border-radius: 4px;
+      background: var(--team-color);
+      color: var(--team-text-color);
+      font-size: 14px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+   }
+
+   .penalty-card__time {
+      font-size: 14px;
+   }
+}

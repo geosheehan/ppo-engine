@@ -239,3 +239,42 @@
    letter-spacing: 0.08em;
    text-transform: uppercase;
 }
+
+.on-ice__net {
+   display: none;
+}
+
+@media (max-height: 500px) and (min-width: 641px) {
+   .on-ice {
+      gap: 4px;
+   }
+
+   .on-ice .on-ice__number--empty-net {
+      display: none;
+   }
+
+   .on-ice__net {
+      display: block;
+      flex: none;
+      width: var(--net-width, 24px);
+   }
+
+   .on-ice--left .on-ice__net {
+      order: -1;
+   }
+
+   .on-ice__net--empty {
+      display: grid;
+      place-items: center;
+      box-sizing: border-box;
+      border: 2px dashed var(--text-h);
+      border-radius: 6px;
+      background: color-mix(in srgb, var(--team-color) 35%, transparent);
+      color: var(--text-h);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      writing-mode: vertical-rl;
+   }
+}

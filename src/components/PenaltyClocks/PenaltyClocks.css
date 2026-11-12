@@ -26,7 +26,7 @@
 
    @media (max-height: 500px) and (min-width: 641px) {
       flex: none;
-      width: 64px;
+      width: 40px;
    }
 }
 
@@ -52,5 +52,11 @@
 @container penalty-slot (width < 90px) {
    .penalty-clocks__empty {
       height: 72px;
+   }
+}
+
+@container penalty-slot (width < 64px) {
+   .penalty-clocks__empty {
+      height: 48px;
    }
 }
