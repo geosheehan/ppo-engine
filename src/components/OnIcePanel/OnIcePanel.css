@@ -244,6 +244,32 @@
    display: none;
 }
 
+@media (min-width: 1760px) and (min-height: 980px) {
+   .on-ice,
+   .on-ice__column {
+      container-type: normal;
+   }
+
+   .on-ice {
+      min-height: 0;
+   }
+
+   .on-ice__lines {
+      gap: var(--line-gap);
+   }
+
+   .on-ice__column {
+      gap: var(--row-gap);
+      width: var(--card-width);
+      height: var(--rink-height);
+   }
+
+   .on-ice__empty-net {
+      height: var(--row-height);
+      font-size: calc(12 * var(--text-unit));
+   }
+}
+
 @media (max-height: 500px) and (min-width: 641px) {
    .on-ice {
       gap: 4px;

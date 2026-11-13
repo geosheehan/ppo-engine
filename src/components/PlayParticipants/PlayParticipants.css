@@ -12,6 +12,11 @@
    @media (max-width: 640px), (max-height: 500px) {
       display: none;
    }
+
+   @media (min-width: 1760px) and (min-height: 980px) {
+      --headshot-size: calc(56 * var(--graphic-unit));
+      height: calc(56 * var(--graphic-unit) + 34 * var(--text-unit) + 2px + 18 * var(--text-unit));
+   }
 }
 
 .play-participants--close {

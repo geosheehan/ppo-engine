@@ -1,3 +1,9 @@
+@property --rink-height {
+   syntax: '<length>';
+   inherits: true;
+   initial-value: 0px;
+}
+
 #root:has(.replay) {
    --text-unit: clamp(1px, 0.5px + min(100vw / 3840, 100svh / 2160), 2px);
    --graphic-unit: calc(2 * var(--text-unit) - 1px);
@@ -34,6 +40,45 @@
    @media (max-height: 500px) and (min-width: 641px) {
       --replay-chrome: 178px;
    }
+
+   /* The PP tables sit beside the score wherever both fit. Below the large tier a line change can show five
+      participant cards a side, so the participants keep the full width under the tables. */
+   @media (min-width: 1280px) and (min-height: 501px) {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      grid-template-rows: auto auto minmax(0, 1fr) auto;
+      grid-template-areas:
+         'table-left header table-right'
+         'participants participants participants'
+         'stage stage stage'
+         'controls controls controls';
+      column-gap: calc(32 * var(--graphic-unit));
+
+      > .replay__header {
+         grid-area: header;
+         align-self: center;
+      }
+
+      > .play-participants {
+         grid-area: participants;
+      }
+
+      > .replay__stage {
+         grid-area: stage;
+      }
+
+      > .replay-controls {
+         grid-area: controls;
+      }
+   }
+
+   @media (min-width: 1760px) and (min-height: 980px) {
+      grid-template-areas:
+         'table-left header table-right'
+         'table-left participants table-right'
+         'stage stage stage'
+         'controls controls controls';
+   }
 }
 
 .replay__header {
@@ -61,6 +106,10 @@
 
    @media (max-height: 500px) and (min-width: 641px) {
       container-type: inline-size;
+   }
+
+   @media (min-width: 1760px) and (min-height: 980px) {
+      min-height: 0;
    }
 }
 
@@ -129,6 +178,53 @@
       align-items: stretch;
       gap: 4px;
    }
+
+   @media (min-width: 1760px) and (min-height: 980px) {
+      --stage-gap: calc(16 * var(--graphic-unit));
+      --row-gap: calc(4 * var(--graphic-unit));
+      --line-gap: calc(8 * var(--graphic-unit));
+      --names-height: calc(34 * var(--text-unit));
+      --card-min: calc(88 * var(--text-unit));
+      --card-pad: calc(8 * var(--graphic-unit));
+      --clocks-height: calc(52 * var(--graphic-unit) + 2px + 18 * var(--text-unit));
+      --clocks-gap: calc(12 * var(--graphic-unit));
+      --rink-height: min(
+         100cqh - var(--clocks-height) - var(--clocks-gap),
+         (100cqw - 2 * var(--stage-gap) - 2 * var(--line-gap) - 4 * var(--card-min)) * 87 / 202,
+         (
+               100cqw - 2 * var(--stage-gap) - 2 * var(--line-gap) - 4 * var(--card-pad) + 4 *
+                  var(--names-height) + 10 * var(--row-gap) / 3
+            ) *
+            87 / 260
+      );
+      --rink-width: calc(var(--rink-height) * 202 / 87);
+      --row-height: calc((var(--rink-height) - 5 * var(--row-gap)) / 6);
+      --headshot-size: min(336px, var(--row-height) - var(--names-height));
+      --card-width: max(var(--headshot-size) + var(--card-pad), var(--card-min));
+      --panel-width: calc(2 * var(--card-width) + var(--line-gap));
+      grid-template-columns:
+         var(--panel-width) repeat(2, calc((var(--rink-width) - var(--stage-gap)) / 2))
+         var(--panel-width);
+      grid-template-rows: var(--rink-height) auto;
+      grid-template-areas:
+         'left rink rink right'
+         '. clocks-left clocks-right .';
+      align-content: center;
+      align-items: stretch;
+      gap: var(--clocks-gap) var(--stage-gap);
+
+      > .on-ice {
+         translate: none;
+      }
+
+      .penalty-clocks--left {
+         grid-area: clocks-left;
+      }
+
+      .penalty-clocks--right {
+         grid-area: clocks-right;
+      }
+   }
 }
 
 .replay__center {
@@ -140,7 +236,7 @@
    min-width: 0;
    contain: size;
 
-   @media (max-width: 640px), (max-height: 500px) {
+   @media (max-width: 640px), (max-height: 500px), (min-width: 1760px) and (min-height: 980px) {
       display: contents;
    }
 }
@@ -159,6 +255,11 @@
       height: auto;
       max-width: min(100%, var(--rink-cap));
    }
+
+   @media (min-width: 1760px) and (min-height: 980px) {
+      grid-area: rink;
+      height: 100%;
+   }
 }
 
 .replay__icon {
@@ -170,7 +271,7 @@
    grid-template-columns: repeat(2, minmax(0, 1fr));
    gap: 16px 32px;
 
-   @media (max-width: 640px), (max-height: 500px) {
+   @media (max-width: 640px), (max-height: 500px), (min-width: 1760px) and (min-height: 980px) {
       display: contents;
    }
 }
@@ -182,5 +283,21 @@
 
    @media (max-width: 880px) {
       grid-template-columns: 1fr;
+   }
+
+   @media (min-width: 1280px) and (min-height: 501px) {
+      display: contents;
+
+      > .strength-table__card--left {
+         grid-area: table-left;
+         justify-self: start;
+         align-self: center;
+      }
+
+      > .strength-table__card--right {
+         grid-area: table-right;
+         justify-self: end;
+         align-self: center;
+      }
    }
 }
