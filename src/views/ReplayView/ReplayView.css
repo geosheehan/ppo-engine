@@ -72,12 +72,6 @@
       }
    }
 
-   /* Every headshot on the page is one size, so the participant row and the clocks grow with the rink and R comes
-      from the whole window: the page height left after the nav, header, controls, padding and gaps, the stage
-      width, and ten participant cards fitting between the tables. Each limit is linear in R.
-      Fixed sizes: #root's 2px of borders, nav 48 + 1px, header 98.1 + 2px (one-line detail), controls 56,
-      43 graphic units of padding and row gaps, two tables of at most 400, and 96 graphic units of gaps
-      between ten participant cards. */
    @media (min-width: 1910px) and (min-height: 980px) {
       --stage-gap: calc(16 * var(--graphic-unit));
       --row-gap: calc(4 * var(--graphic-unit));
