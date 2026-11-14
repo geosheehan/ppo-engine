@@ -5,6 +5,10 @@
    gap: 2px;
    min-width: 0;
    text-align: left;
+
+   @media (min-width: 1910px) and (min-height: 980px) {
+      --headshot-size: inherit;
+   }
 }
 
 .penalty-card__player {

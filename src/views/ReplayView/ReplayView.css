@@ -72,7 +72,49 @@
       }
    }
 
-   @media (min-width: 1760px) and (min-height: 980px) {
+   /* Every headshot on the page is one size, so the participant row and the clocks grow with the rink and R comes
+      from the whole window: the page height left after the nav, header, controls, padding and gaps, the stage
+      width, and ten participant cards fitting between the tables. Each limit is linear in R.
+      Fixed sizes: #root's 2px of borders, nav 48 + 1px, header 98.1 + 2px (one-line detail), controls 56,
+      43 graphic units of padding and row gaps, two tables of at most 400, and 96 graphic units of gaps
+      between ten participant cards. */
+   @media (min-width: 1910px) and (min-height: 980px) {
+      --stage-gap: calc(16 * var(--graphic-unit));
+      --row-gap: calc(4 * var(--graphic-unit));
+      --line-gap: calc(8 * var(--graphic-unit));
+      --names-height: calc(34 * var(--text-unit));
+      --card-min: calc(88 * var(--text-unit));
+      --card-pad: calc(8 * var(--graphic-unit));
+      --clocks-gap: calc(12 * var(--graphic-unit));
+      --page-width: calc(100vw - 2px - 64 * var(--graphic-unit));
+      --page-height: calc(
+         100svh - 48 * var(--text-unit) - 1px - 98.1 * var(--text-unit) - 2px - 56 *
+            var(--text-unit) - 43 * var(--graphic-unit)
+      );
+      --middle-width: calc(var(--page-width) - 800 * var(--text-unit) - 64 * var(--graphic-unit));
+      --rink-height: min(
+         (
+               var(--page-height) - var(--clocks-gap) - 2 * var(--text-unit) - 4px + 5 *
+                  var(--row-gap) / 3
+            ) *
+            3 / 4,
+         (var(--page-width) - 2 * var(--stage-gap) - 2 * var(--line-gap) - 4 * var(--card-min)) *
+            87 / 202,
+         (
+               var(--page-width) - 2 * var(--stage-gap) - 2 * var(--line-gap) - 4 *
+                  var(--card-pad) + 4 * var(--names-height) + 10 * var(--row-gap) / 3
+            ) *
+            87 / 260,
+         6 *
+            (
+               (var(--middle-width) - 96 * var(--graphic-unit)) / 10 - var(--card-pad) +
+                  var(--names-height)
+            ) +
+            5 * var(--row-gap)
+      );
+      --row-height: calc((var(--rink-height) - 5 * var(--row-gap)) / 6);
+      --headshot-size: min(336px, var(--row-height) - var(--names-height));
+      --card-width: max(var(--headshot-size) + var(--card-pad), var(--card-min));
       grid-template-areas:
          'table-left header table-right'
          'table-left participants table-right'
@@ -108,7 +150,7 @@
       container-type: inline-size;
    }
 
-   @media (min-width: 1760px) and (min-height: 980px) {
+   @media (min-width: 1910px) and (min-height: 980px) {
       min-height: 0;
    }
 }
@@ -179,28 +221,8 @@
       gap: 4px;
    }
 
-   @media (min-width: 1760px) and (min-height: 980px) {
-      --stage-gap: calc(16 * var(--graphic-unit));
-      --row-gap: calc(4 * var(--graphic-unit));
-      --line-gap: calc(8 * var(--graphic-unit));
-      --names-height: calc(34 * var(--text-unit));
-      --card-min: calc(88 * var(--text-unit));
-      --card-pad: calc(8 * var(--graphic-unit));
-      --clocks-height: calc(52 * var(--graphic-unit) + 2px + 18 * var(--text-unit));
-      --clocks-gap: calc(12 * var(--graphic-unit));
-      --rink-height: min(
-         100cqh - var(--clocks-height) - var(--clocks-gap),
-         (100cqw - 2 * var(--stage-gap) - 2 * var(--line-gap) - 4 * var(--card-min)) * 87 / 202,
-         (
-               100cqw - 2 * var(--stage-gap) - 2 * var(--line-gap) - 4 * var(--card-pad) + 4 *
-                  var(--names-height) + 10 * var(--row-gap) / 3
-            ) *
-            87 / 260
-      );
+   @media (min-width: 1910px) and (min-height: 980px) {
       --rink-width: calc(var(--rink-height) * 202 / 87);
-      --row-height: calc((var(--rink-height) - 5 * var(--row-gap)) / 6);
-      --headshot-size: min(336px, var(--row-height) - var(--names-height));
-      --card-width: max(var(--headshot-size) + var(--card-pad), var(--card-min));
       --panel-width: calc(2 * var(--card-width) + var(--line-gap));
       grid-template-columns:
          var(--panel-width) repeat(2, calc((var(--rink-width) - var(--stage-gap)) / 2))
@@ -225,20 +247,6 @@
          grid-area: clocks-right;
       }
    }
-
-   @media (min-width: 1760px) and (min-height: 980px) and (aspect-ratio >= 2/1) {
-      --card-text: calc(8 * var(--text-unit) + 100 * var(--text-unit));
-      --rink-height: min(
-         100cqh - var(--clocks-height) - var(--clocks-gap),
-         (
-               100cqw - 2 * var(--stage-gap) - 2 * var(--line-gap) - 4 * var(--card-text) + 10 *
-                  var(--row-gap) / 3
-            ) *
-            87 / 260
-      );
-      --headshot-size: min(336px, var(--row-height));
-      --card-width: calc(var(--headshot-size) + var(--card-text));
-   }
 }
 
 .replay__center {
@@ -250,7 +258,7 @@
    min-width: 0;
    contain: size;
 
-   @media (max-width: 640px), (max-height: 500px), (min-width: 1760px) and (min-height: 980px) {
+   @media (max-width: 640px), (max-height: 500px), (min-width: 1910px) and (min-height: 980px) {
       display: contents;
    }
 }
@@ -270,7 +278,7 @@
       max-width: min(100%, var(--rink-cap));
    }
 
-   @media (min-width: 1760px) and (min-height: 980px) {
+   @media (min-width: 1910px) and (min-height: 980px) {
       grid-area: rink;
       height: 100%;
       outline: var(--text-unit) solid var(--text-h);
@@ -291,7 +299,7 @@
    grid-template-columns: repeat(2, minmax(0, 1fr));
    gap: 16px 32px;
 
-   @media (max-width: 640px), (max-height: 500px), (min-width: 1760px) and (min-height: 980px) {
+   @media (max-width: 640px), (max-height: 500px), (min-width: 1910px) and (min-height: 980px) {
       display: contents;
    }
 }

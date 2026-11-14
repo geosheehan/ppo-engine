@@ -244,7 +244,7 @@
    display: none;
 }
 
-@media (min-width: 1760px) and (min-height: 980px) {
+@media (min-width: 1910px) and (min-height: 980px) {
    .on-ice,
    .on-ice__column {
       container-type: normal;

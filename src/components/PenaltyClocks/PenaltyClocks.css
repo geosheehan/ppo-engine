@@ -28,6 +28,10 @@
       flex: none;
       width: 40px;
    }
+
+   @media (min-width: 1910px) and (min-height: 980px) {
+      flex-basis: calc(var(--headshot-size) + 88 * var(--text-unit));
+   }
 }
 
 .penalty-clocks__empty {
@@ -35,6 +39,10 @@
    box-sizing: border-box;
    border: 1px dashed var(--border);
    border-radius: calc(6 * var(--graphic-unit));
+
+   @media (min-width: 1910px) and (min-height: 980px) {
+      height: calc(var(--headshot-size) + 2px + 18 * var(--text-unit));
+   }
 }
 
 @container penalty-slot (width < 128px) {

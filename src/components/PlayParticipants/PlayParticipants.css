@@ -13,17 +13,12 @@
       display: none;
    }
 
-   @media (min-width: 1760px) and (min-height: 980px) {
-      --card-basis: calc(52 * var(--graphic-unit) + 88 * var(--text-unit));
-      width: calc(10 * var(--card-basis) + 8 * var(--gap-together) + var(--gap-facing));
+   @media (min-width: 1910px) and (min-height: 980px) {
+      --headshot-size: inherit;
+      width: calc(10 * var(--card-width) + 8 * var(--gap-together) + var(--gap-facing));
       max-width: 100%;
+      height: calc(var(--headshot-size) + 34 * var(--text-unit) + 2px + 18 * var(--text-unit));
       justify-self: center;
-   }
-
-   @media (min-width: 1760px) and (min-height: 980px) and (aspect-ratio < 2/1) {
-      --headshot-size: calc(56 * var(--graphic-unit));
-      --card-basis: max(64 * var(--graphic-unit), 88 * var(--text-unit));
-      height: calc(56 * var(--graphic-unit) + 34 * var(--text-unit) + 2px + 18 * var(--text-unit));
    }
 }
 
@@ -81,15 +76,10 @@
    text-overflow: ellipsis;
 }
 
-@media (min-width: 1760px) and (min-height: 980px) {
-   .play-participants__card {
-      flex-basis: var(--card-basis);
-   }
-}
-
-@media (min-width: 1760px) and (min-height: 980px) and (aspect-ratio < 2/1) {
+@media (min-width: 1910px) and (min-height: 980px) {
    .play-participants__card,
    .play-participants__card--mirrored {
+      flex-basis: var(--card-width);
       text-align: center;
    }
 }

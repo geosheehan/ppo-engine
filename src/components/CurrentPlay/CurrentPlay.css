@@ -103,6 +103,13 @@
       text-overflow: ellipsis;
       font-size: 14px;
    }
+
+   /* One line, so the header is always the height the large tier's rink formula expects. */
+   @media (min-width: 1910px) and (min-height: 980px) {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+   }
 }
 
 .current-play__effects {
