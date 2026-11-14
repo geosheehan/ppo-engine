@@ -1,3 +1,4 @@
+import { shiftlessLifetime } from '../src/index';
 import { env, exports } from 'cloudflare:workers';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { MockInstance } from 'vitest';
@@ -146,8 +147,10 @@ describe('per-visitor rate limit', () => {
 });
 
 describe('loading a game from the NHL', () => {
-   const playByPlay = (id: string, gameState = 'OFF') =>
-      `{"id":${id},"season":20262027,"gameState":"${gameState}","plays":[]}`;
+   const playByPlay = (id: string, gameState = 'OFF', gameDate?: string) =>
+      `{"id":${id},"season":20262027,${gameDate === undefined ? '' : `"gameDate":"${gameDate}",`}"gameState":"${gameState}","plays":[]}`;
+   const daysAgo = (days: number) =>
+      new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
    const shifts = (total: number) => `{"data":[${total > 0 ? '{"id":1}' : ''}],"total":${total}}`;
    const ok = (body: string) => () => new Response(body);
 
@@ -195,17 +198,50 @@ describe('loading a game from the NHL', () => {
       },
    );
 
-   it.each([
-      ['empty', shifts(0)],
-      ['unrecognized', '{"rows":[],"count":0}'],
-   ])('refuses %s shifts and stores nothing', async (_, body) => {
-      nhlRoutes = { playByPlay: ok(playByPlay('2026020103')), shifts: ok(body) };
+   it('refuses shifts it cannot read and stores nothing', async () => {
+      nhlRoutes = {
+         playByPlay: ok(playByPlay('2026020103')),
+         shifts: ok('{"rows":[],"count":0}'),
+      };
       const response = await get('/game/2026020103');
       expect(response.status).toBe(502);
       expect(await response.json()).toEqual({
-         error: 'The NHL has no shifts for game 2026020103 yet',
+         error: "The NHL sent shifts for game 2026020103 that can't be read",
       });
       expect(await env.GAMES.get('v1:2026020103')).toBeNull();
+   });
+
+   it.each([
+      ['2026020150', 'a game played this week', daysAgo(3), 3600],
+      ['2026020151', 'a game without a date', undefined, 3600],
+      ['2026020152', 'a game played a month ago', daysAgo(30), 30 * 24 * 60 * 60],
+   ])('serves %s (%s) without shifts and keeps it %is', async (id, _, gameDate, lifetime) => {
+      nhlRoutes = { playByPlay: ok(playByPlay(id, 'OFF', gameDate)), shifts: ok(shifts(0)) };
+      const response = await get(`/game/${id}`);
+      expect(response.status).toBe(200);
+      expect(response.headers.get('Cache-Control')).toBe(`public, max-age=${lifetime}`);
+      expect(await response.text()).toBe(
+         `{"game":${playByPlay(id, 'OFF', gameDate)},"shifts":${shifts(0)}}`,
+      );
+      const stored = await env.GAMES.getWithMetadata(`v1:${id}`);
+      expect(stored.metadata).toEqual({ lifetime });
+
+      nhlRequests.length = 0;
+      const again = await get(`/game/${id}`);
+      expect(again.headers.get('Cache-Control')).toBe(`public, max-age=${lifetime}`);
+      expect(nhlRequests).toHaveLength(0);
+   });
+
+   it('stores a game for good once it is three months old, with or without shifts', async () => {
+      nhlRoutes = {
+         playByPlay: ok(playByPlay('2026020153', 'OFF', daysAgo(120))),
+         shifts: ok(shifts(0)),
+      };
+      const response = await get('/game/2026020153');
+      expect(response.headers.get('Cache-Control')).toBe('public, max-age=86400');
+      const stored = await env.GAMES.getWithMetadata('v1:2026020153');
+      expect(stored.value).not.toBeNull();
+      expect(stored.metadata).toBeNull();
    });
 
    it('passes on a 404 from the NHL', async () => {
@@ -381,5 +417,24 @@ describe('GET /schedule/:date', () => {
       expect(response.status).toBe(503);
       expect(response.headers.get('Retry-After')).toBe('60');
       expect(nhlRequests).toHaveLength(0);
+   });
+});
+
+describe('shiftlessLifetime', () => {
+   const now = Date.parse('2026-11-14T12:00:00Z');
+   const HOUR = 60 * 60;
+   const DAY = 24 * HOUR;
+
+   it.each([
+      ['2026-11-14', HOUR],
+      ['2026-11-01', HOUR],
+      ['2026-10-30', 30 * DAY],
+      ['2026-08-17', 30 * DAY],
+      ['2026-08-15', undefined],
+      ['2011-02-11', undefined],
+      [undefined, HOUR],
+      ['not a date', HOUR],
+   ])('keeps a game played on %s for %s seconds', (gameDate, expected) => {
+      expect(shiftlessLifetime(gameDate, now)).toBe(expected);
    });
 });

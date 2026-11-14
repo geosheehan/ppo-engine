@@ -8,8 +8,12 @@ const GAME_ID = /^\d{4}0[123]\d{4}$/;
 
 const FINISHED = /"gameState"\s*:\s*"(OFF|FINAL)"/;
 const SHIFT_TOTAL = /"total"\s*:\s*(\d+)\s*}\s*$/;
+const GAME_DATE = /"gameDate"\s*:\s*"(\d{4}-\d{2}-\d{2})"/;
 
-const DAY_SECONDS = 24 * 60 * 60;
+const MINUTE_SECONDS = 60;
+const HOUR_SECONDS = 60 * MINUTE_SECONDS;
+const DAY_SECONDS = 24 * HOUR_SECONDS;
+const DAY_MS = DAY_SECONDS * 1000;
 
 const allowedOrigins = (env: Env) =>
    new Set(env.ALLOWED_ORIGINS.split(',').map((origin) => origin.trim()));
@@ -21,36 +25,58 @@ const shiftsUrl = (id: string) =>
 const json = (body: unknown, status = 200, headers?: HeadersInit) =>
    Response.json(body, { status, headers });
 
-const gameResponse = (body: BodyInit) =>
+const gameResponse = (body: BodyInit, lifetime?: number) =>
    new Response(body, {
       headers: {
          'Content-Type': 'application/json',
-         'Cache-Control': `public, max-age=${DAY_SECONDS}`,
+         'Cache-Control': `public, max-age=${lifetime ?? DAY_SECONDS}`,
       },
    });
+
+// The NHL often posts shift charts hours after a game, so a game without them is kept only for a while and then
+// asked for again: hourly for two weeks, monthly until it is three months old, then for good (undefined).
+export function shiftlessLifetime(
+   gameDate: string | undefined,
+   now = Date.now(),
+): number | undefined {
+   const played = gameDate === undefined ? Number.NaN : Date.parse(`${gameDate}T00:00:00Z`);
+   if (Number.isNaN(played)) return HOUR_SECONDS;
+   const days = (now - played) / DAY_MS;
+   if (days > 90) return undefined;
+   if (days > 14) return 30 * DAY_SECONDS;
+   return HOUR_SECONDS;
+}
 
 // The v1 prefix lets a future change to the stored shape use fresh keys instead of migrating old ones.
 const gameKey = (id: string) => `v1:${id}`;
 
 const NO_SUCH_GAME = 'The NHL has no such game';
 
-async function loadGame(id: string, env: Env): Promise<string> {
+type LoadedGame = { body: string; lifetime?: number };
+
+async function loadGame(id: string, env: Env): Promise<LoadedGame> {
    const playByPlay = await fetchFromNhl(playByPlayUrl(id), env, NO_SUCH_GAME);
    if (!FINISHED.test(playByPlay)) throw new NhlError(409, `Game ${id} has not finished`);
 
    const shifts = await fetchFromNhl(shiftsUrl(id), env, NO_SUCH_GAME);
    const total = SHIFT_TOTAL.exec(shifts)?.[1];
-   if (total === undefined || Number(total) === 0) {
-      throw new NhlError(502, `The NHL has no shifts for game ${id} yet`);
+   if (total === undefined) {
+      throw new NhlError(502, `The NHL sent shifts for game ${id} that can't be read`);
    }
+   const lifetime =
+      Number(total) === 0 ? shiftlessLifetime(GAME_DATE.exec(playByPlay)?.[1]) : undefined;
 
    const body = `{"game":${playByPlay},"shifts":${shifts}}`;
    try {
-      await env.GAMES.put(gameKey(id), body);
+      await env.GAMES.put(
+         gameKey(id),
+         body,
+         lifetime === undefined ? undefined : { expirationTtl: lifetime, metadata: { lifetime } },
+      );
    } catch (error) {
       console.error(`Could not store game ${id}`, error);
    }
-   return body;
+   return { body, lifetime };
 }
 
 async function handleGame(id: string, env: Env, ctx: ExecutionContext): Promise<Response> {
@@ -58,10 +84,15 @@ async function handleGame(id: string, env: Env, ctx: ExecutionContext): Promise<
       return json({ error: `Not a preseason, regular season or playoff game ID: ${id}` }, 400);
    }
 
-   const stored = await env.GAMES.get(gameKey(id), { type: 'stream', cacheTtl: DAY_SECONDS });
-   if (stored !== null) return gameResponse(stored);
+   // A short edge cache, so a game stored without shifts can't outlive its expiry by more than a minute.
+   const stored = await env.GAMES.getWithMetadata<{ lifetime?: number }>(gameKey(id), {
+      type: 'stream',
+      cacheTtl: MINUTE_SECONDS,
+   });
+   if (stored.value !== null) return gameResponse(stored.value, stored.metadata?.lifetime);
 
-   return gameResponse(await loadOnce(gameKey(id), ctx, () => loadGame(id, env)));
+   const { body, lifetime } = await loadOnce(gameKey(id), ctx, () => loadGame(id, env));
+   return gameResponse(body, lifetime);
 }
 
 async function handleGet(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
