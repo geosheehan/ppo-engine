@@ -88,6 +88,7 @@ function Rink({ className, children }: RinkProps) {
          <rect x={-100} y={-42.5} width={200} height={85} rx={28} ry={28} fill="#ffffff" />
          {/* Frame around the team-color ends, inset so the edge of the viewBox doesn't clip half the stroke */}
          <rect
+            className="rink__frame"
             x={-100.75}
             y={-43.25}
             width={201.5}

@@ -273,6 +273,12 @@
    @media (min-width: 1760px) and (min-height: 980px) {
       grid-area: rink;
       height: 100%;
+      outline: var(--text-unit) solid var(--text-h);
+      outline-offset: calc(-1 * var(--text-unit));
+
+      .rink__frame {
+         display: none;
+      }
    }
 }
 
