@@ -1,6 +1,7 @@
 import '@components/GamePicker/GamePicker.css';
 import { useEffect, useId, useRef, useState } from 'react';
 import GameWeek from '@components/GameWeek';
+import CloseIcon from '@components/icons/nav/CloseIcon';
 import type { GameSummary } from '@api/types';
 
 type GamePickerProps = {
@@ -54,6 +55,19 @@ function GamePicker({ selected, autoOpen, onPick }: GamePickerProps) {
                if (event.target === event.currentTarget) setOpen(event.newState === 'open');
             }}
          >
+            <div className="game-picker__head">
+               <h2 className="game-picker__title">Pick a game</h2>
+               <button
+                  type="button"
+                  className="game-picker__close"
+                  aria-label="Close"
+                  title="Close"
+                  popoverTarget={popoverId}
+                  popoverTargetAction="hide"
+               >
+                  <CloseIcon size={20} />
+               </button>
+            </div>
             {open && (
                <GameWeek initialDate={selected?.date} selectedId={selected?.id} onPick={pick} />
             )}
