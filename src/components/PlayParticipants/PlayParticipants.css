@@ -15,7 +15,11 @@
 
    @media (min-width: 1760px) and (min-height: 980px) {
       --headshot-size: calc(56 * var(--graphic-unit));
+      --card-basis: max(64 * var(--graphic-unit), 88 * var(--text-unit));
+      width: calc(10 * var(--card-basis) + 8 * var(--gap-together) + var(--gap-facing));
+      max-width: 100%;
       height: calc(56 * var(--graphic-unit) + 34 * var(--text-unit) + 2px + 18 * var(--text-unit));
+      justify-self: center;
    }
 }
 
@@ -71,4 +75,12 @@
    overflow: hidden;
    white-space: nowrap;
    text-overflow: ellipsis;
+}
+
+@media (min-width: 1760px) and (min-height: 980px) {
+   .play-participants__card,
+   .play-participants__card--mirrored {
+      flex-basis: var(--card-basis);
+      text-align: center;
+   }
 }

@@ -45,7 +45,7 @@
       participant cards a side, so the participants keep the full width under the tables. */
    @media (min-width: 1280px) and (min-height: 501px) {
       display: grid;
-      grid-template-columns: 1fr auto 1fr;
+      grid-template-columns: 1fr minmax(0, auto) 1fr;
       grid-template-rows: auto auto minmax(0, 1fr) auto;
       grid-template-areas:
          'table-left header table-right'
