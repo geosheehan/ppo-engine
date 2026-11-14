@@ -125,7 +125,7 @@
    }
 }
 
-@media (min-width: 1760px) and (min-height: 980px) {
+@media (min-width: 1760px) and (min-height: 980px) and (aspect-ratio < 2/1) {
    :is(.on-ice, .play-participants) {
       .player-card {
          flex-direction: column;

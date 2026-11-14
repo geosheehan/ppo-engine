@@ -225,6 +225,20 @@
          grid-area: clocks-right;
       }
    }
+
+   @media (min-width: 1760px) and (min-height: 980px) and (aspect-ratio >= 2/1) {
+      --card-text: calc(8 * var(--text-unit) + 100 * var(--text-unit));
+      --rink-height: min(
+         100cqh - var(--clocks-height) - var(--clocks-gap),
+         (
+               100cqw - 2 * var(--stage-gap) - 2 * var(--line-gap) - 4 * var(--card-text) + 10 *
+                  var(--row-gap) / 3
+            ) *
+            87 / 260
+      );
+      --headshot-size: min(336px, var(--row-height));
+      --card-width: calc(var(--headshot-size) + var(--card-text));
+   }
 }
 
 .replay__center {
