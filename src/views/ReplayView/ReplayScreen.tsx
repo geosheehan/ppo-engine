@@ -32,6 +32,7 @@ function ReplayScreen({ game, replay, emptyTitle = 'Loading game' }: ReplayScree
    const [left, right] = sides;
    const play = replay?.play;
    const isLineChange = replay?.changedTeamId !== undefined;
+   const noShifts = game !== undefined && game.shifts.length === 0;
    const team = (side: Side) => game?.teamByHomeOrAway(side);
    const title = game ? `${game.game.awayTeam.abbrev} @ ${game.game.homeTeam.abbrev}` : emptyTitle;
    const teamIds = game && {
@@ -96,6 +97,7 @@ function ReplayScreen({ game, replay, emptyTitle = 'Loading game' }: ReplayScree
                   color={game?.colors[left]}
                   players={replay?.onIcePlayers[left]}
                   highlighted={participantIds}
+                  noShifts={noShifts}
                />
                <div className="replay__center">
                   <Rink className="replay__rink">
@@ -135,6 +137,7 @@ function ReplayScreen({ game, replay, emptyTitle = 'Loading game' }: ReplayScree
                   color={game?.colors[right]}
                   players={replay?.onIcePlayers[right]}
                   highlighted={participantIds}
+                  noShifts={noShifts}
                />
             </div>
          </div>

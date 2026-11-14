@@ -14,6 +14,7 @@ type OnIcePanelProps = {
    color?: string;
    players?: Player[];
    highlighted?: number[];
+   noShifts?: boolean;
 };
 
 const SKATER_SLOTS = 5;
@@ -35,6 +36,7 @@ function OnIcePanel({
    color,
    players,
    highlighted = NO_IDS,
+   noShifts = false,
 }: OnIcePanelProps) {
    const onIce = players ?? NO_PLAYERS;
    const goalies = onIce.filter(isGoalie);
@@ -93,41 +95,49 @@ function OnIcePanel({
                : undefined
          }
       >
-         <div className="on-ice__lines">
-            <ol className="on-ice__column">
-               {players ? skaters.map(card) : emptyCards(SKATER_SLOTS)}
-            </ol>
-            <ol className="on-ice__column">
-               {players ? (
-                  <>
-                     {goalies.map(card)}
-                     {goalies.length === 0 && <li className="on-ice__empty-net">Empty net</li>}
-                  </>
-               ) : (
-                  emptyCards(1)
-               )}
-            </ol>
-         </div>
-         <ol className="on-ice__numbers">
-            {players ? (
-               <>
-                  {skaters.map(chip)}
-                  {goalies.map(chip)}
-                  {goalies.length === 0 && (
-                     <li className="on-ice__number on-ice__number--goalie on-ice__number--empty-net">
-                        <abbr title="Empty net">EN</abbr>
-                     </li>
+         {noShifts ? (
+            <p className="on-ice__none">No shift data</p>
+         ) : (
+            <>
+               <div className="on-ice__lines">
+                  <ol className="on-ice__column">
+                     {players ? skaters.map(card) : emptyCards(SKATER_SLOTS)}
+                  </ol>
+                  <ol className="on-ice__column">
+                     {players ? (
+                        <>
+                           {goalies.map(card)}
+                           {goalies.length === 0 && (
+                              <li className="on-ice__empty-net">Empty net</li>
+                           )}
+                        </>
+                     ) : (
+                        emptyCards(1)
+                     )}
+                  </ol>
+               </div>
+               <ol className="on-ice__numbers">
+                  {players ? (
+                     <>
+                        {skaters.map(chip)}
+                        {goalies.map(chip)}
+                        {goalies.length === 0 && (
+                           <li className="on-ice__number on-ice__number--goalie on-ice__number--empty-net">
+                              <abbr title="Empty net">EN</abbr>
+                           </li>
+                        )}
+                     </>
+                  ) : (
+                     Array.from({ length: SKATER_SLOTS + 1 }, (_, i) => (
+                        <li key={i} className="on-ice__number on-ice__number--blank" />
+                     ))
                   )}
-               </>
-            ) : (
-               Array.from({ length: SKATER_SLOTS + 1 }, (_, i) => (
-                  <li key={i} className="on-ice__number on-ice__number--blank" />
-               ))
-            )}
-         </ol>
-         <div className={clsx('on-ice__net', emptyNet && 'on-ice__net--empty')}>
-            {emptyNet && 'Empty net'}
-         </div>
+               </ol>
+               <div className={clsx('on-ice__net', emptyNet && 'on-ice__net--empty')}>
+                  {emptyNet && 'Empty net'}
+               </div>
+            </>
+         )}
       </div>
    );
 }
