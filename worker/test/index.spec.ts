@@ -6,8 +6,25 @@ import type { MockInstance } from 'vitest';
 const STORED = ['2026020046', '2026010046', '2025030411'];
 const storedBody = (id: string) => `{"game":{"id":${id}},"shifts":{"data":[],"total":0}}`;
 
+const gzip = (text: string) =>
+   new Response(new Blob([text]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer();
+const gunzip = (gzipped: ArrayBuffer) =>
+   new Response(new Blob([gzipped]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
+const storedGame = async (id: string) => {
+   const { value, metadata } = await env.GAMES.getWithMetadata(`v2:${id}`, 'arrayBuffer');
+   const { keys } = await env.GAMES.list({ prefix: `v2:${id}` });
+   const expiration = keys[0]?.expiration;
+   return {
+      body: value === null ? null : await gunzip(value),
+      metadata,
+      secondsLeft: expiration === undefined ? undefined : expiration - Date.now() / 1000,
+   };
+};
+
 beforeAll(async () => {
-   await Promise.all(STORED.map((id) => env.GAMES.put(`v1:${id}`, storedBody(id))));
+   await Promise.all(
+      STORED.map(async (id) => env.GAMES.put(`v2:${id}`, await gzip(storedBody(id)))),
+   );
 });
 
 type NhlRoutes = Partial<
@@ -53,6 +70,7 @@ describe('GET /game/:id', () => {
       const response = await get(`/game/${id}`);
       expect(response.status).toBe(200);
       expect(response.headers.get('Content-Type')).toBe('application/json');
+      expect(response.headers.get('Content-Encoding')).toBe('gzip');
       expect(response.headers.get('Cache-Control')).toBe('public, max-age=86400');
       expect(await response.text()).toBe(storedBody(id));
    });
@@ -173,7 +191,9 @@ describe('loading a game from the NHL', () => {
          'https://api.nhle.com/stats/rest/en/shiftcharts?cayenneExp=gameId=2026020100',
       ]);
       expect(nhlRequests[0].headers.get('User-Agent')).toContain('ppo-engine');
-      expect(await env.GAMES.get('v1:2026020100')).toBe(expected);
+      const stored = await storedGame('2026020100');
+      expect(stored.body).toBe(expected);
+      expect(stored.secondsLeft).toBeCloseTo(365 * 24 * 60 * 60, -2);
    });
 
    it('serves a stored game without asking the NHL', async () => {
@@ -194,7 +214,7 @@ describe('loading a game from the NHL', () => {
          expect(response.status).toBe(409);
          expect(await response.json()).toEqual({ error: 'Game 2026020102 has not finished' });
          expect(nhlRequests).toHaveLength(1);
-         expect(await env.GAMES.get('v1:2026020102')).toBeNull();
+         expect((await storedGame('2026020102')).body).toBeNull();
       },
    );
 
@@ -208,7 +228,7 @@ describe('loading a game from the NHL', () => {
       expect(await response.json()).toEqual({
          error: "The NHL sent shifts for game 2026020103 that can't be read",
       });
-      expect(await env.GAMES.get('v1:2026020103')).toBeNull();
+      expect((await storedGame('2026020103')).body).toBeNull();
    });
 
    it.each([
@@ -223,8 +243,9 @@ describe('loading a game from the NHL', () => {
       expect(await response.text()).toBe(
          `{"game":${playByPlay(id, 'OFF', gameDate)},"shifts":${shifts(0)}}`,
       );
-      const stored = await env.GAMES.getWithMetadata(`v1:${id}`);
+      const stored = await storedGame(id);
       expect(stored.metadata).toEqual({ lifetime });
+      expect(stored.secondsLeft).toBeCloseTo(lifetime, -2);
 
       nhlRequests.length = 0;
       const again = await get(`/game/${id}`);
@@ -232,16 +253,17 @@ describe('loading a game from the NHL', () => {
       expect(nhlRequests).toHaveLength(0);
    });
 
-   it('stores a game for good once it is three months old, with or without shifts', async () => {
+   it('keeps a game for a year once it is three months old, with or without shifts', async () => {
       nhlRoutes = {
          playByPlay: ok(playByPlay('2026020153', 'OFF', daysAgo(120))),
          shifts: ok(shifts(0)),
       };
       const response = await get('/game/2026020153');
       expect(response.headers.get('Cache-Control')).toBe('public, max-age=86400');
-      const stored = await env.GAMES.getWithMetadata('v1:2026020153');
-      expect(stored.value).not.toBeNull();
+      const stored = await storedGame('2026020153');
+      expect(stored.body).not.toBeNull();
       expect(stored.metadata).toBeNull();
+      expect(stored.secondsLeft).toBeCloseTo(365 * 24 * 60 * 60, -2);
    });
 
    it('passes on a 404 from the NHL', async () => {

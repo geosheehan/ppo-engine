@@ -14,6 +14,7 @@ const MINUTE_SECONDS = 60;
 const HOUR_SECONDS = 60 * MINUTE_SECONDS;
 const DAY_SECONDS = 24 * HOUR_SECONDS;
 const DAY_MS = DAY_SECONDS * 1000;
+const STORED_GAME_SECONDS = 365 * DAY_SECONDS;
 
 const allowedOrigins = (env: Env) =>
    new Set(env.ALLOWED_ORIGINS.split(',').map((origin) => origin.trim()));
@@ -25,16 +26,23 @@ const shiftsUrl = (id: string) =>
 const json = (body: unknown, status = 200, headers?: HeadersInit) =>
    Response.json(body, { status, headers });
 
-const gameResponse = (body: BodyInit, lifetime?: number) =>
-   new Response(body, {
+// Games are stored gzipped and sent as they are. 'manual' stops the runtime from encoding them again.
+const gameResponse = (gzipped: BodyInit, lifetime?: number) =>
+   new Response(gzipped, {
+      encodeBody: 'manual',
       headers: {
          'Content-Type': 'application/json',
+         'Content-Encoding': 'gzip',
          'Cache-Control': `public, max-age=${lifetime ?? DAY_SECONDS}`,
       },
    });
 
+const gzip = (text: string): Promise<ArrayBuffer> =>
+   new Response(new Blob([text]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer();
+
 // The NHL often posts shift charts hours after a game, so a game without them is kept only for a while and then
-// asked for again: hourly for two weeks, monthly until it is three months old, then for good (undefined).
+// asked for again: hourly for two weeks, monthly until it is three months old, then kept like any finished game
+// (undefined).
 export function shiftlessLifetime(
    gameDate: string | undefined,
    now = Date.now(),
@@ -47,12 +55,12 @@ export function shiftlessLifetime(
    return HOUR_SECONDS;
 }
 
-// The v1 prefix lets a future change to the stored shape use fresh keys instead of migrating old ones.
-const gameKey = (id: string) => `v1:${id}`;
+// The version prefix lets a change to the stored shape use fresh keys instead of migrating old ones.
+const gameKey = (id: string) => `v2:${id}`;
 
 const NO_SUCH_GAME = 'The NHL has no such game';
 
-type LoadedGame = { body: string; lifetime?: number };
+type LoadedGame = { gzipped: ArrayBuffer; lifetime?: number };
 
 async function loadGame(id: string, env: Env): Promise<LoadedGame> {
    const playByPlay = await fetchFromNhl(playByPlayUrl(id), env, NO_SUCH_GAME);
@@ -66,17 +74,16 @@ async function loadGame(id: string, env: Env): Promise<LoadedGame> {
    const lifetime =
       Number(total) === 0 ? shiftlessLifetime(GAME_DATE.exec(playByPlay)?.[1]) : undefined;
 
-   const body = `{"game":${playByPlay},"shifts":${shifts}}`;
+   const gzipped = await gzip(`{"game":${playByPlay},"shifts":${shifts}}`);
    try {
-      await env.GAMES.put(
-         gameKey(id),
-         body,
-         lifetime === undefined ? undefined : { expirationTtl: lifetime, metadata: { lifetime } },
-      );
+      await env.GAMES.put(gameKey(id), gzipped, {
+         expirationTtl: lifetime ?? STORED_GAME_SECONDS,
+         metadata: lifetime === undefined ? undefined : { lifetime },
+      });
    } catch (error) {
       console.error(`Could not store game ${id}`, error);
    }
-   return { body, lifetime };
+   return { gzipped, lifetime };
 }
 
 async function handleGame(id: string, env: Env, ctx: ExecutionContext): Promise<Response> {
@@ -91,8 +98,8 @@ async function handleGame(id: string, env: Env, ctx: ExecutionContext): Promise<
    });
    if (stored.value !== null) return gameResponse(stored.value, stored.metadata?.lifetime);
 
-   const { body, lifetime } = await loadOnce(gameKey(id), ctx, () => loadGame(id, env));
-   return gameResponse(body, lifetime);
+   const { gzipped, lifetime } = await loadOnce(gameKey(id), ctx, () => loadGame(id, env));
+   return gameResponse(gzipped, lifetime);
 }
 
 async function handleGet(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
