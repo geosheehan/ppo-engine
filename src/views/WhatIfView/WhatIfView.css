@@ -6,11 +6,6 @@
    }
 }
 
-.what-if__hint {
-   margin-top: 0;
-   font-size: 15px;
-}
-
 .what-if__toolbar {
    display: flex;
    flex-wrap: wrap;
@@ -42,16 +37,6 @@
 .what-if__team {
    font-weight: 600;
    color: var(--text-h);
-}
-
-.what-if__builder,
-.what-if__strip {
-   overflow-x: auto;
-}
-
-.what-if__builder > *,
-.what-if__strip-content {
-   min-width: 56rem;
 }
 
 .what-if__totals {

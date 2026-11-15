@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { isPeriodBreak, penaltyLanes, trackFraction, trackTicks } from '@layout/scenarioTrack';
+import {
+   isPeriodBreak,
+   penaltyLanes,
+   tickSeconds,
+   trackFraction,
+   trackTicks,
+} from '@layout/scenarioTrack';
 import type { ScenarioEvent } from '@domain/scenario';
 
 describe('trackFraction', () => {
@@ -14,6 +20,15 @@ describe('trackTicks and isPeriodBreak', () => {
       const ticks = trackTicks();
       expect(ticks).toHaveLength(13);
       expect(ticks.filter(isPeriodBreak)).toEqual([1200, 2400]);
+   });
+});
+
+describe('tickSeconds', () => {
+   it('widens the tick step as the track narrows, down to one tick per period', () => {
+      expect(tickSeconds(1800)).toBe(300);
+      expect(tickSeconds(400)).toBe(600);
+      expect(tickSeconds(200)).toBe(1200);
+      expect(tickSeconds(0)).toBe(1200);
    });
 });
 

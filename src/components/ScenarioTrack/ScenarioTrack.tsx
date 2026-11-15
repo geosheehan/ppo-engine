@@ -2,9 +2,11 @@ import '@components/ScenarioTrack/ScenarioTrack.css';
 import { Fragment, useRef } from 'react';
 import type { KeyboardEvent, PointerEvent } from 'react';
 import { clsx } from 'clsx';
+import { useElementWidth } from '@hooks/useElementWidth';
 import {
    isPeriodBreak,
    penaltyLanes,
+   tickSeconds,
    trackFraction,
    trackSeconds,
    trackTicks,
@@ -23,7 +25,7 @@ import {
 import type { ScenarioEvent, ScenarioPenalty } from '@domain/scenario';
 import type { GameElapsed, Side } from '@domain/types';
 
-const TEAM_ROWS: Side[] = [SIDES.AWAY, SIDES.HOME];
+const TEAM_ROWS: Side[] = [SIDES.HOME, SIDES.AWAY];
 const KEY_STEP_SECONDS = 5;
 const SHIFT_KEY_STEP_SECONDS = 60;
 
@@ -70,6 +72,8 @@ function ScenarioTrack({
 }: ScenarioTrackProps) {
    const laneRef = useRef<HTMLDivElement>(null);
    const dragRef = useRef<Drag | null>(null);
+   const [rulerRef, rulerWidth] = useElementWidth<HTMLDivElement>();
+   const ticks = trackTicks(tickSeconds(rulerWidth));
    const { laneOf, laneCount } = penaltyLanes(events);
 
    const secondsPerPixel = (): number => {
@@ -206,8 +210,8 @@ function ScenarioTrack({
          onPointerUp={endDrag}
          onPointerCancel={endDrag}
       >
-         <div className="scenario-track__ruler">
-            {trackTicks().map((time) => (
+         <div ref={rulerRef} className="scenario-track__ruler">
+            {ticks.map((time) => (
                <span
                   key={time}
                   className={clsx(
@@ -223,7 +227,7 @@ function ScenarioTrack({
             ))}
          </div>
          <div className="scenario-track__guides" aria-hidden="true">
-            {trackTicks().map((time) => (
+            {ticks.map((time) => (
                <span
                   key={time}
                   className={clsx(

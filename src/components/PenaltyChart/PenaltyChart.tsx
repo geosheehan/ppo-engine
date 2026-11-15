@@ -1,6 +1,7 @@
 import '@components/PenaltyChart/PenaltyChart.css';
 import { useMemo } from 'react';
 import { clsx } from 'clsx';
+import { useElementWidth } from '@hooks/useElementWidth';
 import { useGame } from '@context/useGame';
 import { axisX, isBaseline } from '@layout/gameAxis';
 import type { GameAxis, StrengthPiece } from '@layout/gameAxis';
@@ -14,9 +15,9 @@ import { playerShortName } from '@domain/players';
 import { isGoal, playTime } from '@domain/plays';
 import type { GameElapsed, Side } from '@domain/types';
 
-const TEAM_ROWS: Side[] = [SIDES.AWAY, SIDES.HOME];
-// Fraction of the chart a time label needs at the strip's narrowest width.
-const LABEL_GAP = 0.05;
+const TEAM_ROWS: Side[] = [SIDES.HOME, SIDES.AWAY];
+const LABEL_WIDTH_PX = 45;
+const TEAM_COLUMN_PX = 64;
 
 const advantageSide = ({ strength }: StrengthPiece): Side | undefined => {
    if (strength.away === strength.home) return undefined;
@@ -30,6 +31,8 @@ type PenaltyChartProps = {
 function PenaltyChart({ axis }: PenaltyChartProps) {
    const { game, plays, penalties, penaltyResult, colors, teamByHomeOrAway, playerById, sideOf } =
       useGame();
+   const [gridRef, gridWidth] = useElementWidth<HTMLDivElement>();
+   const labelGap = gridWidth > TEAM_COLUMN_PX ? LABEL_WIDTH_PX / (gridWidth - TEAM_COLUMN_PX) : 0;
    const gameEnd = axis.breakpoints.at(-1) ?? 0;
    const served = useMemo(
       () =>
@@ -67,7 +70,7 @@ function PenaltyChart({ axis }: PenaltyChartProps) {
          ...goals.map(({ time }): [GameElapsed, GameElapsed] => [time, time]),
       ],
       (time) => axisX(axis, time),
-      LABEL_GAP,
+      labelGap,
    );
    const labelTimes = [...labelRowOf.keys()];
    const labelRowCount = Math.max(1, ...[...labelRowOf.values()].map((row) => row + 1));
@@ -93,9 +96,12 @@ function PenaltyChart({ axis }: PenaltyChartProps) {
    return (
       <div className="penalty-chart">
          <div
+            ref={gridRef}
             className="penalty-chart__grid"
             style={{
-               gridTemplateColumns: ['4rem', ...columns, shootoutColumn, '0'].join(' '),
+               gridTemplateColumns: [`${TEAM_COLUMN_PX}px`, ...columns, shootoutColumn, '0'].join(
+                  ' ',
+               ),
                gridTemplateRows: `1.25rem repeat(${labelRowCount}, 1.25rem) repeat(5, 1.75rem) 1.75rem`,
             }}
          >

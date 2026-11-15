@@ -3,14 +3,18 @@ import { penaltySeconds, SCENARIO_SECONDS } from '@domain/scenario';
 import type { ScenarioEvent, ScenarioPenalty } from '@domain/scenario';
 import type { GameElapsed, Side } from '@domain/types';
 
-const TICK_SECONDS = 5 * 60;
+const TICK_STEPS = [5 * 60, 10 * 60, PERIOD_SECONDS];
+const MIN_TICK_GAP_PX = 48;
 
 export const trackFraction = (time: GameElapsed): number => time / SCENARIO_SECONDS;
 
 export const trackSeconds = (fraction: number): number => fraction * SCENARIO_SECONDS;
 
-export const trackTicks = (): GameElapsed[] =>
-   Array.from({ length: SCENARIO_SECONDS / TICK_SECONDS + 1 }, (_, i) => i * TICK_SECONDS);
+export const tickSeconds = (trackWidth: number): number =>
+   TICK_STEPS.find((step) => trackFraction(step) * trackWidth >= MIN_TICK_GAP_PX) ?? PERIOD_SECONDS;
+
+export const trackTicks = (step: number = TICK_STEPS[0]): GameElapsed[] =>
+   Array.from({ length: SCENARIO_SECONDS / step + 1 }, (_, i) => i * step);
 
 export const isPeriodBreak = (time: GameElapsed): boolean =>
    time > 0 && time < SCENARIO_SECONDS && time % PERIOD_SECONDS === 0;

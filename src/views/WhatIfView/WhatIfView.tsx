@@ -25,7 +25,7 @@ import {
 import type { ScenarioEvent, ScenarioGoal, ScenarioPenalty } from '@domain/scenario';
 import type { GameElapsed, Side } from '@domain/types';
 
-const SIDE_ORDER: Side[] = [SIDES.AWAY, SIDES.HOME];
+const SIDE_ORDER: Side[] = [SIDES.HOME, SIDES.AWAY];
 
 type NewEvent = Omit<ScenarioPenalty, 'id' | 'time'> | Omit<ScenarioGoal, 'id' | 'time'>;
 
@@ -73,12 +73,8 @@ function WhatIfView() {
 
    return (
       <main className="what-if">
-         <h1>What if?</h1>
-         <p className="what-if__hint">
-            Click the track to place the cursor, then add events there. Drag to move, and drag a
-            penalty's right edge to change its type. Arrow keys nudge the selected event (Shift for
-            a minute), and Delete removes it.
-         </p>
+         <title>What if?</title>
+         <h1 className="visually-hidden">What if?</h1>
 
          <div className="what-if__toolbar">
             <span className="what-if__cursor">
@@ -119,19 +115,17 @@ function WhatIfView() {
             </button>
          </div>
 
-         <div className="what-if__builder">
-            <ScenarioTrack
-               events={events}
-               selectedId={selectedId}
-               cursor={cursor}
-               teams={teams}
-               colors={scenario.colors}
-               onChange={change}
-               onSelect={setSelectedId}
-               onRemove={remove}
-               onCursor={setCursor}
-            />
-         </div>
+         <ScenarioTrack
+            events={events}
+            selectedId={selectedId}
+            cursor={cursor}
+            teams={teams}
+            colors={scenario.colors}
+            onChange={change}
+            onSelect={setSelectedId}
+            onRemove={remove}
+            onCursor={setCursor}
+         />
 
          <GameContext value={scenario}>
             <h2>What the engine sees</h2>

@@ -22,4 +22,13 @@
       font-weight: 500;
       color: var(--text-h);
    }
+
+   @media (max-width: 640px) {
+      font-size: 13px;
+
+      th,
+      td {
+         padding: 4px;
+      }
+   }
 }
