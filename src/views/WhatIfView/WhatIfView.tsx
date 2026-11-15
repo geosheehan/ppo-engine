@@ -4,6 +4,7 @@ import GoalEffectTable from '@components/GoalEffectTable';
 import PenaltyChart from '@components/PenaltyChart';
 import ScenarioTrack from '@components/ScenarioTrack';
 import StrengthTable from '@components/StrengthTable';
+import StrengthTableMerged from '@components/StrengthTable/StrengthTableMerged';
 import { GameContext } from '@context/GameContext';
 import type { GameContextValue } from '@context/types';
 import { gameAxis } from '@layout/gameAxis';
@@ -76,61 +77,8 @@ function WhatIfView() {
          <title>What if?</title>
          <h1 className="visually-hidden">What if?</h1>
 
-         <div className="what-if__toolbar">
-            <span className="what-if__cursor">
-               At {periodLabel(scenarioPeriod(cursor), SCENARIO_PERIODS)} {scenarioClock(cursor)}
-            </span>
-            {SIDE_ORDER.map((side) => (
-               <div
-                  key={side}
-                  role="group"
-                  aria-label={`Add for ${teams[side]}`}
-                  className="what-if__add"
-                  style={{ '--team-color': scenario.colors[side] }}
-               >
-                  <span className="what-if__team">{teams[side]}</span>
-                  {Object.values(SCENARIO_PENALTIES).map((penaltyType) => (
-                     <button
-                        key={penaltyType}
-                        type="button"
-                        onClick={() => add({ kind: 'penalty', side, penaltyType })}
-                     >
-                        + {SCENARIO_PENALTY_RULES[penaltyType].label}
-                     </button>
-                  ))}
-                  <button type="button" onClick={() => add({ kind: 'goal', side })}>
-                     + Goal
-                  </button>
-               </div>
-            ))}
-            <button
-               type="button"
-               disabled={selected === undefined}
-               onClick={() => selected && remove(selected.id)}
-            >
-               Remove selected
-            </button>
-            <button type="button" disabled={events.length === 0} onClick={clear}>
-               Clear
-            </button>
-         </div>
-
-         <ScenarioTrack
-            events={events}
-            selectedId={selectedId}
-            cursor={cursor}
-            teams={teams}
-            colors={scenario.colors}
-            onChange={change}
-            onSelect={setSelectedId}
-            onRemove={remove}
-            onCursor={setCursor}
-         />
-
          <GameContext value={scenario}>
-            <h2>What the engine sees</h2>
-            <PenaltyChart axis={axis} />
-            <div className="what-if__totals">
+            <div className="what-if__top">
                {SIDE_ORDER.map((side, i) => (
                   <StrengthTable
                      key={side}
@@ -141,7 +89,72 @@ function WhatIfView() {
                      totals={totals[side]}
                   />
                ))}
+               <StrengthTableMerged
+                  teams={SIDE_ORDER.map((side) => ({
+                     side,
+                     team: scenario.teamByHomeOrAway(side),
+                     color: scenario.colors[side],
+                     totals: totals[side],
+                  }))}
+               />
+
+               <div className="what-if__controls">
+                  <span className="what-if__cursor">
+                     At {periodLabel(scenarioPeriod(cursor), SCENARIO_PERIODS)}{' '}
+                     {scenarioClock(cursor)}
+                  </span>
+                  {SIDE_ORDER.map((side) => (
+                     <div
+                        key={side}
+                        role="group"
+                        aria-label={`Add for ${teams[side]}`}
+                        className="what-if__add"
+                        style={{ '--team-color': scenario.colors[side] }}
+                     >
+                        <span className="what-if__team">{teams[side]}</span>
+                        {Object.values(SCENARIO_PENALTIES).map((penaltyType) => (
+                           <button
+                              key={penaltyType}
+                              type="button"
+                              onClick={() => add({ kind: 'penalty', side, penaltyType })}
+                           >
+                              + {SCENARIO_PENALTY_RULES[penaltyType].label}
+                           </button>
+                        ))}
+                        <button type="button" onClick={() => add({ kind: 'goal', side })}>
+                           + Goal
+                        </button>
+                     </div>
+                  ))}
+                  <div className="what-if__actions">
+                     <button
+                        type="button"
+                        disabled={selected === undefined}
+                        onClick={() => selected && remove(selected.id)}
+                     >
+                        Remove selected
+                     </button>
+                     <button type="button" disabled={events.length === 0} onClick={clear}>
+                        Clear
+                     </button>
+                  </div>
+               </div>
             </div>
+
+            <ScenarioTrack
+               events={events}
+               selectedId={selectedId}
+               cursor={cursor}
+               teams={teams}
+               colors={scenario.colors}
+               onChange={change}
+               onSelect={setSelectedId}
+               onRemove={remove}
+               onCursor={setCursor}
+            />
+
+            <h2>What the engine sees</h2>
+            <PenaltyChart axis={axis} />
             <GoalEffectTable />
          </GameContext>
       </main>

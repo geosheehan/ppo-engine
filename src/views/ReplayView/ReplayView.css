@@ -5,11 +5,7 @@
 }
 
 #root:has(.replay) {
-   --text-unit: clamp(1px, 0.5px + min(100vw / 3840, 100svh / 2160), 2px);
-   --graphic-unit: calc(2 * var(--text-unit) - 1px);
    height: 100svh;
-   font-size: calc(1rem + 18 * (var(--text-unit) - 1px));
-   line-height: 145%;
 
    @media (max-width: 640px), (max-height: 500px) {
       height: auto;
