@@ -4,8 +4,8 @@ export const SIDES = {
 } as const;
 
 export const DEFAULT_TEAM_COLORS = {
-   AWAY: '#c8102e',
-   HOME: '#0072ce',
+   AWAY: '#0072ce',
+   HOME: '#c8102e',
 } as const;
 
 // Everything below is a value the NHL API sends.
