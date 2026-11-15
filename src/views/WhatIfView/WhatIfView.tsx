@@ -3,7 +3,6 @@ import { useMemo, useState } from 'react';
 import GoalEffectTable from '@components/GoalEffectTable';
 import PenaltyChart from '@components/PenaltyChart';
 import ScenarioTrack from '@components/ScenarioTrack';
-import StrengthRibbon from '@components/StrengthRibbon';
 import StrengthTable from '@components/StrengthTable';
 import { GameContext } from '@context/GameContext';
 import type { GameContextValue } from '@context/types';
@@ -136,12 +135,7 @@ function WhatIfView() {
 
          <GameContext value={scenario}>
             <h2>What the engine sees</h2>
-            <div className="what-if__strip">
-               <div className="what-if__strip-content">
-                  <PenaltyChart axis={axis} />
-                  <StrengthRibbon axis={axis} />
-               </div>
-            </div>
+            <PenaltyChart axis={axis} />
             <div className="what-if__totals">
                {SIDE_ORDER.map((side, i) => (
                   <StrengthTable

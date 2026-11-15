@@ -1,17 +1,7 @@
 .analysis {
-   padding: 0 32px;
+   padding: 0 32px 16px;
 
    @media (max-width: 640px) {
       padding-inline: 16px;
    }
-}
-
-/* The penalty chart and ribbon scroll together, so they stay lined up on the shared axis. */
-.analysis__strip {
-   overflow-x: auto;
-   padding-bottom: 16px;
-}
-
-.analysis__strip-content {
-   min-width: 56rem;
 }
