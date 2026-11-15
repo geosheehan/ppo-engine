@@ -1,5 +1,9 @@
 .what-if {
-   padding: 0 24px 48px;
+   padding: 0 32px 48px;
+
+   @media (max-width: 640px) {
+      padding-inline: 16px;
+   }
 }
 
 .what-if__hint {
