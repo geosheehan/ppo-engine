@@ -2,6 +2,7 @@ import '@components/PlayerCard/PlayerCard.css';
 import { clsx } from 'clsx';
 import { useHeadshot } from '@hooks/useHeadshot';
 import placeholderHeadshot from '@assets/placeholder-headshot.png';
+import { SEPARATOR } from '@layout/constants';
 import { headshotShade } from '@domain/colors';
 import type { Player, Team } from '@domain/types';
 
@@ -42,7 +43,7 @@ function PlayerCard({ player, team, color, mirrored = false }: PlayerCardProps) 
                {player && (
                   <>
                      {' '}
-                     #{player.sweaterNumber} · {player.positionCode}
+                     #{player.sweaterNumber} {SEPARATOR} {player.positionCode}
                   </>
                )}
             </div>

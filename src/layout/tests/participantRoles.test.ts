@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { SEPARATOR } from '@layout/constants';
 import { playParticipantLayout } from '@layout/participantLayout';
 import { participantRoles, rolesLine } from '@layout/participantRoles';
 import type { LineChange, Play, Player, Side, Team } from '@domain/types';
@@ -38,7 +39,7 @@ describe('participantRoles', () => {
       const layout = playParticipantLayout(lookups, goal, undefined, homeOnLeft);
 
       expect(rolesLine(participantRoles(layout))).toBe(
-         'Goal #7 · 1st assist #88 · 2nd assist #8 · Goalie #31',
+         `Goal #7 ${SEPARATOR} 1st assist #88 ${SEPARATOR} 2nd assist #8 ${SEPARATOR} Goalie #31`,
       );
    });
 
@@ -50,7 +51,7 @@ describe('participantRoles', () => {
       const layout = playParticipantLayout(lookups, goal, undefined, homeOnLeft);
 
       expect(rolesLine(participantRoles(layout, { combineAssists: true }))).toBe(
-         'Goal #7 · Assist #88 #8 · Goalie #31',
+         `Goal #7 ${SEPARATOR} Assist #88 #8 ${SEPARATOR} Goalie #31`,
       );
    });
 
@@ -67,7 +68,7 @@ describe('participantRoles', () => {
          { role: 'Off', numbers: [46, 2] },
          { role: 'On', numbers: [88, 8] },
       ]);
-      expect(rolesLine(participantRoles(layout))).toBe('Off #46 #2 · On #88 #8');
+      expect(rolesLine(participantRoles(layout))).toBe(`Off #46 #2 ${SEPARATOR} On #88 #8`);
    });
 
    it('is empty for a play without named players', () => {

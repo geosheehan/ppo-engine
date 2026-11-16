@@ -1,3 +1,5 @@
+import { SEPARATOR } from '@layout/constants';
+
 const DATE_FORMAT = new Intl.DateTimeFormat('en-US', {
    month: 'short',
    day: 'numeric',
@@ -6,4 +8,4 @@ const DATE_FORMAT = new Intl.DateTimeFormat('en-US', {
 });
 
 export const gameLabel = ({ date, away, home }: { date: string; away: string; home: string }) =>
-   `${DATE_FORMAT.format(new Date(`${date}T00:00:00Z`))} · ${away} @ ${home}`;
+   `${DATE_FORMAT.format(new Date(`${date}T00:00:00Z`))} ${SEPARATOR} ${away} @ ${home}`;

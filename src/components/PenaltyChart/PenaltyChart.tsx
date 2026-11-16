@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { clsx } from 'clsx';
 import { useElementWidth } from '@hooks/useElementWidth';
 import { useGame } from '@context/useGame';
-import { EN_DASH } from '@layout/constants';
+import { EN_DASH, SEPARATOR } from '@layout/constants';
 import { axisX, isBaseline } from '@layout/gameAxis';
 import type { GameAxis, StrengthPiece } from '@layout/gameAxis';
 import { chartMoments, labelRows, momentClock, momentPeriod } from '@layout/penaltyChart';
@@ -191,7 +191,7 @@ function PenaltyChart({ axis, stoppages }: PenaltyChartProps) {
                         baseline && 'penalty-chart__strength--baseline',
                         !baseline && side === undefined && 'penalty-chart__strength--even',
                      )}
-                     title={`${momentTitle(piece.start)}${EN_DASH}${momentClock(piece.end)} · ${away} ${piece.strength.away} ${EN_DASH} ${home} ${piece.strength.home}`}
+                     title={`${momentTitle(piece.start)}${EN_DASH}${momentClock(piece.end)} ${SEPARATOR} ${away} ${piece.strength.away} ${EN_DASH} ${home} ${piece.strength.home}`}
                      style={{
                         'gridColumn': `${line(piece.start)} / ${line(piece.end)}`,
                         'gridRow': strengthRow,
@@ -217,7 +217,7 @@ function PenaltyChart({ axis, stoppages }: PenaltyChartProps) {
                         penalty.coincidental && 'penalty-chart__box--coincidental',
                         penalty.endReason === 'goal' && 'penalty-chart__box--goal',
                      )}
-                     title={`${playerShortName(player)} · ${infraction} · ${play.details.duration} min`}
+                     title={`${playerShortName(player)} ${SEPARATOR} ${infraction} ${SEPARATOR} ${play.details.duration} min`}
                      style={{
                         'gridColumn': `${line(penalty.start)} / ${line(penalty.end)}`,
                         'gridRow': laneRow(penalty.side, penalty.penaltyClock),
@@ -244,7 +244,7 @@ function PenaltyChart({ axis, stoppages }: PenaltyChartProps) {
                <span
                   key={`goal-${eventId}`}
                   className="penalty-chart__goal"
-                  title={`${teamByHomeOrAway(side).abbrev} goal · ${momentTitle(time)}`}
+                  title={`${teamByHomeOrAway(side).abbrev} goal ${SEPARATOR} ${momentTitle(time)}`}
                   style={{
                      'gridColumn': line(time),
                      'gridRow': goalsRow,
@@ -256,7 +256,7 @@ function PenaltyChart({ axis, stoppages }: PenaltyChartProps) {
                <span
                   key={`stoppage-${time}`}
                   className="penalty-chart__stoppage"
-                  title={`Stoppage · ${momentTitle(time)}`}
+                  title={`Stoppage ${SEPARATOR} ${momentTitle(time)}`}
                   style={{ gridColumn: line(time), gridRow: goalsRow }}
                />
             ))}

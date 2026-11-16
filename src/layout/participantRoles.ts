@@ -1,3 +1,4 @@
+import { SEPARATOR } from '@layout/constants';
 import type { ParticipantCard, ParticipantLayout } from '@layout/types';
 
 export type RoleNumbers = {
@@ -27,4 +28,4 @@ export const participantRoles = (
 export const rolesLine = (roles: RoleNumbers[]): string =>
    roles
       .map(({ role, numbers }) => [role, ...numbers.map((number) => `#${number}`)].join(' '))
-      .join(' · ');
+      .join(` ${SEPARATOR} `);

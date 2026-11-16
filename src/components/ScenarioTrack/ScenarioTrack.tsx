@@ -7,6 +7,7 @@ import CaretIcon from '@components/icons/CaretIcon';
 import MinusIcon from '@components/icons/MinusIcon';
 import PlusIcon from '@components/icons/PlusIcon';
 import { useElementWidth } from '@hooks/useElementWidth';
+import { SEPARATOR } from '@layout/constants';
 import {
    isPeriodStart,
    OVERTIME_FORMATS,
@@ -155,8 +156,8 @@ function ScenarioTrack({
             : event.kind === 'goal'
               ? `${teams[event.side]} goal`
               : `${teams[event.side]} #${event.id} ${SCENARIO_PENALTY_RULES[event.penaltyType].label.toLowerCase()}`;
-      const title = `${what} · ${moment(event.time)}`;
-      return isDiscarded(event, winner) ? `${title} · ${DISCARDED_NOTE}` : title;
+      const title = `${what} ${SEPARATOR} ${moment(event.time)}`;
+      return isDiscarded(event, winner) ? `${title} ${SEPARATOR} ${DISCARDED_NOTE}` : title;
    };
 
    const startDrag = (event: ScenarioEvent, mode: Drag['mode']) => (e: PointerEvent) => {
@@ -289,7 +290,7 @@ function ScenarioTrack({
 
    const chipLabel = (period: number): string =>
       isOvertimePeriod(setup, period)
-         ? `${periodLabel(period, setup.regulation)} · ${OVERTIME_FORMATS[setup.gameType].chip}`
+         ? `${periodLabel(period, setup.regulation)} ${SEPARATOR} ${OVERTIME_FORMATS[setup.gameType].chip}`
          : periodLabel(period, setup.regulation);
    const onChipKeyDown = (period: number) => (e: KeyboardEvent) => {
       const target: Record<string, number> = {

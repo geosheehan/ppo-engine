@@ -8,6 +8,7 @@ import StrengthTable from '@components/StrengthTable';
 import StrengthTableMerged from '@components/StrengthTable/StrengthTableMerged';
 import { GameContext } from '@context/GameContext';
 import type { GameContextValue } from '@context/types';
+import { SEPARATOR } from '@layout/constants';
 import { gameAxis } from '@layout/gameAxis';
 import { OVERTIME_FORMATS } from '@layout/scenarioTrack';
 import { homeDefendingSides } from '@engine/defendingSide';
@@ -124,7 +125,7 @@ function WhatIfView() {
       };
       const formats = Object.values(SCENARIO_GAME_TYPES).map((gameType): PeriodOption => ({
          key: gameType,
-         label: `OT · ${OVERTIME_FORMATS[gameType].chip}`,
+         label: `OT ${SEPARATOR} ${OVERTIME_FORMATS[gameType].chip}`,
          length: OVERTIME_FORMATS[gameType].length,
          current: overtime && setup.gameType === gameType,
          blocked: overtime ? undefined : makeOvertimeBlock({ ...setup, gameType }, period),

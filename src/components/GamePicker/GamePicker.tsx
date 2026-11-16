@@ -4,6 +4,7 @@ import GameWeek from '@components/GameWeek';
 import CaretIcon from '@components/icons/CaretIcon';
 import CloseIcon from '@components/icons/nav/CloseIcon';
 import type { GameSummary } from '@api/types';
+import { SEPARATOR } from '@layout/constants';
 
 type GamePickerProps = {
    selected?: GameSummary;
@@ -39,7 +40,7 @@ function GamePicker({ selected, autoOpen, onPick }: GamePickerProps) {
             Game
             {selected !== undefined && (
                <span className="game-picker__current">
-                  {' · '}
+                  {` ${SEPARATOR} `}
                   {selected.away} @ {selected.home}
                </span>
             )}
