@@ -2,6 +2,7 @@ import '@views/WhatIfView/WhatIfView.css';
 import { useMemo, useState } from 'react';
 import GoalEffectTable from '@components/GoalEffectTable';
 import PenaltyChart from '@components/PenaltyChart';
+import PenaltyClocks from '@components/PenaltyClocks';
 import ScenarioTrack from '@components/ScenarioTrack';
 import type { PeriodControls, PeriodOption } from '@components/ScenarioTrack/ScenarioTrack';
 import StrengthTable from '@components/StrengthTable';
@@ -14,6 +15,7 @@ import { OVERTIME_FORMATS } from '@layout/scenarioTrack';
 import { homeDefendingSides } from '@engine/defendingSide';
 import { runPenaltyEngine } from '@engine/penaltyEngine';
 import { countPowerPlays, totalsAt } from '@engine/powerPlayCounter';
+import { snapshotAt } from '@engine/snapshot';
 import { SIDES } from '@domain/constants';
 import { indexGame } from '@domain/game';
 import { periodLabel } from '@domain/labels';
@@ -27,7 +29,6 @@ import {
    SCENARIO_PENALTIES,
    SCENARIO_PENALTY_RULES,
    scenarioClock,
-   scenarioEnd,
    scenarioGame,
    scenarioPeriod,
 } from '@domain/scenario';
@@ -79,7 +80,12 @@ function WhatIfView() {
 
    const scenario = useMemo(() => scenarioContext(events, setup), [events, setup]);
    const axis = useMemo(() => gameAxis(scenario, scenario.penaltyResult.timeline), [scenario]);
-   const totals = totalsAt(scenario.powerPlays, scenarioEnd(events, setup));
+   const penaltyPlays = useMemo(
+      () => new Map(scenario.penalties.map((play) => [play.eventId, play])),
+      [scenario],
+   );
+   const snapshot = snapshotAt(scenario.penaltyResult, penaltyPlays, cursor);
+   const totals = totalsAt(scenario.powerPlays, cursor);
    const winner = overtimeWinner(events, setup);
    const stoppages = events
       .filter((event) => event.kind === 'stoppage' && !isDiscarded(event, winner))
@@ -156,6 +162,15 @@ function WhatIfView() {
                      team={scenario.teamByHomeOrAway(side)}
                      color={scenario.colors[side]}
                      totals={totals[side]}
+                     strength={snapshot.strength}
+                  />
+               ))}
+               {SIDE_ORDER.map((side, i) => (
+                  <PenaltyClocks
+                     key={side}
+                     side={side}
+                     onClock={snapshot.onClock}
+                     position={i === 0 ? 'left' : 'right'}
                   />
                ))}
                <StrengthTableMerged
@@ -165,6 +180,7 @@ function WhatIfView() {
                      color: scenario.colors[side],
                      totals: totals[side],
                   }))}
+                  strength={snapshot.strength}
                />
 
                <div className="what-if__controls">

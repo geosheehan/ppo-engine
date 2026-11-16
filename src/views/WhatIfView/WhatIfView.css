@@ -11,7 +11,8 @@
    grid-template-columns: repeat(2, minmax(0, 1fr));
    grid-template-areas:
       'controls controls'
-      'table-left table-right';
+      'table-left table-right'
+      'clocks-left clocks-right';
    gap: 16px calc(32 * var(--graphic-unit));
    margin-bottom: 16px;
 
@@ -28,17 +29,27 @@
       grid-area: table-right;
    }
 
+   > .penalty-clocks--left {
+      grid-area: clocks-left;
+   }
+
+   > .penalty-clocks--right {
+      grid-area: clocks-right;
+   }
+
    @media (max-width: 880px) {
-      grid-template-columns: minmax(0, 1fr);
       grid-template-areas:
-         'controls'
-         'table-left'
-         'table-right';
+         'controls controls'
+         'table-left table-left'
+         'table-right table-right'
+         'clocks-left clocks-right';
    }
 
    @media (min-width: 1280px) {
       grid-template-columns: 1fr auto 1fr;
-      grid-template-areas: 'table-left controls table-right';
+      grid-template-areas:
+         'table-left controls table-right'
+         'clocks-left controls clocks-right';
       align-items: center;
 
       > .strength-table__card--left {
@@ -47,6 +58,11 @@
 
       > .strength-table__card--right {
          justify-self: end;
+      }
+
+      /* The left clocks run row-reverse, so flex-end packs both sides toward the outer edges, under their tables. */
+      > .penalty-clocks {
+         justify-content: flex-end;
       }
    }
 }
