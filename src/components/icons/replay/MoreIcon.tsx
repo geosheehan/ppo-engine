@@ -1,13 +1,13 @@
-import ReplayIconFrame from '@components/icons/replay/ReplayIconFrame';
-import type { ReplayIconProps } from '@components/types';
+import InlineIconFrame from '@components/icons/InlineIconFrame';
+import type { InlineIconProps } from '@components/types';
 
-function MoreIcon(props: ReplayIconProps) {
+function MoreIcon(props: InlineIconProps) {
    return (
-      <ReplayIconFrame {...props}>
+      <InlineIconFrame {...props}>
          <circle cx="5" cy="12" r="2" />
          <circle cx="12" cy="12" r="2" />
          <circle cx="19" cy="12" r="2" />
-      </ReplayIconFrame>
+      </InlineIconFrame>
    );
 }
 

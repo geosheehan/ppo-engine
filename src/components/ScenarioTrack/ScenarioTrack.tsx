@@ -3,6 +3,9 @@ import { Fragment, useEffect, useId, useRef, useState } from 'react';
 import type { KeyboardEvent, PointerEvent, ReactNode } from 'react';
 import { clsx } from 'clsx';
 import ActionButton from '@components/ActionButton';
+import CaretIcon from '@components/icons/CaretIcon';
+import MinusIcon from '@components/icons/MinusIcon';
+import PlusIcon from '@components/icons/PlusIcon';
 import { useElementWidth } from '@hooks/useElementWidth';
 import {
    isPeriodStart,
@@ -342,10 +345,10 @@ function ScenarioTrack({
                onKeyDown={onChipKeyDown(period)}
             >
                {chipLabel(period)}
-               <span aria-hidden="true">{open ? ' ▴' : ' ▾'}</span>
+               <CaretIcon direction={open ? 'up' : 'down'} size="1em" />
             </button>
             <ActionButton
-               label="+"
+               label={<PlusIcon size="1em" />}
                name={`Add a period after ${name}`}
                hint={`Add a period after ${name}`}
                blocked={controls.addBlocked}
@@ -353,7 +356,7 @@ function ScenarioTrack({
                onBlocked={explain}
             />
             <ActionButton
-               label="−"
+               label={<MinusIcon size="1em" />}
                name={`Remove ${name}`}
                hint={`Remove ${name}`}
                blocked={controls.removeBlocked}

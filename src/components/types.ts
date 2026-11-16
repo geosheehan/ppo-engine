@@ -6,6 +6,6 @@ export type IconProps = {
    color?: string;
 };
 
-export type ReplayIconProps = {
-   size?: number;
+export type InlineIconProps = {
+   size?: number | string;
 };

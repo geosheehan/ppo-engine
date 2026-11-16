@@ -1,6 +1,7 @@
 import '@components/GamePicker/GamePicker.css';
 import { useEffect, useId, useRef, useState } from 'react';
 import GameWeek from '@components/GameWeek';
+import CaretIcon from '@components/icons/CaretIcon';
 import CloseIcon from '@components/icons/nav/CloseIcon';
 import type { GameSummary } from '@api/types';
 
@@ -42,7 +43,7 @@ function GamePicker({ selected, autoOpen, onPick }: GamePickerProps) {
                   {selected.away} @ {selected.home}
                </span>
             )}
-            <span aria-hidden="true">▾</span>
+            <CaretIcon size="1em" />
          </button>
          <div
             ref={popoverRef}

@@ -1,11 +1,11 @@
-import ReplayIconFrame from '@components/icons/replay/ReplayIconFrame';
-import type { ReplayIconProps } from '@components/types';
+import InlineIconFrame from '@components/icons/InlineIconFrame';
+import type { InlineIconProps } from '@components/types';
 
-function PreviousIcon(props: ReplayIconProps) {
+function PreviousIcon(props: InlineIconProps) {
    return (
-      <ReplayIconFrame {...props}>
+      <InlineIconFrame {...props}>
          <path d="M16 6v12l-8.5-6z" />
-      </ReplayIconFrame>
+      </InlineIconFrame>
    );
 }
 

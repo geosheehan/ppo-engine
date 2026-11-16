@@ -1,7 +1,8 @@
 import '@components/ActionButton/ActionButton.css';
+import type { ReactNode } from 'react';
 
 type ActionButtonProps = {
-   label: string;
+   label: ReactNode;
    name?: string;
    blocked?: string;
    hint?: string;

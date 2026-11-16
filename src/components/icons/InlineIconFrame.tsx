@@ -1,11 +1,11 @@
 import type { ReactNode } from 'react';
-import type { ReplayIconProps } from '@components/types';
+import type { InlineIconProps } from '@components/types';
 
-type ReplayIconFrameProps = ReplayIconProps & {
+type InlineIconFrameProps = InlineIconProps & {
    children: ReactNode;
 };
 
-function ReplayIconFrame({ size = 18, children }: ReplayIconFrameProps) {
+function InlineIconFrame({ size = 18, children }: InlineIconFrameProps) {
    return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
          {children}
@@ -13,4 +13,4 @@ function ReplayIconFrame({ size = 18, children }: ReplayIconFrameProps) {
    );
 }
 
-export default ReplayIconFrame;
+export default InlineIconFrame;

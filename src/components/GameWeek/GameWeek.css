@@ -56,15 +56,15 @@
 }
 
 .game-week__arrow {
+   display: grid;
+   place-items: center;
    width: 32px;
    height: 32px;
+   padding: 0;
    border: 1px solid var(--border);
    border-radius: 6px;
    background: transparent;
    color: var(--text-h);
-   font: inherit;
-   font-size: 20px;
-   line-height: 1;
    cursor: pointer;
 
    &:hover {

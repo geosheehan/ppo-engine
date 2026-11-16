@@ -2,6 +2,8 @@ import '@components/GameWeek/GameWeek.css';
 import { Suspense, use, useEffect, useId, useRef, useState } from 'react';
 import { clsx } from 'clsx';
 import ErrorBoundary from '@components/ErrorBoundary';
+import CaretIcon from '@components/icons/CaretIcon';
+import ChevronIcon from '@components/icons/ChevronIcon';
 import SeasonCalendar from '@components/SeasonCalendar';
 import { ppoApi } from '@api/ppoApi';
 import {
@@ -72,11 +74,11 @@ function GameWeek({ initialDate, selectedId, onPick }: GameWeekProps) {
                aria-label="Previous week"
                onClick={() => moveWeek(-1)}
             >
-               ‹
+               <ChevronIcon direction="left" size={20} />
             </button>
             <button type="button" className="game-week__range" popoverTarget={jumpId}>
                {weekRangeLabel(shown.weekStart)}
-               <span aria-hidden="true">▾</span>
+               <CaretIcon size="1em" />
             </button>
             <div
                ref={jumpRef}
@@ -95,7 +97,7 @@ function GameWeek({ initialDate, selectedId, onPick }: GameWeekProps) {
                aria-label="Next week"
                onClick={() => moveWeek(1)}
             >
-               ›
+               <ChevronIcon direction="right" size={20} />
             </button>
          </div>
          {fetchedWeek === shown.weekStart ? (
