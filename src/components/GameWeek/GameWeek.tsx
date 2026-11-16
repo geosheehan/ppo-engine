@@ -200,7 +200,7 @@ function DayStrip({ weekStart, selectedDay, counts, onDay }: DayStripProps) {
                      <span className="game-week__weekday">{weekdayLabel(date)}</span>
                      <span className="game-week__date">{monthDayLabel(date)}</span>
                      <span className="game-week__count">
-                        {counts === undefined ? ' ' : `${count} ${count === 1 ? 'game' : 'games'}`}
+                        {counts !== undefined && `${count} ${count === 1 ? 'game' : 'games'}`}
                      </span>
                   </button>
                </li>

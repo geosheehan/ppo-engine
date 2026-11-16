@@ -120,6 +120,7 @@
 }
 
 .game-week__count {
+   min-height: 1lh;
    font-size: 12px;
 
    @media (max-width: 768px) {
