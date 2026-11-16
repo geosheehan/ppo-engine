@@ -1,3 +1,4 @@
+import { EN_DASH } from '@layout/constants';
 import { GAME_SCHEDULE_STATES, GAME_STATES, PERIOD_TYPES } from '@domain/constants';
 import type { ScheduleGame, ScheduleWeek } from '@domain/types';
 
@@ -59,7 +60,7 @@ export const longDayLabel = (date: string): string => WEEKDAY_LONG_FORMAT.format
 export function weekRangeLabel(weekStart: string): string {
    const end = addDays(weekStart, 6);
    const year = end.slice(0, 4);
-   return `${monthDayLabel(weekStart)} – ${monthDayLabel(end)}, ${year}`;
+   return `${monthDayLabel(weekStart)} ${EN_DASH} ${monthDayLabel(end)}, ${year}`;
 }
 
 export function gameStatusLabel(game: ScheduleGame, timeZone?: string): string {

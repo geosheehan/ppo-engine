@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { EN_DASH } from '@layout/constants';
 import {
    monthGrid,
    monthLabel,
@@ -20,7 +21,7 @@ describe('seasons', () => {
       expect(seasonOf(date)).toBe(season);
    });
 
-   it('lists every season back to 1917–18, newest first', () => {
+   it('lists every season back to 1917-18, newest first', () => {
       const seasons = seasonsUpTo('2026-11-09');
       expect(seasons.at(0)).toBe(2026);
       expect(seasons.at(-1)).toBe(1917);
@@ -28,8 +29,8 @@ describe('seasons', () => {
    });
 
    it('names a season by both years', () => {
-      expect(seasonLabel(2026)).toBe('2026–27');
-      expect(seasonLabel(1999)).toBe('1999–00');
+      expect(seasonLabel(2026)).toBe(`2026${EN_DASH}27`);
+      expect(seasonLabel(1999)).toBe(`1999${EN_DASH}00`);
    });
 });
 

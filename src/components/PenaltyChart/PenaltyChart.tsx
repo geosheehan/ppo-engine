@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { clsx } from 'clsx';
 import { useElementWidth } from '@hooks/useElementWidth';
 import { useGame } from '@context/useGame';
+import { EN_DASH } from '@layout/constants';
 import { axisX, isBaseline } from '@layout/gameAxis';
 import type { GameAxis, StrengthPiece } from '@layout/gameAxis';
 import { chartMoments, labelRows, momentClock, momentPeriod } from '@layout/penaltyChart';
@@ -190,7 +191,7 @@ function PenaltyChart({ axis, stoppages }: PenaltyChartProps) {
                         baseline && 'penalty-chart__strength--baseline',
                         !baseline && side === undefined && 'penalty-chart__strength--even',
                      )}
-                     title={`${momentTitle(piece.start)}–${momentClock(piece.end)} · ${away} ${piece.strength.away} – ${home} ${piece.strength.home}`}
+                     title={`${momentTitle(piece.start)}${EN_DASH}${momentClock(piece.end)} · ${away} ${piece.strength.away} ${EN_DASH} ${home} ${piece.strength.home}`}
                      style={{
                         'gridColumn': `${line(piece.start)} / ${line(piece.end)}`,
                         'gridRow': strengthRow,

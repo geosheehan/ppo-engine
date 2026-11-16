@@ -9,6 +9,7 @@ import PlaybackSelect from '@components/PlaybackSelect';
 import ReplayTrack from '@components/ReplayTrack';
 import StepButtons from '@components/StepButtons';
 import { useReplayPlayback } from '@hooks/useReplayPlayback';
+import { EN_DASH } from '@layout/constants';
 import { isGoalStep } from '@domain/steps';
 import type { GameElapsed, Play, ReplayPosition, ReplayStep } from '@domain/types';
 
@@ -65,9 +66,11 @@ function ReplayControls({
          <div className="replay-controls__essentials">
             <span className="replay-controls__count">
                <span className="visually-hidden">Play </span>
-               <span>{disabled ? '–' : index + 1}</span>
+               <span>{disabled ? EN_DASH : index + 1}</span>
                <span className="visually-hidden"> of </span>
-               <span className="replay-controls__count-total">{disabled ? '–' : plays.length}</span>
+               <span className="replay-controls__count-total">
+                  {disabled ? EN_DASH : plays.length}
+               </span>
             </span>
             <ReplayTrack
                stepIndex={stepIndex}
@@ -122,7 +125,9 @@ function ReplayControls({
          <div className="replay-controls__extras">
             <div className="replay-controls__group">
                <span className="replay-controls__position">
-                  {disabled ? 'Play – / –' : `Play ${index + 1} / ${plays.length}`}
+                  {disabled
+                     ? `Play ${EN_DASH} / ${EN_DASH}`
+                     : `Play ${index + 1} / ${plays.length}`}
                </span>
                <PlaybackSelect value={playbackKey} disabled={disabled} onChange={setPlaybackKey} />
             </div>

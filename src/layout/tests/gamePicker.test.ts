@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { EN_DASH } from '@layout/constants';
 import {
    addDays,
    defaultPickerWeek,
@@ -63,7 +64,7 @@ describe('dates', () => {
    });
 
    it('labels a week that spans two years by its end', () => {
-      expect(weekRangeLabel('2026-12-28')).toBe('Dec 28 – Jan 3, 2027');
+      expect(weekRangeLabel('2026-12-28')).toBe(`Dec 28 ${EN_DASH} Jan 3, 2027`);
    });
 });
 

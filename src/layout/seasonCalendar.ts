@@ -1,3 +1,4 @@
+import { EN_DASH } from '@layout/constants';
 import { addDays, weekStartOf } from '@layout/gamePicker';
 
 const FIRST_SEASON = 1917;
@@ -26,7 +27,7 @@ export const seasonsUpTo = (date: string): number[] =>
    Array.from({ length: seasonOf(date) - FIRST_SEASON + 1 }, (_, index) => seasonOf(date) - index);
 
 export const seasonLabel = (season: number): string =>
-   `${season}–${String((season + 1) % 100).padStart(2, '0')}`;
+   `${season}${EN_DASH}${String((season + 1) % 100).padStart(2, '0')}`;
 
 export const seasonMonths = (): number[] => SEASON_MONTHS;
 
