@@ -1,0 +1,25 @@
+/* Opacity only, so the dots never change the text's width. */
+.loading-dots > span {
+   opacity: 0;
+   animation: loading-dot 1.2s infinite;
+
+   &:nth-child(2) {
+      animation-delay: 0.2s;
+   }
+
+   &:nth-child(3) {
+      animation-delay: 0.4s;
+   }
+
+   @media (prefers-reduced-motion: reduce) {
+      opacity: 1;
+      animation: none;
+   }
+}
+
+@keyframes loading-dot {
+   30%,
+   70% {
+      opacity: 1;
+   }
+}

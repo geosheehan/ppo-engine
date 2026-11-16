@@ -4,6 +4,7 @@ import { clsx } from 'clsx';
 import ErrorBoundary from '@components/ErrorBoundary';
 import CaretIcon from '@components/icons/CaretIcon';
 import ChevronIcon from '@components/icons/ChevronIcon';
+import LoadingDots from '@components/LoadingDots';
 import SeasonCalendar from '@components/SeasonCalendar';
 import { ppoApi } from '@api/ppoApi';
 import {
@@ -61,7 +62,10 @@ function GameWeek({ initialDate, selectedId, onPick }: GameWeekProps) {
    const waiting = (
       <>
          <DayStrip weekStart={shown.weekStart} selectedDay={shown.day} onDay={pickDay} />
-         <p className="game-week__message">Loading games…</p>
+         <p className="game-week__message" role="status">
+            Loading games
+            <LoadingDots />
+         </p>
       </>
    );
 
