@@ -1,23 +1,42 @@
 import { PERIOD_SECONDS } from '@domain/constants';
-import { penaltySeconds, SCENARIO_SECONDS } from '@domain/scenario';
-import type { ScenarioEvent, ScenarioPenalty } from '@domain/scenario';
+import { penaltySeconds, SCENARIO_GAME_TYPES } from '@domain/scenario';
+import type { ScenarioEvent, ScenarioGameType, ScenarioPenalty } from '@domain/scenario';
 import type { GameElapsed, Side } from '@domain/types';
 
 const TICK_STEPS = [5 * 60, 10 * 60, PERIOD_SECONDS];
 const MIN_TICK_GAP_PX = 48;
 
-export const trackFraction = (time: GameElapsed): number => time / SCENARIO_SECONDS;
+export const OVERTIME_FORMATS: Record<
+   ScenarioGameType,
+   { chip: string; length: string; title: string }
+> = {
+   [SCENARIO_GAME_TYPES.REGULAR]: {
+      chip: '3v3',
+      length: '5:00',
+      title: 'Regular-season OT: 3-on-3 for 5:00',
+   },
+   [SCENARIO_GAME_TYPES.PLAYOFF]: {
+      chip: '5v5',
+      length: '20:00',
+      title: 'Playoff OT: 5-on-5 for 20:00',
+   },
+};
 
-export const trackSeconds = (fraction: number): number => fraction * SCENARIO_SECONDS;
+export const trackFraction = (time: GameElapsed, total: GameElapsed): number => time / total;
 
-export const tickSeconds = (trackWidth: number): number =>
-   TICK_STEPS.find((step) => trackFraction(step) * trackWidth >= MIN_TICK_GAP_PX) ?? PERIOD_SECONDS;
+export const trackSeconds = (fraction: number, total: GameElapsed): number => fraction * total;
 
-export const trackTicks = (step: number = TICK_STEPS[0]): GameElapsed[] =>
-   Array.from({ length: SCENARIO_SECONDS / step + 1 }, (_, i) => i * step);
+export const tickSeconds = (trackWidth: number, total: GameElapsed): number =>
+   TICK_STEPS.find((step) => trackFraction(step, total) * trackWidth >= MIN_TICK_GAP_PX)
+   ?? PERIOD_SECONDS;
 
-export const isPeriodBreak = (time: GameElapsed): boolean =>
-   time > 0 && time < SCENARIO_SECONDS && time % PERIOD_SECONDS === 0;
+export const trackTicks = (total: GameElapsed, step: number = TICK_STEPS[0]): GameElapsed[] => {
+   const ticks = Array.from({ length: Math.floor(total / step) + 1 }, (_, i) => i * step);
+   return ticks.at(-1) === total ? ticks : [...ticks, total];
+};
+
+export const isPeriodStart = (time: GameElapsed, total: GameElapsed): boolean =>
+   time < total && time % PERIOD_SECONDS === 0;
 
 export type TrackLanes = {
    laneOf: Map<number, number>;

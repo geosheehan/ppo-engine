@@ -9,6 +9,8 @@ declare module 'react' {
       '--rink-right-end-color'?: string;
       '--replay-track-progress'?: number;
       '--replay-track-goal-position'?: number;
+      '--scenario-track-bar-room'?: string;
+      '--scenario-track-chip-room'?: string;
       '--headshot-accent'?: string;
       '--swatch-color'?: string;
    }

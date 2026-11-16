@@ -1,0 +1,8 @@
+.action-button {
+   font-family: inherit;
+
+   &[aria-disabled='true'] {
+      opacity: 0.45;
+      cursor: not-allowed;
+   }
+}

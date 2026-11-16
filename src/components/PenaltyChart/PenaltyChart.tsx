@@ -26,9 +26,10 @@ const advantageSide = ({ strength }: StrengthPiece): Side | undefined => {
 
 type PenaltyChartProps = {
    axis: GameAxis;
+   stoppages?: GameElapsed[];
 };
 
-function PenaltyChart({ axis }: PenaltyChartProps) {
+function PenaltyChart({ axis, stoppages }: PenaltyChartProps) {
    const { game, plays, penalties, penaltyResult, colors, teamByHomeOrAway, playerById, sideOf } =
       useGame();
    const [gridRef, gridWidth] = useElementWidth<HTMLDivElement>();
@@ -57,9 +58,12 @@ function PenaltyChart({ axis }: PenaltyChartProps) {
       [plays, sideOf, gameEnd],
    );
 
+   const shownStoppages = (stoppages ?? []).filter((time) => time <= gameEnd);
+
    const moments = chartMoments(axis.breakpoints, [
       ...served.flatMap(({ start, end }) => [start, end]),
       ...goals.map(({ time }) => time),
+      ...shownStoppages,
    ]);
    const labelRowOf = labelRows(
       [
@@ -118,7 +122,7 @@ function PenaltyChart({ axis }: PenaltyChartProps) {
                Strength
             </div>
             <div className="penalty-chart__team" style={{ gridRow: goalsRow }}>
-               Goals
+               {stoppages ? 'Events' : 'Goals'}
             </div>
             {TEAM_ROWS.flatMap((side) =>
                ([0, 1] as const).map((penaltyClock) => (
@@ -245,6 +249,14 @@ function PenaltyChart({ axis }: PenaltyChartProps) {
                      'gridRow': goalsRow,
                      '--team-color': colors[side],
                   }}
+               />
+            ))}
+            {shownStoppages.map((time) => (
+               <span
+                  key={`stoppage-${time}`}
+                  className="penalty-chart__stoppage"
+                  title={`Stoppage · ${momentTitle(time)}`}
+                  style={{ gridColumn: line(time), gridRow: goalsRow }}
                />
             ))}
          </div>

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-   isPeriodBreak,
+   isPeriodStart,
    penaltyLanes,
    tickSeconds,
    trackFraction,
@@ -9,26 +9,36 @@ import {
 import type { ScenarioEvent } from '@domain/scenario';
 
 describe('trackFraction', () => {
-   it('places regulation time on one real-time scale', () => {
-      expect(trackFraction(0)).toBe(0);
-      expect(trackFraction(1800)).toBe(0.5);
+   it('places game time on one real-time scale', () => {
+      expect(trackFraction(0, 3600)).toBe(0);
+      expect(trackFraction(1800, 3600)).toBe(0.5);
+      expect(trackFraction(600, 1200)).toBe(0.5);
    });
 });
 
-describe('trackTicks and isPeriodBreak', () => {
-   it('ticks every five minutes and breaks between periods', () => {
-      const ticks = trackTicks();
+describe('trackTicks and isPeriodStart', () => {
+   it('ticks every five minutes and marks each period start', () => {
+      const ticks = trackTicks(3600);
       expect(ticks).toHaveLength(13);
-      expect(ticks.filter(isPeriodBreak)).toEqual([1200, 2400]);
+      expect(ticks.filter((time) => isPeriodStart(time, 3600))).toEqual([0, 1200, 2400]);
+   });
+
+   it('always ticks the final horn, even after a 5:00 OT', () => {
+      expect(trackTicks(3900, 600).slice(-3)).toEqual([3000, 3600, 3900]);
+      expect(trackTicks(1200, 1200)).toEqual([0, 1200]);
    });
 });
 
 describe('tickSeconds', () => {
    it('widens the tick step as the track narrows, down to one tick per period', () => {
-      expect(tickSeconds(1800)).toBe(300);
-      expect(tickSeconds(400)).toBe(600);
-      expect(tickSeconds(200)).toBe(1200);
-      expect(tickSeconds(0)).toBe(1200);
+      expect(tickSeconds(1800, 3600)).toBe(300);
+      expect(tickSeconds(400, 3600)).toBe(600);
+      expect(tickSeconds(200, 3600)).toBe(1200);
+      expect(tickSeconds(0, 3600)).toBe(1200);
+   });
+
+   it('keeps five-minute ticks on a one-period track', () => {
+      expect(tickSeconds(400, 1200)).toBe(300);
    });
 });
 

@@ -98,6 +98,19 @@
    box-sizing: content-box;
 }
 
+.penalty-chart__stoppage {
+   z-index: 3;
+   justify-self: start;
+   align-self: center;
+   width: 8px;
+   height: 8px;
+   translate: -50% 0;
+   rotate: 45deg;
+   border: 2px solid var(--bg);
+   background: var(--text-h);
+   box-sizing: content-box;
+}
+
 .penalty-chart__box {
    z-index: 1;
    margin: 3px 1px;
