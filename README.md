@@ -26,7 +26,7 @@ minors, coincidental and offsetting penalties, delayed penalties, goals that rel
 ## How it fits together
 
 ```
-NHL APIs ──► Cloudflare Worker ──► React app (GitHub Pages)
+NHL APIs --> Cloudflare Worker --> React app (GitHub Pages)
              caches finished games     runs the penalty engine
              in KV, rate-limited       in the browser
 ```
@@ -133,7 +133,7 @@ version it uses. The check's error message explains how.
 Deploy the Worker before the site whenever the site depends on a Worker change.
 
 1. **Worker**: run `npm run deploy` in `worker/`. This needs a Cloudflare login (`npx wrangler login`).
-2. **Site**: in GitHub, go to Actions → _Deploy to GitHub Pages_ → _Run workflow_. It builds `master` and publishes it
+2. **Site**: in GitHub, go to Actions > _Deploy to GitHub Pages_ > _Run workflow_. It builds `master` and publishes it
    to GitHub Pages.
 
 ## NHL data

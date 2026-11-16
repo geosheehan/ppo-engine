@@ -114,7 +114,7 @@ describe('addPeriodAfter', () => {
       );
    });
 
-   it('is blocked by the cap for the period’s own type', () => {
+   it('is blocked by the cap for the periods own type', () => {
       expect(addPeriodAfterBlock(OT_ONLY, 1)).toBe('3-on-3 OT has only one period');
       expect(addPeriodAfterBlock({ ...OT_ONLY, gameType: 'playoff' }, 1)).toBeUndefined();
    });
@@ -128,7 +128,7 @@ describe('addPeriodAfter', () => {
    });
 });
 
-describe('changing a period’s type', () => {
+describe('changing a periods type', () => {
    it('lets only the last REG period become OT and only the first OT become REG', () => {
       expect(makeOvertimeBlock(THREE_REG, 3)).toBeUndefined();
       expect(makeOvertimeBlock(THREE_REG, 2)).toBe('Only the last REG period can become OT');

@@ -24,7 +24,6 @@ export function livePosition(
       }
 
       const travelMs = ((nextAt - time) * 1000) / speed;
-      // The tolerance stops float leftovers (1.9999… game seconds) from showing the clock a second behind.
       if (left < travelMs) return { index, time: time + Math.floor((left * speed) / 1000 + 1e-6) };
       left -= travelMs;
       index += 1;

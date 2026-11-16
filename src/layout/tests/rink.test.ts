@@ -48,7 +48,7 @@ describe('nearestFaceoffDot', () => {
 });
 
 describe('boundToIce', () => {
-   // Distance from the inner rectangle (x ±72, y ±14.5); the ice is everything within 28 ft of it.
+   // Distance from the inner rectangle (x +/-72, y +/-14.5); the ice is everything within 28 ft of it.
    const fromInner = ({ x, y }: { x: number; y: number }) =>
       Math.hypot(x - Math.max(-72, Math.min(72, x)), y - Math.max(-14.5, Math.min(14.5, y)));
 
