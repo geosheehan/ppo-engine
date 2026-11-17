@@ -80,11 +80,14 @@ type ScenarioTrackProps = {
    events: ScenarioEvent[];
    setup: ScenarioSetup;
    selectedId: number | undefined;
+   selectedIds: ReadonlySet<number>;
+   hoveredIds: ReadonlySet<number>;
    cursor: GameElapsed;
    teams: Record<Side, string>;
    colors: Record<Side, string>;
    onChange: (event: ScenarioEvent) => void;
    onSelect: (id: number | undefined) => void;
+   onHover: (id: number | undefined) => void;
    onRemove: (id: number) => void;
    onCursor: (time: GameElapsed) => void;
    periodControls: (period: number) => PeriodControls;
@@ -96,11 +99,14 @@ function ScenarioTrack({
    events,
    setup,
    selectedId,
+   selectedIds,
+   hoveredIds,
    cursor,
    teams,
    colors,
    onChange,
    onSelect,
+   onHover,
    onRemove,
    onCursor,
    periodControls,
@@ -208,7 +214,10 @@ function ScenarioTrack({
    const markerClass = (event: ScenarioEvent, base: string) =>
       clsx(
          base,
-         event.id === selectedId && 'scenario-track__marker--selected',
+         selectedIds.has(event.id) && 'scenario-track__marker--selected',
+         hoveredIds.has(event.id)
+            && !selectedIds.has(event.id)
+            && 'scenario-track__marker--hovered',
          isDiscarded(event, winner) && 'scenario-track__marker--discarded',
       );
 
@@ -220,6 +229,10 @@ function ScenarioTrack({
       'onPointerDown': startDrag(event, 'move'),
       'onFocus': () => onSelect(event.id),
       'onKeyDown': onKeyDown(event),
+      'onPointerEnter': (e: PointerEvent) => {
+         if (e.pointerType !== 'touch') onHover(event.id);
+      },
+      'onPointerLeave': () => onHover(undefined),
    });
 
    const penaltyBox = (penalty: ScenarioPenalty) => (

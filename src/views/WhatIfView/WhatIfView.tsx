@@ -13,6 +13,7 @@ import { GameContext } from '@context/GameContext';
 import type { GameContextValue } from '@context/types';
 import { EVEN_STRENGTH_LABEL, GOAL_SITUATION_LABELS, SEPARATOR } from '@layout/constants';
 import { gameAxis } from '@layout/gameAxis';
+import { linkedEvents } from '@layout/linkedEvents';
 import { OVERTIME_FORMATS } from '@layout/scenarioTrack';
 import { homeDefendingSides } from '@engine/defendingSide';
 import { runPenaltyEngine } from '@engine/penaltyEngine';
@@ -100,6 +101,7 @@ function WhatIfView() {
    const [setup, setSetup] = useState<ScenarioSetup>(DEFAULT_SETUP);
    const [events, setEvents] = useState<ScenarioEvent[]>([]);
    const [selectedId, setSelectedId] = useState<number>();
+   const [hoveredId, setHoveredId] = useState<number>();
    const [cursor, setCursor] = useState<GameElapsed>(0);
    const [tableView, setTableView] = useState<TableView>(TABLE_VIEWS.CURSOR);
    const fullGame = tableView === TABLE_VIEWS.GAME;
@@ -116,11 +118,13 @@ function WhatIfView() {
    const winner = overtimeWinner(events, setup);
    const stoppages = events
       .filter((event) => event.kind === 'stoppage' && !isDiscarded(event, winner))
-      .map(({ time }) => time);
+      .map(({ id, time }) => ({ eventId: id, time }));
    const teams = {
       away: scenario.game.awayTeam.abbrev,
       home: scenario.game.homeTeam.abbrev,
    };
+   const selectedIds = linkedEvents(scenario.penaltyResult.goals, selectedId);
+   const hoveredIds = linkedEvents(scenario.penaltyResult.goals, hoveredId);
    const selected = events.find((event) => event.id === selectedId);
    const ordered = eventsInOrder(events);
    const selectedAt = ordered.findIndex((event) => event.id === selectedId);
@@ -273,11 +277,14 @@ function WhatIfView() {
                events={events}
                setup={setup}
                selectedId={selectedId}
+               selectedIds={selectedIds}
+               hoveredIds={hoveredIds}
                cursor={cursor}
                teams={teams}
                colors={scenario.colors}
                onChange={change}
                onSelect={setSelectedId}
+               onHover={setHoveredId}
                onRemove={remove}
                onCursor={setCursor}
                periodControls={periodControls}
@@ -303,8 +310,20 @@ function WhatIfView() {
             </div>
 
             <h2>What the engine sees</h2>
-            <PenaltyChart axis={axis} stoppages={stoppages} />
-            <GoalEffectTable />
+            <PenaltyChart
+               axis={axis}
+               stoppages={stoppages}
+               selectedIds={selectedIds}
+               hoveredIds={hoveredIds}
+               onSelect={setSelectedId}
+               onHover={setHoveredId}
+            />
+            <GoalEffectTable
+               selectedIds={selectedIds}
+               hoveredIds={hoveredIds}
+               onSelect={setSelectedId}
+               onHover={setHoveredId}
+            />
          </GameContext>
       </main>
    );

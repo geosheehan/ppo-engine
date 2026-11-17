@@ -1,11 +1,13 @@
 import '@components/PenaltyChart/PenaltyChart.css';
 import { useMemo } from 'react';
+import type { KeyboardEvent, PointerEvent } from 'react';
 import { clsx } from 'clsx';
 import { useElementWidth } from '@hooks/useElementWidth';
 import { useGame } from '@context/useGame';
 import { EN_DASH, SEPARATOR } from '@layout/constants';
 import { axisX, isBaseline } from '@layout/gameAxis';
 import type { GameAxis, StrengthPiece } from '@layout/gameAxis';
+import { NO_EVENTS } from '@layout/linkedEvents';
 import { chartMoments, labelRows, momentClock, momentPeriod } from '@layout/penaltyChart';
 import { strengthLabel } from '@engine/strength';
 import type { PenaltyClock } from '@engine/types';
@@ -25,12 +27,28 @@ const advantageSide = ({ strength }: StrengthPiece): Side | undefined => {
    return strength.away > strength.home ? SIDES.AWAY : SIDES.HOME;
 };
 
-type PenaltyChartProps = {
-   axis: GameAxis;
-   stoppages?: GameElapsed[];
+export type ChartStoppage = {
+   eventId: number;
+   time: GameElapsed;
 };
 
-function PenaltyChart({ axis, stoppages }: PenaltyChartProps) {
+type PenaltyChartProps = {
+   axis: GameAxis;
+   stoppages?: ChartStoppage[];
+   selectedIds?: ReadonlySet<number>;
+   hoveredIds?: ReadonlySet<number>;
+   onSelect?: (eventId: number) => void;
+   onHover?: (eventId: number | undefined) => void;
+};
+
+function PenaltyChart({
+   axis,
+   stoppages,
+   selectedIds = NO_EVENTS,
+   hoveredIds = NO_EVENTS,
+   onSelect,
+   onHover,
+}: PenaltyChartProps) {
    const { game, plays, penalties, penaltyResult, colors, teamByHomeOrAway, playerById, sideOf } =
       useGame();
    const [gridRef, gridWidth] = useElementWidth<HTMLDivElement>();
@@ -59,12 +77,37 @@ function PenaltyChart({ axis, stoppages }: PenaltyChartProps) {
       [plays, sideOf, gameEnd],
    );
 
-   const shownStoppages = (stoppages ?? []).filter((time) => time <= gameEnd);
+   const shownStoppages = (stoppages ?? []).filter(({ time }) => time <= gameEnd);
+
+   const pickClass = (eventId: number) =>
+      clsx(
+         selectedIds.has(eventId) && 'penalty-chart__pick--selected',
+         hoveredIds.has(eventId) && !selectedIds.has(eventId) && 'penalty-chart__pick--hovered',
+      );
+   const pickProps = (eventId: number, label: string) =>
+      onSelect === undefined
+         ? {}
+         : {
+              'role': 'button',
+              'tabIndex': 0,
+              'aria-label': label,
+              'aria-pressed': selectedIds.has(eventId),
+              'onClick': () => onSelect(eventId),
+              'onKeyDown': (e: KeyboardEvent) => {
+                 if (e.key !== 'Enter' && e.key !== ' ') return;
+                 e.preventDefault();
+                 onSelect(eventId);
+              },
+              'onPointerEnter': (e: PointerEvent) => {
+                 if (e.pointerType !== 'touch') onHover?.(eventId);
+              },
+              'onPointerLeave': () => onHover?.(undefined),
+           };
 
    const moments = chartMoments(axis.breakpoints, [
       ...served.flatMap(({ start, end }) => [start, end]),
       ...goals.map(({ time }) => time),
-      ...shownStoppages,
+      ...shownStoppages.map(({ time }) => time),
    ]);
    const labelRowOf = labelRows(
       [
@@ -209,15 +252,18 @@ function PenaltyChart({ axis, stoppages }: PenaltyChartProps) {
                const playerId = play.details.committedByPlayerId ?? play.details.servedByPlayerId;
                const player = playerId !== undefined ? playerById(playerId) : undefined;
                const infraction = penaltyDisplayName(play.details.descKey);
+               const title = `${playerShortName(player)} ${SEPARATOR} ${infraction} ${SEPARATOR} ${play.details.duration} min`;
                return (
                   <div
                      key={`${penalty.penaltyEventId}-${penalty.doubleMinorHalf ?? 0}`}
+                     {...pickProps(penalty.penaltyEventId, title)}
                      className={clsx(
                         'penalty-chart__box',
                         penalty.coincidental && 'penalty-chart__box--coincidental',
                         penalty.endReason === 'goal' && 'penalty-chart__box--goal',
+                        pickClass(penalty.penaltyEventId),
                      )}
-                     title={`${playerShortName(player)} ${SEPARATOR} ${infraction} ${SEPARATOR} ${play.details.duration} min`}
+                     title={title}
                      style={{
                         'gridColumn': `${line(penalty.start)} / ${line(penalty.end)}`,
                         'gridRow': laneRow(penalty.side, penalty.penaltyClock),
@@ -240,26 +286,34 @@ function PenaltyChart({ axis, stoppages }: PenaltyChartProps) {
                   }}
                />
             ))}
-            {goals.map(({ eventId, time, side }) => (
-               <span
-                  key={`goal-${eventId}`}
-                  className="penalty-chart__goal"
-                  title={`${teamByHomeOrAway(side).abbrev} goal ${SEPARATOR} ${momentTitle(time)}`}
-                  style={{
-                     'gridColumn': line(time),
-                     'gridRow': goalsRow,
-                     '--team-color': colors[side],
-                  }}
-               />
-            ))}
-            {shownStoppages.map((time) => (
-               <span
-                  key={`stoppage-${time}`}
-                  className="penalty-chart__stoppage"
-                  title={`Stoppage ${SEPARATOR} ${momentTitle(time)}`}
-                  style={{ gridColumn: line(time), gridRow: goalsRow }}
-               />
-            ))}
+            {goals.map(({ eventId, time, side }) => {
+               const title = `${teamByHomeOrAway(side).abbrev} goal ${SEPARATOR} ${momentTitle(time)}`;
+               return (
+                  <span
+                     key={`goal-${eventId}`}
+                     {...pickProps(eventId, title)}
+                     className={clsx('penalty-chart__goal', pickClass(eventId))}
+                     title={title}
+                     style={{
+                        'gridColumn': line(time),
+                        'gridRow': goalsRow,
+                        '--team-color': colors[side],
+                     }}
+                  />
+               );
+            })}
+            {shownStoppages.map(({ eventId, time }) => {
+               const title = `Stoppage ${SEPARATOR} ${momentTitle(time)}`;
+               return (
+                  <span
+                     key={`stoppage-${eventId}`}
+                     {...pickProps(eventId, title)}
+                     className={clsx('penalty-chart__stoppage', pickClass(eventId))}
+                     title={title}
+                     style={{ gridColumn: line(time), gridRow: goalsRow }}
+                  />
+               );
+            })}
          </div>
       </div>
    );

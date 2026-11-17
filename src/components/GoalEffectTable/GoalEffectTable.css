@@ -23,6 +23,31 @@
       color: var(--text-h);
    }
 
+   .goal-effect-table__row {
+      cursor: pointer;
+   }
+
+   .goal-effect-table__row--hovered {
+      background: color-mix(in srgb, var(--text-h) 7%, transparent);
+   }
+
+   .goal-effect-table__row--selected {
+      background: color-mix(in srgb, var(--text-h) 14%, transparent);
+
+      td:first-child {
+         box-shadow: inset 3px 0 0 var(--text-h);
+      }
+   }
+
+   .goal-effect-table__pick {
+      padding: 0;
+      border: none;
+      background: none;
+      color: inherit;
+      font: inherit;
+      cursor: pointer;
+   }
+
    @media (max-width: 640px) {
       font-size: 13px;
 

@@ -254,6 +254,12 @@
    border-style: dashed;
 }
 
+.scenario-track__marker--hovered {
+   outline: 1px solid var(--scenario-track-selection);
+   outline-offset: 1px;
+   z-index: 1;
+}
+
 .scenario-track__marker--selected {
    outline: 2px solid var(--scenario-track-selection);
    outline-offset: 1px;

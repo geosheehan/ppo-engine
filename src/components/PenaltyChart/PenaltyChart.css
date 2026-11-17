@@ -133,3 +133,29 @@
 .penalty-chart__box--goal {
    border-right-width: 3px;
 }
+
+.penalty-chart__grid [role='button'] {
+   cursor: pointer;
+}
+
+.penalty-chart__pick--hovered,
+.penalty-chart__pick--selected {
+   z-index: 4;
+   outline: 1px solid var(--text-h);
+   outline-offset: 1px;
+}
+
+.penalty-chart__pick--selected {
+   outline-width: 2px;
+}
+
+.penalty-chart__goal[role='button'],
+.penalty-chart__stoppage[role='button'] {
+   position: relative;
+
+   &::before {
+      content: '';
+      position: absolute;
+      inset: -8px;
+   }
+}

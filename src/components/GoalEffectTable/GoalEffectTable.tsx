@@ -1,11 +1,26 @@
 import '@components/GoalEffectTable/GoalEffectTable.css';
+import type { PointerEvent } from 'react';
+import { clsx } from 'clsx';
 import { useGame } from '@context/useGame';
 import { EVEN_STRENGTH_LABEL, GOAL_SITUATION_LABELS } from '@layout/constants';
+import { NO_EVENTS } from '@layout/linkedEvents';
 import { goalSituation } from '@engine/powerPlayCounter';
 import { strengthLabel } from '@engine/strength';
 import { periodLabel } from '@domain/labels';
 
-function GoalEffectTable() {
+type GoalEffectTableProps = {
+   selectedIds?: ReadonlySet<number>;
+   hoveredIds?: ReadonlySet<number>;
+   onSelect?: (eventId: number) => void;
+   onHover?: (eventId: number | undefined) => void;
+};
+
+function GoalEffectTable({
+   selectedIds = NO_EVENTS,
+   hoveredIds = NO_EVENTS,
+   onSelect,
+   onHover,
+}: GoalEffectTableProps) {
    const { game, plays, penalties, penaltyResult, playerById, teamByHomeOrAway } = useGame();
    const playById = new Map(plays.map((play) => [play.eventId, play]));
 
@@ -36,11 +51,42 @@ function GoalEffectTable() {
             {penaltyResult.goals.map((goal) => {
                const play = playById.get(goal.goalEventId);
                const situation = goalSituation(goal);
+               const time = play
+                  ? `${periodLabel(play.periodDescriptor.number, game.regPeriods)} ${play.timeInPeriod}`
+                  : '';
+               const selected = selectedIds.has(goal.goalEventId);
                return (
-                  <tr key={goal.goalEventId}>
+                  <tr
+                     key={goal.goalEventId}
+                     className={clsx(
+                        onSelect && 'goal-effect-table__row',
+                        selected && 'goal-effect-table__row--selected',
+                        !selected
+                           && hoveredIds.has(goal.goalEventId)
+                           && 'goal-effect-table__row--hovered',
+                     )}
+                     onClick={onSelect && (() => onSelect(goal.goalEventId))}
+                     onPointerEnter={
+                        onHover
+                        && ((e: PointerEvent) => {
+                           if (e.pointerType !== 'touch') onHover(goal.goalEventId);
+                        })
+                     }
+                     onPointerLeave={onHover && (() => onHover(undefined))}
+                  >
                      <td>
-                        {play
-                           && `${periodLabel(play.periodDescriptor.number, game.regPeriods)} ${play.timeInPeriod}`}
+                        {onSelect ? (
+                           <button
+                              type="button"
+                              className="goal-effect-table__pick"
+                              aria-pressed={selected}
+                              aria-label={`Select ${teamByHomeOrAway(goal.side).abbrev} goal at ${time}`}
+                           >
+                              {time}
+                           </button>
+                        ) : (
+                           time
+                        )}
                      </td>
                      <td>{teamByHomeOrAway(goal.side).abbrev}</td>
                      <td>{strengthLabel(goal.strength, goal.side)}</td>
