@@ -169,11 +169,12 @@
          order: 3;
       }
 
-      > h2 {
+      > .what-if__chart-head {
          order: 4;
       }
 
-      > .penalty-chart {
+      > .penalty-chart,
+      > .why-table {
          order: 5;
       }
 
@@ -192,4 +193,23 @@
          order: 8;
       }
    }
+}
+
+.what-if__chart-head {
+   display: flex;
+   flex-wrap: wrap;
+   align-items: center;
+   justify-content: center;
+   gap: 8px 16px;
+   margin-bottom: 8px;
+
+   > h2 {
+      margin: 0;
+   }
+}
+
+.what-if__why {
+   display: inline-flex;
+   align-items: center;
+   gap: 8px;
 }

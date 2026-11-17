@@ -20,7 +20,7 @@ const called = (
 
 describe('assessPenalties (Rule 19)', () => {
    it('serves one minor each 4-on-4 when nothing else is in effect', () => {
-      const sentences = assessPenalties(
+      const { sentences } = assessPenalties(
          [called('away', 'MIN', 2), called('home', 'MIN', 2)],
          false,
       );
@@ -31,29 +31,53 @@ describe('assessPenalties (Rule 19)', () => {
    });
 
    it('cancels one minor each when another penalty is already in effect', () => {
-      expect(assessPenalties([called('away', 'MIN', 2), called('home', 'MIN', 2)], true)).toEqual(
-         [],
+      const { sentences, offset } = assessPenalties(
+         [called('away', 'MIN', 2), called('home', 'MIN', 2)],
+         true,
       );
+      expect(sentences).toEqual([]);
+      expect(offset).toMatchObject([
+         { side: 'away', penalty: { kind: 'minor' } },
+         { side: 'home', penalty: { kind: 'minor' } },
+      ]);
    });
 
    it('cancels fighting majors', () => {
-      expect(assessPenalties([called('away', 'MAJ', 5), called('home', 'MAJ', 5)], false)).toEqual(
-         [],
+      const { sentences, offset } = assessPenalties(
+         [called('away', 'MAJ', 5), called('home', 'MAJ', 5)],
+         false,
       );
+      expect(sentences).toEqual([]);
+      expect(offset).toMatchObject([
+         { side: 'away', penalty: { kind: 'major' } },
+         { side: 'home', penalty: { kind: 'major' } },
+      ]);
+   });
+
+   it('reports nothing offset when one minor each is served 4-on-4', () => {
+      const { offset } = assessPenalties(
+         [called('away', 'MIN', 2), called('home', 'MIN', 2)],
+         false,
+      );
+      expect(offset).toEqual([]);
    });
 
    it('leaves one half of a double minor against a single minor', () => {
-      const sentences = assessPenalties(
+      const { sentences, offset } = assessPenalties(
          [called('away', 'MIN', 4), called('home', 'MIN', 2)],
          false,
       );
       expect(sentences).toHaveLength(1);
       expect(sentences[0]).toMatchObject({ side: 'away', penalties: [{ coincidental: false }] });
       expect(sentences[0].penalties).toHaveLength(1);
+      expect(offset).toMatchObject([
+         { side: 'away', penalty: { doubleMinorHalf: 2 }, by: { kind: 'minor' } },
+         { side: 'home', penalty: { kind: 'minor' }, by: { doubleMinorHalf: 2 } },
+      ]);
    });
 
    it('serves only the difference when several penalties are called', () => {
-      const sentences = assessPenalties(
+      const { sentences } = assessPenalties(
          [
             called('home', 'MAJ', 5),
             called('home', 'MAJ', 5),
@@ -68,15 +92,14 @@ describe('assessPenalties (Rule 19)', () => {
    });
 
    it("serves a player's major before his minor (Rule 20.1)", () => {
-      const [sentence] = assessPenalties(
-         [called('home', 'MIN', 2, 7), called('home', 'MAJ', 5, 7)],
-         false,
-      );
+      const {
+         sentences: [sentence],
+      } = assessPenalties([called('home', 'MIN', 2, 7), called('home', 'MAJ', 5, 7)], false);
       expect(sentence.penalties.map((penalty) => penalty.kind)).toEqual(['major', 'minor']);
    });
 
    it('serves the minor first when coincidental majors were called (Rule 20.1)', () => {
-      const sentences = assessPenalties(
+      const { sentences } = assessPenalties(
          [
             called('home', 'MAJ', 5, 7),
             called('home', 'MIN', 2, 7),
@@ -90,7 +113,7 @@ describe('assessPenalties (Rule 19)', () => {
    });
 
    it("records a minor before another player's major (Rule 26.3)", () => {
-      const sentences = assessPenalties(
+      const { sentences } = assessPenalties(
          [called('home', 'MAJ', 5, 7), called('home', 'MIN', 2, 8)],
          false,
       );
@@ -99,7 +122,9 @@ describe('assessPenalties (Rule 19)', () => {
 
    it('drops the washed first half of a delayed double minor (Rule 18.2)', () => {
       const penalty = { ...called('home', 'MIN', 4), doubleMinorFirstHalfWashed: true };
-      const [sentence] = assessPenalties([penalty], false);
+      const {
+         sentences: [sentence],
+      } = assessPenalties([penalty], false);
       expect(sentence.penalties).toEqual([
          {
             eventId: penalty.eventId,

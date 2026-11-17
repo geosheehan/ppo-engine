@@ -1,4 +1,11 @@
-import type { CalledPenalty, PenaltyKind, Sentence, TimedPenalty } from '@engine/types';
+import type {
+   Assessment,
+   CalledPenalty,
+   OffsetPenalty,
+   PenaltyKind,
+   Sentence,
+   TimedPenalty,
+} from '@engine/types';
 import { PENALTY_SEVERITIES, SIDES } from '@domain/constants';
 import type { Side } from '@domain/types';
 
@@ -42,7 +49,7 @@ export function toTimedPenalties(called: CalledPenalty): TimedPenalty[] {
 
 // Rule 19: one minor each with nothing else on the clocks is served 4-on-4;
 // otherwise equal numbers of minors and majors cancel and only the difference is served.
-export function assessPenalties(called: CalledPenalty[], penaltiesInEffect: boolean): Sentence[] {
+export function assessPenalties(called: CalledPenalty[], penaltiesInEffect: boolean): Assessment {
    const away = called.filter((calledPenalty) => calledPenalty.side === SIDES.AWAY);
    const home = called.filter((calledPenalty) => calledPenalty.side === SIDES.HOME);
 
@@ -57,7 +64,7 @@ export function assessPenalties(called: CalledPenalty[], penaltiesInEffect: bool
       && isSingleMinor(away[0])
       && isSingleMinor(home[0])
    ) {
-      return [away[0], home[0]].map((calledPenalty) => ({
+      const sentences = [away[0], home[0]].map((calledPenalty) => ({
          side: calledPenalty.side,
          playerKey: calledPenalty.playerKey,
          penalties: toTimedPenalties(calledPenalty).map((penalty) => ({
@@ -65,6 +72,7 @@ export function assessPenalties(called: CalledPenalty[], penaltiesInEffect: bool
             coincidental: true,
          })),
       }));
+      return { sentences, offset: [] };
    }
 
    const toOwned = (calledPenalty: CalledPenalty): OwnedPenalty[] =>
@@ -75,21 +83,29 @@ export function assessPenalties(called: CalledPenalty[], penaltiesInEffect: bool
    const awayPenalties = away.flatMap(toOwned);
    const homePenalties = home.flatMap(toOwned);
 
+   const offset: OffsetPenalty[] = [];
    let majorsCancelled = false;
    for (const kind of ['major', 'minor'] as const) {
       const cancelled = Math.min(
          countOfPenaltyKind(awayPenalties, kind),
          countOfPenaltyKind(homePenalties, kind),
       );
-      cancelPenalties(awayPenalties, kind, cancelled);
-      cancelPenalties(homePenalties, kind, cancelled);
+      const awayCancelled = cancelPenalties(awayPenalties, kind, cancelled);
+      const homeCancelled = cancelPenalties(homePenalties, kind, cancelled);
+      awayCancelled.forEach((penalty, i) =>
+         offset.push({ side: SIDES.AWAY, penalty, by: homeCancelled[i] }),
+      );
+      homeCancelled.forEach((penalty, i) =>
+         offset.push({ side: SIDES.HOME, penalty, by: awayCancelled[i] }),
+      );
       if (kind === 'major' && cancelled > 0) majorsCancelled = true;
    }
 
-   return [
+   const sentences = [
       ...toSentences(SIDES.AWAY, awayPenalties, majorsCancelled),
       ...toSentences(SIDES.HOME, homePenalties, majorsCancelled),
    ];
+   return { sentences, offset };
 }
 
 type OwnedPenalty = { penalty: TimedPenalty; playerKey: number };
@@ -97,13 +113,16 @@ type OwnedPenalty = { penalty: TimedPenalty; playerKey: number };
 const countOfPenaltyKind = (penalties: OwnedPenalty[], kind: PenaltyKind) =>
    penalties.filter((owned) => owned.penalty.kind === kind).length;
 
-function cancelPenalties(penalties: OwnedPenalty[], kind: PenaltyKind, count: number): void {
-   for (let i = penalties.length - 1; i >= 0 && count > 0; i--) {
-      if (penalties[i].penalty.kind === kind) {
-         penalties.splice(i, 1);
-         count--;
-      }
+function cancelPenalties(
+   penalties: OwnedPenalty[],
+   kind: PenaltyKind,
+   count: number,
+): TimedPenalty[] {
+   const cancelled: TimedPenalty[] = [];
+   for (let i = penalties.length - 1; i >= 0 && cancelled.length < count; i--) {
+      if (penalties[i].penalty.kind === kind) cancelled.push(penalties.splice(i, 1)[0].penalty);
    }
+   return cancelled;
 }
 
 // Rule 20.1: a player's major is served before his minor, unless coincidental majors were called.

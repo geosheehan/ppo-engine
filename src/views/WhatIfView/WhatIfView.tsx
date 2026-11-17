@@ -10,6 +10,7 @@ import type { PeriodControls, PeriodOption } from '@components/ScenarioTrack/Sce
 import SegmentedControl from '@components/SegmentedControl';
 import StrengthTable from '@components/StrengthTable';
 import StrengthTableMerged from '@components/StrengthTable/StrengthTableMerged';
+import WhyTable from '@components/WhyTable';
 import { GameContext } from '@context/GameContext';
 import type { GameContextValue } from '@context/types';
 import {
@@ -21,6 +22,7 @@ import {
 import { gameAxis } from '@layout/gameAxis';
 import { linkedEvents } from '@layout/linkedEvents';
 import { OVERTIME_FORMATS } from '@layout/scenarioTrack';
+import { whyNotes } from '@layout/whyNotes';
 import { homeDefendingSides } from '@engine/defendingSide';
 import { runPenaltyEngine } from '@engine/penaltyEngine';
 import { countPowerPlays, goalSituation, totalsAt } from '@engine/powerPlayCounter';
@@ -76,6 +78,18 @@ const TABLE_VIEWS = {
 
 type TableView = (typeof TABLE_VIEWS)[keyof typeof TABLE_VIEWS];
 
+const WHY_VIEWS = {
+   OFF: 'off',
+   ON: 'on',
+} as const;
+
+type WhyView = (typeof WHY_VIEWS)[keyof typeof WHY_VIEWS];
+
+const WHY_OPTIONS = [
+   { value: WHY_VIEWS.OFF, label: 'Off' },
+   { value: WHY_VIEWS.ON, label: 'On' },
+];
+
 const TABLE_VIEW_LABELS: Record<TableView, string> = {
    [TABLE_VIEWS.CURSOR]: 'At cursor',
    [TABLE_VIEWS.GAME]: 'Full game',
@@ -111,6 +125,7 @@ function WhatIfView() {
    const [hoveredId, setHoveredId] = useState<number>();
    const [cursor, setCursor] = useState<GameElapsed>(0);
    const [tableView, setTableView] = useState<TableView>(TABLE_VIEWS.CURSOR);
+   const [whyView, setWhyView] = useState<WhyView>(WHY_VIEWS.OFF);
    const fullGame = tableView === TABLE_VIEWS.GAME;
 
    const scenario = useMemo(() => scenarioContext(events, setup), [events, setup]);
@@ -122,9 +137,27 @@ function WhatIfView() {
    const engineDiscardedIds = useMemo(
       () =>
          new Set(
-            scenario.penaltyResult.discardedPenalties.map(({ penaltyEventId }) => penaltyEventId),
+            scenario.penaltyResult.discardedPenalties
+               .filter(({ reason }) => reason === 'notMinorToPlayerInBox')
+               .map(({ penaltyEventId }) => penaltyEventId),
          ),
       [scenario],
+   );
+   const notes = useMemo(
+      () =>
+         whyNotes({
+            result: scenario.penaltyResult,
+            plays: scenario.plays,
+            penalties: scenario.penalties,
+            regPeriods: scenario.game.regPeriods,
+            abbrevs: { away: scenario.game.awayTeam.abbrev, home: scenario.game.homeTeam.abbrev },
+            gameEnd: axis.breakpoints.at(-1) ?? 0,
+            sweaterNumberOf: ({ details }) =>
+               details.committedByPlayerId !== undefined
+                  ? scenario.playerById(details.committedByPlayerId)?.sweaterNumber
+                  : undefined,
+         }),
+      [scenario, axis],
    );
    const snapshot = snapshotAt(scenario.penaltyResult, penaltyPlays, cursor);
    const totals = totalsAt(scenario.powerPlays, fullGame ? scenarioEnd(events, setup) : cursor);
@@ -332,15 +365,37 @@ function WhatIfView() {
                )}
             </div>
 
-            <h2>What the engine sees</h2>
+            <div className="what-if__chart-head">
+               <h2>What the engine sees</h2>
+               <span className="what-if__why">
+                  Why
+                  <SegmentedControl
+                     label="Why table"
+                     value={whyView}
+                     options={WHY_OPTIONS}
+                     onChange={setWhyView}
+                  />
+               </span>
+            </div>
             <PenaltyChart
                axis={axis}
                stoppages={stoppages}
+               pieceNotes={notes.pieces}
+               goalNotes={notes.goals}
                selectedIds={selectedIds}
                hoveredIds={hoveredIds}
                onSelect={setSelectedId}
                onHover={setHoveredId}
             />
+            {whyView === WHY_VIEWS.ON && (
+               <WhyTable
+                  rows={notes.rows}
+                  selectedIds={selectedIds}
+                  hoveredIds={hoveredIds}
+                  onSelect={setSelectedId}
+                  onHover={setHoveredId}
+               />
+            )}
             <GoalEffectTable
                selectedIds={selectedIds}
                hoveredIds={hoveredIds}

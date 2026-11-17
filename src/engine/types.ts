@@ -46,13 +46,15 @@ export type TimelineEntry =
    | { kind: 'penaltyEnd'; time: GameElapsed; penalty: ServedPenalty }
    | { kind: 'goal'; time: GameElapsed; goal: GoalEffect };
 
-export type DiscardReason = 'notMinorToPlayerInBox';
+export type DiscardReason = 'notMinorToPlayerInBox' | 'offsetting';
 
 export type DiscardedPenalty = {
    penaltyEventId: number;
    side: Side;
    time: GameElapsed;
    reason: DiscardReason;
+   doubleMinorHalf?: 1 | 2;
+   offsetBy?: number;
 };
 
 export type PenaltyEngineResult = {
@@ -83,6 +85,17 @@ export type Sentence = {
    side: Side;
    playerKey: number;
    penalties: TimedPenalty[];
+};
+
+export type OffsetPenalty = {
+   side: Side;
+   penalty: TimedPenalty;
+   by: TimedPenalty;
+};
+
+export type Assessment = {
+   sentences: Sentence[];
+   offset: OffsetPenalty[];
 };
 
 export type ClockedPenalty = {

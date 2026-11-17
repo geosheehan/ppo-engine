@@ -20,7 +20,10 @@ describe('no saved game discards a penalty to a player in the box', () => {
    it.each(Object.entries(games).map(([path, game]) => [path.split('/').pop()!, game] as const))(
       '%s',
       (_, game) => {
-         expect(runPenaltyEngine(indexGame(game)).discardedPenalties).toEqual([]);
+         const { discardedPenalties } = runPenaltyEngine(indexGame(game));
+         expect(
+            discardedPenalties.filter(({ reason }) => reason === 'notMinorToPlayerInBox'),
+         ).toEqual([]);
       },
    );
 });

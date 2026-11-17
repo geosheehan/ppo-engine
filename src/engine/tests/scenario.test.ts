@@ -51,6 +51,19 @@ describe('the engine on a scenario game', () => {
       expect(result.servedPenalties.every((penalty) => penalty.coincidental)).toBe(true);
    });
 
+   it('reports offsetting minors when a penalty is already in effect', () => {
+      const result = engineFor([
+         { id: 1, kind: 'penalty', side: 'away', time: 300, penaltyType: 'minor', player: 1 },
+         { id: 2, kind: 'penalty', side: 'away', time: 330, penaltyType: 'minor', player: 2 },
+         { id: 3, kind: 'penalty', side: 'home', time: 330, penaltyType: 'minor', player: 3 },
+      ]);
+      expect(result.servedPenalties).toMatchObject([{ penaltyEventId: 1 }]);
+      expect(result.discardedPenalties).toEqual([
+         { penaltyEventId: 2, side: 'away', time: 330, reason: 'offsetting', offsetBy: 3 },
+         { penaltyEventId: 3, side: 'home', time: 330, reason: 'offsetting', offsetBy: 2 },
+      ]);
+   });
+
    it('runs a penalty across a period break', () => {
       const result = engineFor([
          { id: 1, kind: 'penalty', side: 'home', time: 1140, penaltyType: 'major', player: 1 },

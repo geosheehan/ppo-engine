@@ -1,0 +1,99 @@
+.why-table {
+   margin: 0 auto 24px;
+   border-collapse: collapse;
+   font-size: 15px;
+   font-variant-numeric: tabular-nums;
+
+   caption {
+      margin-bottom: 8px;
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--text-h);
+      text-align: left;
+   }
+
+   th,
+   td {
+      padding: 4px 12px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+   }
+
+   th {
+      font-weight: 500;
+      color: var(--text-h);
+   }
+
+   .why-table__why {
+      white-space: normal;
+      text-align: left;
+   }
+
+   .why-table__team {
+      box-shadow: inset 3px 0 0 var(--team-color);
+   }
+
+   .why-table__narrow {
+      display: none;
+   }
+
+   .why-table__row {
+      cursor: pointer;
+   }
+
+   .why-table__row--hovered {
+      background: color-mix(in srgb, var(--text-h) 7%, transparent);
+   }
+
+   .why-table__row--selected {
+      background: color-mix(in srgb, var(--text-h) 14%, transparent);
+   }
+
+   .why-table__pick {
+      padding: 0;
+      border: none;
+      border-radius: 0;
+      background: none;
+      color: inherit;
+   }
+
+   @media (max-width: 640px) {
+      font-size: 13px;
+
+      th,
+      td {
+         padding: 4px;
+      }
+
+      .why-table__wide {
+         display: none;
+      }
+
+      .why-table__narrow {
+         display: inline;
+      }
+
+      th,
+      .why-table__penalty {
+         text-align: left;
+      }
+
+      td {
+         vertical-align: top;
+      }
+
+      .why-table__penalty {
+         padding-left: 8px;
+         box-shadow: inset 3px 0 0 var(--team-color);
+      }
+
+      .why-table__served {
+         display: block;
+         color: var(--text);
+      }
+
+      b.why-table__narrow {
+         color: var(--text-h);
+      }
+   }
+}

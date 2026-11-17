@@ -2,6 +2,10 @@
    padding-bottom: 8px;
 }
 
+.penalty-chart--goal-tags {
+   padding-bottom: 24px;
+}
+
 .penalty-chart__grid {
    display: grid;
    font-size: 13px;
@@ -86,6 +90,7 @@
 }
 
 .penalty-chart__goal {
+   position: relative;
    z-index: 3;
    justify-self: start;
    align-self: center;
@@ -123,6 +128,35 @@
    overflow: hidden;
    white-space: nowrap;
    text-overflow: ellipsis;
+}
+
+.penalty-chart__box--tagged {
+   display: flex;
+   flex-wrap: wrap;
+   align-items: baseline;
+   justify-content: center;
+   column-gap: 6px;
+}
+
+.penalty-chart__name {
+   min-width: 0;
+   overflow: hidden;
+   text-overflow: ellipsis;
+}
+
+.penalty-chart__tag,
+.penalty-chart__goal-tag {
+   color: var(--text);
+   font-size: 11px;
+}
+
+.penalty-chart__goal-tag {
+   position: absolute;
+   top: calc(100% + 4px);
+   left: 50%;
+   translate: -50% 0;
+   white-space: nowrap;
+   pointer-events: none;
 }
 
 .penalty-chart__box--coincidental {

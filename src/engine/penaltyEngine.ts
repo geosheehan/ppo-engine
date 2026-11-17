@@ -163,7 +163,18 @@ class PenaltyEngine {
       }
 
       const inEffect = !this.penaltyBoxes.away.isEmpty || !this.penaltyBoxes.home.isEmpty;
-      for (const sentence of assessPenalties(penalties, inEffect)) {
+      const { sentences, offset } = assessPenalties(penalties, inEffect);
+      for (const { side, penalty, by } of offset) {
+         this.discardedPenalties.push({
+            penaltyEventId: penalty.eventId,
+            side,
+            time: group.time,
+            reason: 'offsetting',
+            ...(penalty.doubleMinorHalf ? { doubleMinorHalf: penalty.doubleMinorHalf } : {}),
+            offsetBy: by.eventId,
+         });
+      }
+      for (const sentence of sentences) {
          for (const penaltyEventId of this.penaltyBoxes[sentence.side].add(sentence, group.time)) {
             this.discardedPenalties.push({
                penaltyEventId,

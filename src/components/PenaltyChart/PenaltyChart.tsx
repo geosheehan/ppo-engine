@@ -9,6 +9,8 @@ import { axisX, isBaseline } from '@layout/gameAxis';
 import type { GameAxis, StrengthPiece } from '@layout/gameAxis';
 import { NO_EVENTS } from '@layout/linkedEvents';
 import { chartMoments, labelRows, momentClock, momentPeriod } from '@layout/penaltyChart';
+import { pieceKey } from '@layout/whyNotes';
+import type { WhyNote } from '@layout/whyNotes';
 import { strengthLabel } from '@engine/strength';
 import type { PenaltyClock } from '@engine/types';
 import { PERIOD_TYPES, SIDES } from '@domain/constants';
@@ -35,6 +37,8 @@ export type ChartStoppage = {
 type PenaltyChartProps = {
    axis: GameAxis;
    stoppages?: ChartStoppage[];
+   pieceNotes?: ReadonlyMap<string, WhyNote>;
+   goalNotes?: ReadonlyMap<number, WhyNote>;
    selectedIds?: ReadonlySet<number>;
    hoveredIds?: ReadonlySet<number>;
    onSelect?: (eventId: number) => void;
@@ -44,6 +48,8 @@ type PenaltyChartProps = {
 function PenaltyChart({
    axis,
    stoppages,
+   pieceNotes,
+   goalNotes,
    selectedIds = NO_EVENTS,
    hoveredIds = NO_EVENTS,
    onSelect,
@@ -140,9 +146,20 @@ function PenaltyChart({
    const home = teamByHomeOrAway(SIDES.HOME).abbrev;
    const momentTitle = (time: GameElapsed): string =>
       `${periodLabel(momentPeriod(time), game.regPeriods)} ${momentClock(time)}`;
+   const withNote = (title: string, note: WhyNote | undefined): string =>
+      note
+         ? `${title}
+${note.text}`
+         : title;
 
    return (
-      <div className="penalty-chart">
+      <div
+         className={clsx(
+            'penalty-chart',
+            goals.some(({ eventId }) => goalNotes?.get(eventId)?.tag !== undefined)
+               && 'penalty-chart--goal-tags',
+         )}
+      >
          <div
             ref={gridRef}
             className="penalty-chart__grid"
@@ -252,7 +269,12 @@ function PenaltyChart({
                const playerId = play.details.committedByPlayerId ?? play.details.servedByPlayerId;
                const player = playerId !== undefined ? playerById(playerId) : undefined;
                const infraction = penaltyDisplayName(play.details.descKey);
-               const title = `${playerShortName(player)} ${SEPARATOR} ${infraction} ${SEPARATOR} ${play.details.duration} min`;
+               const name = player ? `#${player.sweaterNumber}` : infraction;
+               const note = pieceNotes?.get(pieceKey(penalty));
+               const title = withNote(
+                  `${playerShortName(player)} ${SEPARATOR} ${infraction} ${SEPARATOR} ${play.details.duration} min`,
+                  note,
+               );
                return (
                   <div
                      key={`${penalty.penaltyEventId}-${penalty.doubleMinorHalf ?? 0}`}
@@ -261,6 +283,7 @@ function PenaltyChart({
                         'penalty-chart__box',
                         penalty.coincidental && 'penalty-chart__box--coincidental',
                         penalty.endReason === 'goal' && 'penalty-chart__box--goal',
+                        note?.tag !== undefined && 'penalty-chart__box--tagged',
                         pickClass(penalty.penaltyEventId),
                      )}
                      title={title}
@@ -270,7 +293,14 @@ function PenaltyChart({
                         '--team-color': colors[penalty.side],
                      }}
                   >
-                     {player ? `#${player.sweaterNumber}` : infraction}
+                     {note?.tag !== undefined ? (
+                        <>
+                           <span className="penalty-chart__name">{name}</span>
+                           <span className="penalty-chart__tag">{note.tag}</span>
+                        </>
+                     ) : (
+                        name
+                     )}
                   </div>
                );
             })}
@@ -287,7 +317,11 @@ function PenaltyChart({
                />
             ))}
             {goals.map(({ eventId, time, side }) => {
-               const title = `${teamByHomeOrAway(side).abbrev} goal ${SEPARATOR} ${momentTitle(time)}`;
+               const note = goalNotes?.get(eventId);
+               const title = withNote(
+                  `${teamByHomeOrAway(side).abbrev} goal ${SEPARATOR} ${momentTitle(time)}`,
+                  note,
+               );
                return (
                   <span
                      key={`goal-${eventId}`}
@@ -299,7 +333,11 @@ function PenaltyChart({
                         'gridRow': goalsRow,
                         '--team-color': colors[side],
                      }}
-                  />
+                  >
+                     {note?.tag !== undefined && (
+                        <span className="penalty-chart__goal-tag">{note.tag}</span>
+                     )}
+                  </span>
                );
             })}
             {shownStoppages.map(({ eventId, time }) => {
