@@ -45,6 +45,13 @@
          'clocks-left clocks-right';
    }
 
+   @media (max-width: 640px) {
+      grid-template-areas:
+         'controls controls'
+         'table-left table-left'
+         'clocks-left clocks-right';
+   }
+
    @media (min-width: 1280px) {
       grid-template-columns: 1fr auto 1fr;
       grid-template-areas:
@@ -60,9 +67,31 @@
          justify-self: end;
       }
 
-      /* The left clocks run row-reverse, so flex-end packs both sides toward the outer edges, under their tables. */
       > .penalty-clocks {
          justify-content: flex-end;
+      }
+   }
+
+   &.what-if__top--full-game {
+      grid-template-areas:
+         'controls controls'
+         'table-left table-right';
+
+      @media (max-width: 880px) {
+         grid-template-areas:
+            'controls controls'
+            'table-left table-left'
+            'table-right table-right';
+      }
+
+      @media (max-width: 640px) {
+         grid-template-areas:
+            'controls controls'
+            'table-left table-left';
+      }
+
+      @media (min-width: 1280px) {
+         grid-template-areas: 'table-left controls table-right';
       }
    }
 }
@@ -79,7 +108,38 @@
    }
 }
 
+.what-if__view {
+   display: flex;
+   align-items: center;
+   gap: 12px;
+}
+
+.what-if__view-toggle {
+   display: inline-flex;
+   border: 1px solid var(--border);
+   border-radius: 6px;
+   overflow: hidden;
+
+   & button {
+      padding: 3px 10px;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      color: var(--text-h);
+   }
+
+   & button + button {
+      border-left: 1px solid var(--border);
+   }
+
+   & button[aria-pressed='true'] {
+      background: var(--text-h);
+      color: var(--bg);
+   }
+}
+
 .what-if__cursor {
+   min-width: 6.5em;
    font-variant-numeric: tabular-nums;
    color: var(--text-h);
 }

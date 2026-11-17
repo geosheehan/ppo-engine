@@ -1,5 +1,6 @@
 import '@views/WhatIfView/WhatIfView.css';
 import { useMemo, useState } from 'react';
+import { clsx } from 'clsx';
 import GoalEffectTable from '@components/GoalEffectTable';
 import PenaltyChart from '@components/PenaltyChart';
 import PenaltyClocks from '@components/PenaltyClocks';
@@ -29,6 +30,7 @@ import {
    SCENARIO_PENALTIES,
    SCENARIO_PENALTY_RULES,
    scenarioClock,
+   scenarioEnd,
    scenarioGame,
    scenarioPeriod,
 } from '@domain/scenario';
@@ -55,6 +57,18 @@ import type { GameElapsed, Side } from '@domain/types';
 
 const SIDE_ORDER: Side[] = [SIDES.HOME, SIDES.AWAY];
 
+const TABLE_VIEWS = {
+   CURSOR: 'cursor',
+   GAME: 'game',
+} as const;
+
+type TableView = (typeof TABLE_VIEWS)[keyof typeof TABLE_VIEWS];
+
+const TABLE_VIEW_LABELS: Record<TableView, string> = {
+   [TABLE_VIEWS.CURSOR]: 'At cursor',
+   [TABLE_VIEWS.GAME]: 'Full game',
+};
+
 type NewEvent =
    | Omit<ScenarioPenalty, 'id' | 'time'>
    | Omit<ScenarioGoal, 'id' | 'time'>
@@ -77,6 +91,8 @@ function WhatIfView() {
    const [events, setEvents] = useState<ScenarioEvent[]>([]);
    const [selectedId, setSelectedId] = useState<number>();
    const [cursor, setCursor] = useState<GameElapsed>(0);
+   const [tableView, setTableView] = useState<TableView>(TABLE_VIEWS.CURSOR);
+   const fullGame = tableView === TABLE_VIEWS.GAME;
 
    const scenario = useMemo(() => scenarioContext(events, setup), [events, setup]);
    const axis = useMemo(() => gameAxis(scenario, scenario.penaltyResult.timeline), [scenario]);
@@ -85,7 +101,8 @@ function WhatIfView() {
       [scenario],
    );
    const snapshot = snapshotAt(scenario.penaltyResult, penaltyPlays, cursor);
-   const totals = totalsAt(scenario.powerPlays, cursor);
+   const totals = totalsAt(scenario.powerPlays, fullGame ? scenarioEnd(events, setup) : cursor);
+   const strength = fullGame ? undefined : snapshot.strength;
    const winner = overtimeWinner(events, setup);
    const stoppages = events
       .filter((event) => event.kind === 'stoppage' && !isDiscarded(event, winner))
@@ -153,7 +170,7 @@ function WhatIfView() {
          <h1 className="visually-hidden">What if?</h1>
 
          <GameContext value={scenario}>
-            <div className="what-if__top">
+            <div className={clsx('what-if__top', fullGame && 'what-if__top--full-game')}>
                {SIDE_ORDER.map((side, i) => (
                   <StrengthTable
                      key={side}
@@ -162,17 +179,18 @@ function WhatIfView() {
                      team={scenario.teamByHomeOrAway(side)}
                      color={scenario.colors[side]}
                      totals={totals[side]}
-                     strength={snapshot.strength}
+                     strength={strength}
                   />
                ))}
-               {SIDE_ORDER.map((side, i) => (
-                  <PenaltyClocks
-                     key={side}
-                     side={side}
-                     onClock={snapshot.onClock}
-                     position={i === 0 ? 'left' : 'right'}
-                  />
-               ))}
+               {!fullGame
+                  && SIDE_ORDER.map((side, i) => (
+                     <PenaltyClocks
+                        key={side}
+                        side={side}
+                        onClock={snapshot.onClock}
+                        position={i === 0 ? 'left' : 'right'}
+                     />
+                  ))}
                <StrengthTableMerged
                   teams={SIDE_ORDER.map((side) => ({
                      side,
@@ -180,13 +198,28 @@ function WhatIfView() {
                      color: scenario.colors[side],
                      totals: totals[side],
                   }))}
-                  strength={snapshot.strength}
+                  strength={strength}
                />
 
                <div className="what-if__controls">
-                  <span className="what-if__cursor">
-                     At {label(scenarioPeriod(cursor, setup))} {scenarioClock(cursor, setup)}
-                  </span>
+                  <div className="what-if__view">
+                     <div className="what-if__view-toggle" role="group" aria-label="Tables show">
+                        {Object.values(TABLE_VIEWS).map((view) => (
+                           <button
+                              key={view}
+                              type="button"
+                              aria-pressed={view === tableView}
+                              onClick={() => setTableView(view)}
+                           >
+                              {TABLE_VIEW_LABELS[view]}
+                           </button>
+                        ))}
+                     </div>
+                     <span className="what-if__cursor">
+                        {!fullGame
+                           && `At ${label(scenarioPeriod(cursor, setup))} ${scenarioClock(cursor, setup)}`}
+                     </span>
+                  </div>
                   {SIDE_ORDER.map((side) => (
                      <div
                         key={side}
