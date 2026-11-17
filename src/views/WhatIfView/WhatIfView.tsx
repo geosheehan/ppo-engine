@@ -11,7 +11,12 @@ import StrengthTable from '@components/StrengthTable';
 import StrengthTableMerged from '@components/StrengthTable/StrengthTableMerged';
 import { GameContext } from '@context/GameContext';
 import type { GameContextValue } from '@context/types';
-import { EVEN_STRENGTH_LABEL, GOAL_SITUATION_LABELS, SEPARATOR } from '@layout/constants';
+import {
+   ALL_PLAYERS_USED,
+   EVEN_STRENGTH_LABEL,
+   GOAL_SITUATION_LABELS,
+   SEPARATOR,
+} from '@layout/constants';
 import { gameAxis } from '@layout/gameAxis';
 import { linkedEvents } from '@layout/linkedEvents';
 import { OVERTIME_FORMATS } from '@layout/scenarioTrack';
@@ -30,6 +35,7 @@ import {
    isDiscarded,
    isOvertimePeriod,
    lastEventTime,
+   nextPlayer,
    overtimeWinner,
    SCENARIO_GAME_TYPES,
    SCENARIO_PENALTIES,
@@ -130,6 +136,10 @@ function WhatIfView() {
    const selectedAt = ordered.findIndex((event) => event.id === selectedId);
    const goalEffect = scenario.penaltyResult.goals.find((goal) => goal.goalEventId === selectedId);
    const goalTag = goalEffect && goalStrengthTag(goalEffect);
+   const newPlayers: Record<Side, number | undefined> = {
+      away: nextPlayer(events, SIDES.AWAY),
+      home: nextPlayer(events, SIDES.HOME),
+   };
    const label = (period: number): string => periodLabel(period, setup.regulation);
 
    const add = (event: NewEvent, time: GameElapsed = cursor) => {
@@ -252,7 +262,13 @@ function WhatIfView() {
                            <button
                               key={penaltyType}
                               type="button"
-                              onClick={() => add({ kind: 'penalty', side, penaltyType })}
+                              disabled={newPlayers[side] === undefined}
+                              title={newPlayers[side] === undefined ? ALL_PLAYERS_USED : undefined}
+                              onClick={() => {
+                                 const player = newPlayers[side];
+                                 if (player !== undefined)
+                                    add({ kind: 'penalty', side, penaltyType, player });
+                              }}
                            >
                               + {SCENARIO_PENALTY_RULES[penaltyType].label}
                            </button>
@@ -293,6 +309,7 @@ function WhatIfView() {
                {selected && (
                   <EventInspector
                      event={selected}
+                     events={events}
                      setup={setup}
                      teams={teams}
                      colors={scenario.colors}

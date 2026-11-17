@@ -91,6 +91,7 @@ export type ScenarioPenalty = {
    side: Side;
    time: GameElapsed;
    penaltyType: ScenarioPenaltyType;
+   player: number;
 };
 
 export type ScenarioGoal = {
@@ -213,10 +214,42 @@ export function nearestPenaltyType(seconds: number): ScenarioPenaltyType {
 export function scenarioEventName(event: ScenarioEvent, teams: Record<Side, string>): string {
    if (event.kind === 'stoppage') return 'Stoppage';
    if (event.kind === 'goal') return `${teams[event.side]} goal`;
-   return `${teams[event.side]} #${event.id} ${SCENARIO_PENALTY_RULES[event.penaltyType].label.toLowerCase()}`;
+   return `${teams[event.side]} #${event.player} ${SCENARIO_PENALTY_RULES[event.penaltyType].label.toLowerCase()}`;
 }
 
-export const scenarioPlayerId = (penaltyId: number): number => 1000 + penaltyId;
+export const MAX_SCENARIO_PLAYERS = 20;
+
+export const teamPlayers = (events: ScenarioEvent[], side: Side): number[] =>
+   [
+      ...new Set(
+         events.flatMap((event) =>
+            event.kind === 'penalty' && event.side === side ? [event.player] : [],
+         ),
+      ),
+   ].toSorted((a, b) => a - b);
+
+// The lowest number not on the track, so a player whose penalties were all deleted is reused before a new one.
+export function nextPlayer(events: ScenarioEvent[], side: Side): number | undefined {
+   const used = new Set(teamPlayers(events, side));
+   for (let player = 1; player <= MAX_SCENARIO_PLAYERS; player++) {
+      if (!used.has(player)) return player;
+   }
+   return undefined;
+}
+
+// Player numbers belong to one team, so a penalty that changes team goes to a new player there.
+export function withSide(
+   event: ScenarioPenalty | ScenarioGoal,
+   side: Side,
+   events: ScenarioEvent[],
+): ScenarioPenalty | ScenarioGoal | undefined {
+   if (event.kind === 'goal' || event.side === side) return { ...event, side };
+   const player = nextPlayer(events, side);
+   return player === undefined ? undefined : { ...event, side, player };
+}
+
+export const scenarioPlayerId = (side: Side, player: number): number =>
+   1000 + SCENARIO_TEAM_IDS[side] * 100 + player;
 
 const clockPad = (seconds: number): string => {
    const clock = secondsToClock(seconds);
@@ -237,6 +270,8 @@ const playClock = (setup: ScenarioSetup, time: GameElapsed, period: number) => {
       timeRemaining: clockPad(periodLength(setup, period) - inPeriod),
    };
 };
+
+const SIDE_LIST: Side[] = [SIDES.HOME, SIDES.AWAY];
 
 const PERIOD_PLAY_ID = 900_000;
 const PERIOD_FACEOFF_ID = 800_000;
@@ -336,23 +371,23 @@ export function scenarioGame(events: ScenarioEvent[], setup: ScenarioSetup): Gam
             typeCode: rule.severity,
             descKey: rule.descKey,
             duration: rule.minutes,
-            committedByPlayerId: scenarioPlayerId(event.id),
+            committedByPlayerId: scenarioPlayerId(event.side, event.player),
          },
       };
       return penalty;
    });
 
-   const rosterSpots: Player[] = counted
-      .filter((event) => event.kind === 'penalty')
-      .map((penalty) => ({
-         teamId: SCENARIO_TEAM_IDS[penalty.side],
-         playerId: scenarioPlayerId(penalty.id),
+   const rosterSpots: Player[] = SIDE_LIST.flatMap((side) =>
+      teamPlayers(counted, side).map((player) => ({
+         teamId: SCENARIO_TEAM_IDS[side],
+         playerId: scenarioPlayerId(side, player),
          firstName: { default: 'Player' },
-         lastName: { default: String(penalty.id) },
-         sweaterNumber: penalty.id,
+         lastName: { default: String(player) },
+         sweaterNumber: player,
          positionCode: 'C',
          headshot: '',
-      }));
+      })),
+   );
 
    return {
       season: 20262027,

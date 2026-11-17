@@ -8,12 +8,14 @@ import CursorMoveIcon from '@components/icons/CursorMoveIcon';
 import MinusIcon from '@components/icons/MinusIcon';
 import PlusIcon from '@components/icons/PlusIcon';
 import TrashIcon from '@components/icons/TrashIcon';
+import { ALL_PLAYERS_USED } from '@layout/constants';
 import { textColorOn } from '@domain/colors';
 import { SIDES } from '@domain/constants';
 import { periodLabel } from '@domain/labels';
 import {
    clockSeconds,
    lastEventTime,
+   nextPlayer,
    periodCount,
    periodTime,
    SCENARIO_PENALTIES,
@@ -22,12 +24,15 @@ import {
    scenarioEventName,
    scenarioPeriod,
    snapTime,
+   teamPlayers,
+   withSide,
 } from '@domain/scenario';
 import type { ScenarioEvent, ScenarioPenaltyType, ScenarioSetup } from '@domain/scenario';
 import type { GameElapsed, Side } from '@domain/types';
 
 const TEAM_ORDER: Side[] = [SIDES.HOME, SIDES.AWAY];
 const ICON_SIZE = '1.15em';
+const NEW_PLAYER = 'new';
 const TEAM_KEYS: Record<string, Side> = { h: SIDES.HOME, a: SIDES.AWAY };
 const TYPE_KEYS: Record<string, ScenarioPenaltyType> = {
    1: SCENARIO_PENALTIES.MINOR,
@@ -37,6 +42,7 @@ const TYPE_KEYS: Record<string, ScenarioPenaltyType> = {
 
 type EventInspectorProps = {
    event: ScenarioEvent;
+   events: ScenarioEvent[];
    setup: ScenarioSetup;
    teams: Record<Side, string>;
    colors: Record<Side, string>;
@@ -53,6 +59,7 @@ type EventInspectorProps = {
 
 function EventInspector({
    event,
+   events,
    setup,
    teams,
    colors,
@@ -73,14 +80,20 @@ function EventInspector({
    const nudge = (by: number) => setTime(snapTime(event.time + by, setup));
    const atCursor = event.time === cursor;
    const boxColor = event.kind === 'stoppage' ? undefined : colors[event.side];
+   const toSide = (side: Side) =>
+      event.kind === 'stoppage' ? undefined : withSide(event, side, events);
+   const changeSide = (side: Side) => {
+      const changed = toSide(side);
+      if (changed) onChange(changed);
+   };
+   const newPlayer = event.kind === 'penalty' ? nextPlayer(events, event.side) : undefined;
 
    const onKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey || e.altKey) return;
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement) return;
       const key = e.key.toLowerCase();
       if (key === 'escape') onSelect(undefined);
-      else if (event.kind !== 'stoppage' && key in TEAM_KEYS)
-         onChange({ ...event, side: TEAM_KEYS[key] });
+      else if (event.kind !== 'stoppage' && key in TEAM_KEYS) changeSide(TEAM_KEYS[key]);
       else if (event.kind === 'penalty' && key in TYPE_KEYS)
          onChange({ ...event, penaltyType: TYPE_KEYS[key] });
       else return;
@@ -125,16 +138,44 @@ function EventInspector({
                         key={side}
                         type="button"
                         aria-pressed={side === event.side}
+                        disabled={toSide(side) === undefined}
+                        title={toSide(side) === undefined ? ALL_PLAYERS_USED : undefined}
                         style={{
                            '--team-color': colors[side],
                            '--team-text-color': textColorOn(colors[side]),
                         }}
-                        onClick={() => onChange({ ...event, side })}
+                        onClick={() => changeSide(side)}
                      >
                         {teams[side]}
                      </button>
                   ))}
                </span>
+            </span>
+         )}
+
+         {event.kind === 'penalty' && (
+            <span className="event-inspector__field">
+               <span className="event-inspector__label">Player</span>
+               <select
+                  aria-label="Player"
+                  value={event.player}
+                  onChange={(e) => {
+                     const player =
+                        e.target.value === NEW_PLAYER ? newPlayer : Number(e.target.value);
+                     if (player !== undefined) onChange({ ...event, player });
+                  }}
+               >
+                  {teamPlayers(events, event.side).map((player) => (
+                     <option key={player} value={player}>
+                        #{player}
+                     </option>
+                  ))}
+                  <option value={NEW_PLAYER} disabled={newPlayer === undefined}>
+                     {newPlayer === undefined
+                        ? 'New player (none left)'
+                        : `New player (#${newPlayer})`}
+                  </option>
+               </select>
             </span>
          )}
 

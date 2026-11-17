@@ -246,7 +246,7 @@ function ScenarioTrack({
             '--team-color': colors[penalty.side],
          }}
       >
-         #{penalty.id}
+         #{penalty.player}
          <span
             className="scenario-track__stretch"
             aria-hidden="true"

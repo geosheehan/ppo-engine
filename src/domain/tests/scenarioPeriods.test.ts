@@ -46,6 +46,7 @@ describe('removePeriod', () => {
          side: 'away',
          time: 1140,
          penaltyType: 'major',
+         player: 4,
       };
       const edit = removePeriod({ setup: THREE_REG, events: [penalty] }, 2);
       expect(times(edit.events)).toEqual([[4, 1140]]);

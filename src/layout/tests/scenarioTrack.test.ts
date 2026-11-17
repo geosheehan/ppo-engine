@@ -45,9 +45,9 @@ describe('tickSeconds', () => {
 describe('penaltyLanes', () => {
    it('stacks overlapping penalties and reuses a lane once it is free', () => {
       const events: ScenarioEvent[] = [
-         { id: 1, kind: 'penalty', side: 'away', time: 0, penaltyType: 'major' },
-         { id: 2, kind: 'penalty', side: 'away', time: 60, penaltyType: 'minor' },
-         { id: 3, kind: 'penalty', side: 'away', time: 300, penaltyType: 'minor' },
+         { id: 1, kind: 'penalty', side: 'away', time: 0, penaltyType: 'major', player: 1 },
+         { id: 2, kind: 'penalty', side: 'away', time: 60, penaltyType: 'minor', player: 2 },
+         { id: 3, kind: 'penalty', side: 'away', time: 300, penaltyType: 'minor', player: 3 },
          { id: 4, kind: 'goal', side: 'away', time: 30 },
       ];
       const { laneOf, laneCount } = penaltyLanes(events);
@@ -61,8 +61,8 @@ describe('penaltyLanes', () => {
 
    it('keeps the two teams apart', () => {
       const { laneOf } = penaltyLanes([
-         { id: 1, kind: 'penalty', side: 'away', time: 0, penaltyType: 'minor' },
-         { id: 2, kind: 'penalty', side: 'home', time: 0, penaltyType: 'minor' },
+         { id: 1, kind: 'penalty', side: 'away', time: 0, penaltyType: 'minor', player: 1 },
+         { id: 2, kind: 'penalty', side: 'home', time: 0, penaltyType: 'minor', player: 2 },
       ]);
       expect(laneOf.get(2)).toBe(0);
    });

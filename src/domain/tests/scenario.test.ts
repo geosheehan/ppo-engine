@@ -7,7 +7,9 @@ import {
    eventsInOrder,
    isDiscarded,
    lastEventTime,
+   MAX_SCENARIO_PLAYERS,
    nearestPenaltyType,
+   nextPlayer,
    overtimeWinner,
    periodTime,
    scenarioClock,
@@ -15,10 +17,13 @@ import {
    scenarioEventName,
    scenarioGame,
    scenarioPeriod,
+   scenarioPlayerId,
    scenarioSeconds,
    snapTime,
+   teamPlayers,
+   withSide,
 } from '@domain/scenario';
-import type { ScenarioEvent, ScenarioSetup } from '@domain/scenario';
+import type { ScenarioEvent, ScenarioPenalty, ScenarioSetup } from '@domain/scenario';
 
 const THREE_REG: ScenarioSetup = { gameType: 'regular', regulation: 3, overtime: 0 };
 const REG_WITH_OT: ScenarioSetup = { gameType: 'regular', regulation: 3, overtime: 1 };
@@ -98,13 +103,20 @@ describe('periodTime', () => {
 describe('scenarioEventName', () => {
    const teams = { away: 'AWY', home: 'HOM' };
 
-   it('names penalties by team, id and type', () => {
+   it('names penalties by team, player and type', () => {
       expect(
          scenarioEventName(
-            { id: 3, kind: 'penalty', side: 'home', time: 0, penaltyType: 'double-minor' },
+            {
+               id: 3,
+               kind: 'penalty',
+               side: 'home',
+               time: 0,
+               penaltyType: 'double-minor',
+               player: 7,
+            },
             teams,
          ),
-      ).toBe('HOM #3 double minor');
+      ).toBe('HOM #7 double minor');
    });
 
    it('names goals by team and stoppages alone', () => {
@@ -130,7 +142,7 @@ describe('overtimeWinner', () => {
    const events: ScenarioEvent[] = [
       { id: 1, kind: 'goal', side: 'home', time: 600 },
       { id: 2, kind: 'goal', side: 'away', time: 3700 },
-      { id: 3, kind: 'penalty', side: 'home', time: 3750, penaltyType: 'minor' },
+      { id: 3, kind: 'penalty', side: 'home', time: 3750, penaltyType: 'minor', player: 3 },
       { id: 4, kind: 'goal', side: 'home', time: 3650 },
    ];
 
@@ -151,9 +163,9 @@ describe('overtimeWinner', () => {
 
 describe('scenarioGame', () => {
    const events: ScenarioEvent[] = [
-      { id: 1, kind: 'penalty', side: 'away', time: 300, penaltyType: 'double-minor' },
+      { id: 1, kind: 'penalty', side: 'away', time: 300, penaltyType: 'double-minor', player: 1 },
       { id: 2, kind: 'goal', side: 'home', time: 330 },
-      { id: 3, kind: 'penalty', side: 'home', time: 300, penaltyType: 'major' },
+      { id: 3, kind: 'penalty', side: 'home', time: 300, penaltyType: 'major', player: 3 },
       { id: 4, kind: 'goal', side: 'home', time: 1200 },
       { id: 5, kind: 'stoppage', time: 1500 },
    ];
@@ -213,7 +225,7 @@ describe('scenarioGame', () => {
       const game = scenarioGame(
          [
             { id: 1, kind: 'goal', side: 'home', time: 3700 },
-            { id: 2, kind: 'penalty', side: 'away', time: 3750, penaltyType: 'minor' },
+            { id: 2, kind: 'penalty', side: 'away', time: 3750, penaltyType: 'minor', player: 2 },
          ],
          PLAYOFF_2OT,
       );
@@ -222,5 +234,70 @@ describe('scenarioGame', () => {
       expect(game.plays.some((play) => play.eventId === 2)).toBe(false);
       const end = game.plays.find((play) => play.typeDescKey === 'game-end');
       expect(end && playTime(end)).toBe(3700);
+   });
+});
+
+describe('players', () => {
+   const penalty = (id: number, side: 'away' | 'home', player: number): ScenarioPenalty => ({
+      id,
+      kind: 'penalty',
+      side,
+      time: 0,
+      penaltyType: 'minor',
+      player,
+   });
+
+   it('lists the players of each team once, in number order', () => {
+      const events = [penalty(1, 'home', 4), penalty(2, 'home', 1), penalty(3, 'home', 4)];
+      expect(teamPlayers(events, 'home')).toEqual([1, 4]);
+      expect(teamPlayers(events, 'away')).toEqual([]);
+   });
+
+   it('fills the lowest free number before adding a new one', () => {
+      const events = [penalty(1, 'home', 1), penalty(2, 'home', 3), penalty(3, 'away', 2)];
+      expect(nextPlayer(events, 'home')).toBe(2);
+      expect(nextPlayer(events, 'away')).toBe(1);
+      expect(nextPlayer([], 'home')).toBe(1);
+   });
+
+   it('stops at the number of dressed players', () => {
+      const full = Array.from({ length: MAX_SCENARIO_PLAYERS }, (_, i) =>
+         penalty(i + 1, 'away', i + 1),
+      );
+      expect(nextPlayer(full, 'away')).toBeUndefined();
+      expect(nextPlayer(full, 'home')).toBe(1);
+   });
+
+   it('gives a penalty that changes team the next free player on its new team', () => {
+      const moving = penalty(1, 'home', 3);
+      const events = [moving, penalty(2, 'away', 1)];
+      expect(withSide(moving, 'away', events)).toMatchObject({ side: 'away', player: 2 });
+      expect(withSide(moving, 'home', events)).toMatchObject({ side: 'home', player: 3 });
+   });
+
+   it('keeps a penalty on its team when the other team has no free player', () => {
+      const full = Array.from({ length: MAX_SCENARIO_PLAYERS }, (_, i) =>
+         penalty(i + 1, 'away', i + 1),
+      );
+      const moving = penalty(99, 'home', 1);
+      expect(withSide(moving, 'away', [...full, moving])).toBeUndefined();
+   });
+
+   it('gives one roster spot per player and the same player to each of his penalties', () => {
+      const game = scenarioGame(
+         [penalty(1, 'home', 4), penalty(2, 'home', 4), penalty(3, 'away', 4)],
+         THREE_REG,
+      );
+      expect(
+         game.rosterSpots.map(({ playerId, sweaterNumber }) => [playerId, sweaterNumber]),
+      ).toEqual([
+         [scenarioPlayerId('home', 4), 4],
+         [scenarioPlayerId('away', 4), 4],
+      ]);
+      expect(game.plays.filter(isPenalty).map((play) => play.details.committedByPlayerId)).toEqual([
+         scenarioPlayerId('home', 4),
+         scenarioPlayerId('home', 4),
+         scenarioPlayerId('away', 4),
+      ]);
    });
 });
