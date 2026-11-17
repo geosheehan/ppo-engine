@@ -12,13 +12,7 @@
 
    select {
       flex: 1;
-      height: 32px;
-      padding: 0 8px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      background: var(--bg);
-      color: var(--text-h);
-      font: inherit;
+      height: var(--control-height);
    }
 }
 
@@ -28,30 +22,9 @@
    gap: 4px;
 }
 
-.season-calendar__month,
-.season-calendar__day {
-   border: 1px solid transparent;
-   border-radius: 6px;
-   background: transparent;
-   color: var(--text-h);
-   font: inherit;
-   cursor: pointer;
-
-   &:hover {
-      border-color: var(--text);
-   }
-}
-
 .season-calendar__month {
+   --control-rest-edge: var(--border);
    padding: 4px 0;
-   border-color: var(--border);
-}
-
-.season-calendar__month--selected,
-.season-calendar__day--selected {
-   border-color: var(--text-h);
-   background: var(--text-h);
-   color: var(--bg);
 }
 
 .season-calendar__days {
@@ -78,12 +51,20 @@
 }
 
 .season-calendar__day {
+   --control-rest-edge: transparent;
    width: 100%;
    height: 32px;
+   padding: 0;
    font-variant-numeric: tabular-nums;
+
+   &[aria-current='date'] {
+      --control-fill: var(--text-h);
+      --control-edge: var(--text-h);
+      color: var(--bg);
+   }
 }
 
-.season-calendar__day--today:not(.season-calendar__day--selected) {
-   border-color: var(--border);
+.season-calendar__day--today:not([aria-current='date']) {
+   --control-rest-edge: var(--border);
    font-weight: 700;
 }

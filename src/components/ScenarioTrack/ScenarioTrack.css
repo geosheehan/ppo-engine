@@ -37,26 +37,35 @@
    margin-left: 2px;
    translate: min(0px, calc(var(--scenario-track-chip-room) - 100%)) 0;
    display: flex;
-   border: 1px solid var(--border);
-   border-radius: 4px;
+   border: 1px solid var(--text);
+   border-radius: var(--control-radius);
    background: var(--bg);
    white-space: nowrap;
 
    & > button {
+      --control-rest-fill: transparent;
       display: flex;
       align-items: center;
       gap: 2px;
       padding: 0 6px;
-      border: none;
+      border: 0;
       border-radius: 0;
-      background: transparent;
-      color: var(--text-h);
-      font: inherit;
-      cursor: pointer;
 
-      &:hover {
-         background: color-mix(in srgb, var(--scenario-track-selection) 14%, transparent);
+      @media (hover: hover) {
+         &:hover {
+            background: color-mix(in srgb, var(--scenario-track-selection) 14%, transparent);
+         }
       }
+   }
+
+   & > button:first-child {
+      border-start-start-radius: inherit;
+      border-end-start-radius: inherit;
+   }
+
+   & > button:last-child {
+      border-start-end-radius: inherit;
+      border-end-end-radius: inherit;
    }
 
    & > button + button {
@@ -81,7 +90,7 @@
    min-width: 10rem;
    padding: 4px 0;
    border: 1px solid color-mix(in srgb, var(--scenario-track-selection) 55%, transparent);
-   border-radius: 6px;
+   border-radius: var(--card-radius);
    background: var(--bg);
 }
 
@@ -91,26 +100,21 @@
 }
 
 .scenario-track__period-option {
+   --control-rest-fill: transparent;
    padding: 4px 12px;
-   border: none;
-   background: transparent;
-   color: var(--text-h);
-   font: inherit;
+   border: 0;
+   border-radius: 0;
    text-align: left;
-   cursor: pointer;
 
-   &:hover {
-      background: color-mix(in srgb, var(--scenario-track-selection) 14%, transparent);
+   @media (hover: hover) {
+      &:hover {
+         background: color-mix(in srgb, var(--scenario-track-selection) 14%, transparent);
+      }
    }
 
    &[aria-current='true'] {
       background: color-mix(in srgb, var(--scenario-track-selection) 22%, transparent);
       font-weight: 600;
-   }
-
-   &[aria-disabled='true'] {
-      opacity: 0.45;
-      cursor: not-allowed;
    }
 
    & small {
@@ -187,10 +191,9 @@
    box-sizing: border-box;
    padding: 0 7px 0 3px;
    border: 1px solid var(--team-color);
-   border-radius: 4px;
+   border-radius: var(--control-radius);
    background: color-mix(in srgb, var(--team-color) 40%, transparent);
    color: var(--text-h);
-   font: inherit;
    text-align: left;
    white-space: nowrap;
    overflow: hidden;

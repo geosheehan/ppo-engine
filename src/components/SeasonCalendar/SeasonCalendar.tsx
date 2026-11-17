@@ -42,10 +42,7 @@ function SeasonCalendar({ date, onPick }: SeasonCalendarProps) {
                <button
                   key={option}
                   type="button"
-                  className={clsx(
-                     'season-calendar__month',
-                     option === month && 'season-calendar__month--selected',
-                  )}
+                  className="season-calendar__month"
                   aria-pressed={option === month}
                   onClick={() => setMonth(option)}
                >
@@ -74,7 +71,6 @@ function SeasonCalendar({ date, onPick }: SeasonCalendarProps) {
                                  type="button"
                                  className={clsx(
                                     'season-calendar__day',
-                                    day === date && 'season-calendar__day--selected',
                                     day === today && 'season-calendar__day--today',
                                  )}
                                  aria-current={day === date ? 'date' : undefined}

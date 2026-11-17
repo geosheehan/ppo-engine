@@ -1,12 +1,3 @@
-.action-button {
-   font-family: inherit;
-
-   &[aria-disabled='true'] {
-      opacity: 0.45;
-      cursor: not-allowed;
-   }
-}
-
 .action-button--repeat {
    touch-action: manipulation;
    user-select: none;
