@@ -195,7 +195,6 @@ function DayStrip({ weekStart, selectedDay, counts, onDay }: DayStripProps) {
                      type="button"
                      className={clsx(
                         'game-week__day',
-                        date === selectedDay && 'game-week__day--selected',
                         counts !== undefined && count === 0 && 'game-week__day--empty',
                      )}
                      aria-pressed={date === selectedDay}
@@ -225,7 +224,7 @@ function GameCard({ game, selected, onPick }: GameCardProps) {
    return (
       <button
          type="button"
-         className={clsx('game-card', selected && 'game-card--selected')}
+         className="game-card"
          disabled={!isPickable(game)}
          aria-current={selected ? 'true' : undefined}
          onClick={() => onPick(String(game.id))}

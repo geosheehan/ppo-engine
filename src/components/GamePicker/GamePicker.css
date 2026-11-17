@@ -2,19 +2,9 @@
    display: flex;
    align-items: center;
    gap: calc(6 * var(--text-unit));
-   height: calc(32 * var(--text-unit));
+   height: var(--control-height);
    padding: 0 calc(14 * var(--text-unit));
-   border: 1px solid var(--border);
-   border-radius: calc(6 * var(--text-unit));
-   background: transparent;
-   color: var(--text-h);
-   font: inherit;
    white-space: nowrap;
-   cursor: pointer;
-
-   &:hover {
-      border-color: var(--text);
-   }
 }
 
 .game-picker__current {
@@ -84,12 +74,8 @@
 .game-picker__close {
    display: grid;
    place-items: center;
+   --control-rest-edge: transparent;
    width: 44px;
    height: 44px;
    padding: 0;
-   border: none;
-   border-radius: 6px;
-   background: transparent;
-   color: var(--text-h);
-   cursor: pointer;
 }

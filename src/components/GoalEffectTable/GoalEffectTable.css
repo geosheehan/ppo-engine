@@ -42,10 +42,9 @@
    .goal-effect-table__pick {
       padding: 0;
       border: none;
+      border-radius: 0;
       background: none;
       color: inherit;
-      font: inherit;
-      cursor: pointer;
    }
 
    @media (max-width: 640px) {

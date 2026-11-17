@@ -42,8 +42,10 @@
    text-decoration: none;
    white-space: nowrap;
 
-   &:hover {
-      color: var(--text-h);
+   @media (hover: hover) {
+      &:hover {
+         color: var(--text-h);
+      }
    }
 }
 
@@ -65,11 +67,7 @@
    height: 44px;
    margin-left: -12px;
    padding: 0;
-   border: none;
-   border-radius: 6px;
-   background: transparent;
-   color: var(--text-h);
-   cursor: pointer;
+   --control-rest-edge: transparent;
 }
 
 @media (max-width: 640px), (max-height: 500px) {
@@ -89,6 +87,7 @@
 
    .app-nav__game {
       min-width: 0;
+      padding-block: 2px;
    }
 }
 

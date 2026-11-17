@@ -89,40 +89,16 @@
    align-items: center;
    gap: 8px;
    font-size: 14px;
+}
 
-   & button {
-      font-family: inherit;
-   }
+:is(.what-if__add, .what-if__actions) > button {
+   height: var(--control-height);
 }
 
 .what-if__view {
    display: flex;
    align-items: center;
    gap: 12px;
-}
-
-.what-if__view-toggle {
-   display: inline-flex;
-   border: 1px solid var(--border);
-   border-radius: 6px;
-   overflow: hidden;
-
-   & button {
-      padding: 3px 10px;
-      border: 0;
-      border-radius: 0;
-      background: transparent;
-      color: var(--text-h);
-   }
-
-   & button + button {
-      border-left: 1px solid var(--border);
-   }
-
-   & button[aria-pressed='true'] {
-      background: var(--text-h);
-      color: var(--bg);
-   }
 }
 
 .what-if__cursor {
@@ -160,7 +136,7 @@
    margin-top: 10px;
 
    @media (min-width: 641px) {
-      min-height: 42px;
+      min-height: calc(var(--control-height) + 14px);
       margin-left: 5rem;
    }
 }

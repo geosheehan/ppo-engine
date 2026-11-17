@@ -1,5 +1,4 @@
 .event-inspector {
-   --event-inspector-control: 28px;
    display: flex;
    flex-wrap: wrap;
    align-items: center;
@@ -7,30 +6,22 @@
    padding: 6px 10px;
    border: 1px solid var(--border);
    border-left: 4px solid var(--team-color, var(--border));
-   border-radius: 4px;
+   border-radius: var(--card-radius);
    background: var(--bg);
    color: var(--text-h);
    font-size: 14px;
    text-align: left;
 
-   & :is(button, select, input) {
-      box-sizing: border-box;
-      height: var(--event-inspector-control);
-      padding: 0 8px;
-      font: inherit;
-      line-height: 1;
+   & :where(button, select, input) {
+      height: var(--control-height);
    }
 
    & .action-button {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-width: var(--event-inspector-control);
+      min-width: var(--control-height);
       padding: 0;
-   }
-
-   @media (max-width: 640px) {
-      --event-inspector-control: 40px;
    }
 }
 
@@ -62,73 +53,25 @@
    color: var(--text);
 }
 
-.event-inspector__teams {
-   display: inline-flex;
-
-   & button {
-      border: 1px solid var(--team-color);
-      border-radius: 0;
-      background: transparent;
-      color: var(--text-h);
-   }
-
-   & button:first-child {
-      border-radius: 6px 0 0 6px;
-   }
-
-   & button + button {
-      margin-left: -1px;
-      border-radius: 0 6px 6px 0;
-   }
-
-   & button[aria-pressed='true'] {
-      position: relative;
-      background: var(--team-color);
-      color: var(--team-text-color);
-   }
-}
-
-.event-inspector__segments {
-   display: inline-flex;
-
-   & button {
-      border: 1px solid var(--text);
-      border-radius: 0;
-      background: transparent;
-      color: var(--text-h);
-   }
-
-   & button:first-child {
-      border-radius: 6px 0 0 6px;
-   }
-
-   & button + button {
-      margin-left: -1px;
-   }
-
-   & button:last-child {
-      border-radius: 0 6px 6px 0;
-   }
-
-   & button[aria-pressed='true'] {
-      background: var(--text-h);
-      color: var(--bg);
-   }
-}
-
 .event-inspector__combo {
    display: inline-flex;
 
-   & .action-button:first-child {
-      border-radius: 4px 0 0 4px;
-   }
-
-   & .action-button:last-child {
-      border-radius: 0 4px 4px 0;
-   }
-
-   & .clock-field {
+   & > * {
       border-radius: 0;
+   }
+
+   & > * + * {
+      margin-left: -1px;
+   }
+
+   & > :first-child {
+      border-start-start-radius: var(--control-radius);
+      border-end-start-radius: var(--control-radius);
+   }
+
+   & > :last-child {
+      border-start-end-radius: var(--control-radius);
+      border-end-end-radius: var(--control-radius);
    }
 }
 

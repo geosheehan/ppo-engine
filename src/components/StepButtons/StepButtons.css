@@ -4,8 +4,12 @@
    gap: calc(4 * var(--text-unit));
 }
 
-.step-buttons .step-buttons__play {
+.step-buttons__play {
    padding-inline: calc(16 * var(--text-unit));
-   background: var(--text-h);
-   color: var(--bg);
+
+   &:enabled {
+      --control-rest-fill: var(--text-h);
+      --control-rest-edge: var(--text-h);
+      color: var(--bg);
+   }
 }

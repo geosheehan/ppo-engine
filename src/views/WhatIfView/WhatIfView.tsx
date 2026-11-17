@@ -7,6 +7,7 @@ import PenaltyChart from '@components/PenaltyChart';
 import PenaltyClocks from '@components/PenaltyClocks';
 import ScenarioTrack from '@components/ScenarioTrack';
 import type { PeriodControls, PeriodOption } from '@components/ScenarioTrack/ScenarioTrack';
+import SegmentedControl from '@components/SegmentedControl';
 import StrengthTable from '@components/StrengthTable';
 import StrengthTableMerged from '@components/StrengthTable/StrengthTableMerged';
 import { GameContext } from '@context/GameContext';
@@ -222,18 +223,15 @@ function WhatIfView() {
 
                <div className="what-if__controls">
                   <div className="what-if__view">
-                     <div className="what-if__view-toggle" role="group" aria-label="Tables show">
-                        {Object.values(TABLE_VIEWS).map((view) => (
-                           <button
-                              key={view}
-                              type="button"
-                              aria-pressed={view === tableView}
-                              onClick={() => setTableView(view)}
-                           >
-                              {TABLE_VIEW_LABELS[view]}
-                           </button>
-                        ))}
-                     </div>
+                     <SegmentedControl
+                        label="Tables show"
+                        value={tableView}
+                        options={Object.values(TABLE_VIEWS).map((view) => ({
+                           value: view,
+                           label: TABLE_VIEW_LABELS[view],
+                        }))}
+                        onChange={setTableView}
+                     />
                      <span className="what-if__cursor">
                         {!fullGame
                            && `At ${label(scenarioPeriod(cursor, setup))} ${scenarioClock(cursor, setup)}`}

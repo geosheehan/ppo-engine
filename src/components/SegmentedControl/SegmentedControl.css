@@ -1,0 +1,35 @@
+.segmented-control {
+   display: inline-flex;
+
+   & > button {
+      height: var(--control-height);
+      border-radius: 0;
+   }
+
+   & > button + button {
+      margin-left: -1px;
+   }
+
+   & > button:first-child {
+      border-start-start-radius: var(--control-radius);
+      border-end-start-radius: var(--control-radius);
+   }
+
+   & > button:last-child {
+      border-start-end-radius: var(--control-radius);
+      border-end-end-radius: var(--control-radius);
+   }
+
+   & > button[aria-pressed='true'] {
+      position: relative;
+   }
+}
+
+.segmented-control__option--colored {
+   --control-edge: var(--team-color);
+
+   &[aria-pressed='true'] {
+      --control-fill: var(--team-color);
+      color: var(--team-text-color);
+   }
+}

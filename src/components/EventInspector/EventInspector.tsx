@@ -8,7 +8,7 @@ import CursorMoveIcon from '@components/icons/CursorMoveIcon';
 import MinusIcon from '@components/icons/MinusIcon';
 import PlusIcon from '@components/icons/PlusIcon';
 import TrashIcon from '@components/icons/TrashIcon';
-import { textColorOn } from '@domain/colors';
+import SegmentedControl from '@components/SegmentedControl';
 import { SIDES } from '@domain/constants';
 import { periodLabel } from '@domain/labels';
 import {
@@ -119,22 +119,16 @@ function EventInspector({
          {event.kind !== 'stoppage' && (
             <span className="event-inspector__field">
                <span className="event-inspector__label">Team</span>
-               <span role="group" aria-label="Team" className="event-inspector__teams">
-                  {TEAM_ORDER.map((side) => (
-                     <button
-                        key={side}
-                        type="button"
-                        aria-pressed={side === event.side}
-                        style={{
-                           '--team-color': colors[side],
-                           '--team-text-color': textColorOn(colors[side]),
-                        }}
-                        onClick={() => onChange({ ...event, side })}
-                     >
-                        {teams[side]}
-                     </button>
-                  ))}
-               </span>
+               <SegmentedControl
+                  label="Team"
+                  value={event.side}
+                  options={TEAM_ORDER.map((side) => ({
+                     value: side,
+                     label: teams[side],
+                     color: colors[side],
+                  }))}
+                  onChange={(side) => onChange({ ...event, side })}
+               />
             </span>
          )}
 
@@ -189,18 +183,15 @@ function EventInspector({
          {event.kind === 'penalty' && (
             <span className="event-inspector__field">
                <span className="event-inspector__label">Type</span>
-               <span role="group" aria-label="Type" className="event-inspector__segments">
-                  {Object.values(SCENARIO_PENALTIES).map((penaltyType) => (
-                     <button
-                        key={penaltyType}
-                        type="button"
-                        aria-pressed={penaltyType === event.penaltyType}
-                        onClick={() => onChange({ ...event, penaltyType })}
-                     >
-                        {SCENARIO_PENALTY_RULES[penaltyType].label}
-                     </button>
-                  ))}
-               </span>
+               <SegmentedControl
+                  label="Type"
+                  value={event.penaltyType}
+                  options={Object.values(SCENARIO_PENALTIES).map((penaltyType) => ({
+                     value: penaltyType,
+                     label: SCENARIO_PENALTY_RULES[penaltyType].label,
+                  }))}
+                  onChange={(penaltyType) => onChange({ ...event, penaltyType })}
+               />
             </span>
          )}
 

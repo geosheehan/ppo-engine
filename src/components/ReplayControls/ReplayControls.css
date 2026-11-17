@@ -6,22 +6,6 @@
    align-items: center;
    gap: calc(8 * var(--text-unit)) calc(32 * var(--text-unit));
 
-   button,
-   select {
-      font: inherit;
-      padding: calc(6 * var(--text-unit)) calc(14 * var(--text-unit));
-      border: 1px solid var(--border);
-      border-radius: calc(6 * var(--text-unit));
-      background: transparent;
-      color: var(--text-h);
-      cursor: pointer;
-   }
-
-   button:disabled {
-      opacity: 0.4;
-      cursor: default;
-   }
-
    option {
       background: var(--bg);
    }
@@ -54,16 +38,17 @@
    gap: calc(4 * var(--text-unit));
 }
 
-.replay-controls button,
-.replay-controls select {
-   height: calc(32 * var(--text-unit));
-   padding-block: 0;
+:where(.replay-controls) :where(button, select) {
+   height: var(--control-height);
 }
 
-.replay-controls button {
+:where(.replay-controls) select {
+   padding-inline: calc(14 * var(--text-unit));
+}
+
+:where(.replay-controls) button {
    display: grid;
    place-items: center;
-   padding-inline: calc(8 * var(--text-unit));
 }
 
 .replay-controls__position {
@@ -152,13 +137,8 @@
       background: var(--bg);
    }
 
-   .replay-controls button,
-   .replay-controls select {
-      height: 44px;
-   }
-
-   .replay-controls button {
-      min-width: 44px;
+   :where(.replay-controls) button {
+      min-width: var(--control-height);
    }
 }
 
