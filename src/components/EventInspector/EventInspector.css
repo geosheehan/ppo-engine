@@ -1,0 +1,143 @@
+.event-inspector {
+   --event-inspector-control: 28px;
+   display: flex;
+   flex-wrap: wrap;
+   align-items: center;
+   gap: 8px 16px;
+   padding: 6px 10px;
+   border: 1px solid var(--border);
+   border-left: 4px solid var(--team-color, var(--border));
+   border-radius: 4px;
+   background: var(--bg);
+   color: var(--text-h);
+   font-size: 14px;
+   text-align: left;
+
+   & :is(button, select, input) {
+      box-sizing: border-box;
+      height: var(--event-inspector-control);
+      padding: 0 8px;
+      font: inherit;
+      line-height: 1;
+   }
+
+   & .action-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: var(--event-inspector-control);
+      padding: 0;
+   }
+
+   @media (max-width: 640px) {
+      --event-inspector-control: 40px;
+   }
+}
+
+.event-inspector__field {
+   display: flex;
+   align-items: center;
+   gap: 4px;
+}
+
+.event-inspector__name {
+   min-width: 9.5em;
+   font-weight: 600;
+   text-align: center;
+
+   @media (max-width: 640px) {
+      flex: 1;
+      min-width: 0;
+   }
+}
+
+.event-inspector__tag {
+   margin-left: 6px;
+   font-weight: 400;
+   color: var(--text);
+}
+
+.event-inspector__label {
+   margin-right: 2px;
+   color: var(--text);
+}
+
+.event-inspector__teams {
+   display: inline-flex;
+
+   & button {
+      border: 1px solid var(--team-color);
+      border-radius: 0;
+      background: transparent;
+      color: var(--text-h);
+   }
+
+   & button:first-child {
+      border-radius: 6px 0 0 6px;
+   }
+
+   & button + button {
+      margin-left: -1px;
+      border-radius: 0 6px 6px 0;
+   }
+
+   & button[aria-pressed='true'] {
+      position: relative;
+      background: var(--team-color);
+      color: var(--team-text-color);
+   }
+}
+
+.event-inspector__segments {
+   display: inline-flex;
+
+   & button {
+      border: 1px solid var(--text);
+      border-radius: 0;
+      background: transparent;
+      color: var(--text-h);
+   }
+
+   & button:first-child {
+      border-radius: 6px 0 0 6px;
+   }
+
+   & button + button {
+      margin-left: -1px;
+   }
+
+   & button:last-child {
+      border-radius: 0 6px 6px 0;
+   }
+
+   & button[aria-pressed='true'] {
+      background: var(--text-h);
+      color: var(--bg);
+   }
+}
+
+.event-inspector__combo {
+   display: inline-flex;
+
+   & .action-button:first-child {
+      border-radius: 4px 0 0 4px;
+   }
+
+   & .action-button:last-child {
+      border-radius: 0 4px 4px 0;
+   }
+
+   & .clock-field {
+      border-radius: 0;
+   }
+}
+
+.event-inspector__actions {
+   padding-left: 12px;
+   border-left: 1px solid var(--border);
+
+   @media (max-width: 640px) {
+      padding-left: 0;
+      border-left: 0;
+   }
+}

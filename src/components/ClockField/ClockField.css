@@ -1,0 +1,11 @@
+.clock-field {
+   width: 4.6em;
+   text-align: center;
+   font-variant-numeric: tabular-nums;
+   cursor: ew-resize;
+   touch-action: pan-y;
+
+   &:focus {
+      cursor: text;
+   }
+}

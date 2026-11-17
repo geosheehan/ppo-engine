@@ -157,8 +157,15 @@ export const snapTime = (seconds: number, setup: ScenarioSetup): GameElapsed =>
 export const scenarioPeriod = (time: GameElapsed, setup: ScenarioSetup): number =>
    Math.min(periodCount(setup), Math.floor(time / PERIOD_SECONDS) + 1);
 
+export const clockSeconds = (time: GameElapsed, setup: ScenarioSetup): number =>
+   time - periodStart(scenarioPeriod(time, setup));
+
 export const scenarioClock = (time: GameElapsed, setup: ScenarioSetup): string =>
-   secondsToClock(time - periodStart(scenarioPeriod(time, setup)));
+   secondsToClock(clockSeconds(time, setup));
+
+export const periodTime = (setup: ScenarioSetup, period: number, clock: number): GameElapsed =>
+   periodStart(period)
+   + Math.min(Math.max(0, clock), periodLength(setup, period) - SCENARIO_SNAP_SECONDS);
 
 export const eventsWithin = (events: ScenarioEvent[], setup: ScenarioSetup): ScenarioEvent[] =>
    events.filter((event) => {
@@ -169,16 +176,17 @@ export const eventsWithin = (events: ScenarioEvent[], setup: ScenarioSetup): Sce
       );
    });
 
+export const eventsInOrder = (events: ScenarioEvent[]): ScenarioEvent[] =>
+   events.toSorted((a, b) => a.time - b.time || events.indexOf(a) - events.indexOf(b));
+
 export function overtimeWinner(
    events: ScenarioEvent[],
    setup: ScenarioSetup,
 ): ScenarioGoal | undefined {
-   return events
-      .filter(
-         (event): event is ScenarioGoal =>
-            event.kind === 'goal' && isOvertimePeriod(setup, scenarioPeriod(event.time, setup)),
-      )
-      .toSorted((a, b) => a.time - b.time || events.indexOf(a) - events.indexOf(b))[0];
+   return eventsInOrder(events).find(
+      (event): event is ScenarioGoal =>
+         event.kind === 'goal' && isOvertimePeriod(setup, scenarioPeriod(event.time, setup)),
+   );
 }
 
 export const scenarioEnd = (events: ScenarioEvent[], setup: ScenarioSetup): GameElapsed =>
@@ -200,6 +208,12 @@ export function nearestPenaltyType(seconds: number): ScenarioPenaltyType {
          nearest = penaltyType;
    }
    return nearest;
+}
+
+export function scenarioEventName(event: ScenarioEvent, teams: Record<Side, string>): string {
+   if (event.kind === 'stoppage') return 'Stoppage';
+   if (event.kind === 'goal') return `${teams[event.side]} goal`;
+   return `${teams[event.side]} #${event.id} ${SCENARIO_PENALTY_RULES[event.penaltyType].label.toLowerCase()}`;
 }
 
 export const scenarioPlayerId = (penaltyId: number): number => 1000 + penaltyId;

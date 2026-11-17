@@ -1,14 +1,9 @@
 import '@components/GoalEffectTable/GoalEffectTable.css';
 import { useGame } from '@context/useGame';
+import { EVEN_STRENGTH_LABEL, GOAL_SITUATION_LABELS } from '@layout/constants';
 import { goalSituation } from '@engine/powerPlayCounter';
 import { strengthLabel } from '@engine/strength';
-import type { GoalSituation } from '@engine/types';
 import { periodLabel } from '@domain/labels';
-
-const SITUATION_LABELS: Record<GoalSituation, string> = {
-   'power-play': 'PP',
-   'shorthanded': 'SH',
-};
 
 function GoalEffectTable() {
    const { game, plays, penalties, penaltyResult, playerById, teamByHomeOrAway } = useGame();
@@ -49,7 +44,7 @@ function GoalEffectTable() {
                      </td>
                      <td>{teamByHomeOrAway(goal.side).abbrev}</td>
                      <td>{strengthLabel(goal.strength, goal.side)}</td>
-                     <td>{situation ? SITUATION_LABELS[situation] : 'EV'}</td>
+                     <td>{situation ? GOAL_SITUATION_LABELS[situation] : EVEN_STRENGTH_LABEL}</td>
                      <td>{penaltyLabel(goal.releasedPenaltyEventId)}</td>
                      <td>{penaltyLabel(goal.washedPenaltyId)}</td>
                   </tr>

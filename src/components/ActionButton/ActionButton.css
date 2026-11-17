@@ -6,3 +6,9 @@
       cursor: not-allowed;
    }
 }
+
+.action-button--repeat {
+   touch-action: manipulation;
+   user-select: none;
+   -webkit-touch-callout: none;
+}

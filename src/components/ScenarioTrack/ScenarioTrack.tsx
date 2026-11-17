@@ -26,8 +26,8 @@ import {
    overtimeWinner,
    penaltySeconds,
    periodCount,
-   SCENARIO_PENALTY_RULES,
    scenarioClock,
+   scenarioEventName,
    scenarioPeriod,
    scenarioSeconds,
    snapTime,
@@ -150,13 +150,7 @@ function ScenarioTrack({
       `${periodLabel(scenarioPeriod(time, setup), setup.regulation)} ${scenarioClock(time, setup)}`;
 
    const eventTitle = (event: ScenarioEvent): string => {
-      const what =
-         event.kind === 'stoppage'
-            ? 'Stoppage'
-            : event.kind === 'goal'
-              ? `${teams[event.side]} goal`
-              : `${teams[event.side]} #${event.id} ${SCENARIO_PENALTY_RULES[event.penaltyType].label.toLowerCase()}`;
-      const title = `${what} ${SEPARATOR} ${moment(event.time)}`;
+      const title = `${scenarioEventName(event, teams)} ${SEPARATOR} ${moment(event.time)}`;
       return isDiscarded(event, winner) ? `${title} ${SEPARATOR} ${DISCARDED_NOTE}` : title;
    };
 

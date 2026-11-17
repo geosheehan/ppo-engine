@@ -48,6 +48,7 @@
       gap: 2px;
       padding: 0 6px;
       border: none;
+      border-radius: 0;
       background: transparent;
       color: var(--text-h);
       font: inherit;
@@ -230,6 +231,7 @@
    translate: -50% -50%;
    rotate: 45deg;
    border: 2px solid var(--bg);
+   border-radius: 0;
    background: var(--text-h);
    cursor: grab;
    touch-action: none;

@@ -45,13 +45,6 @@
          'clocks-left clocks-right';
    }
 
-   @media (max-width: 640px) {
-      grid-template-areas:
-         'controls controls'
-         'table-left table-left'
-         'clocks-left clocks-right';
-   }
-
    @media (min-width: 1280px) {
       grid-template-columns: 1fr auto 1fr;
       grid-template-areas:
@@ -82,12 +75,6 @@
             'controls controls'
             'table-left table-left'
             'table-right table-right';
-      }
-
-      @media (max-width: 640px) {
-         grid-template-areas:
-            'controls controls'
-            'table-left table-left';
       }
 
       @media (min-width: 1280px) {
@@ -167,4 +154,66 @@
    align-items: center;
    justify-content: center;
    gap: 8px;
+}
+
+.what-if__inspector {
+   margin-top: 10px;
+
+   @media (min-width: 641px) {
+      min-height: 42px;
+      margin-left: 5rem;
+   }
+}
+
+@media (max-width: 640px) {
+   .what-if {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 16px;
+
+      > .what-if__top {
+         display: contents;
+      }
+
+      > *,
+      > .what-if__top > * {
+         grid-area: auto / 1 / auto / -1;
+      }
+
+      > .what-if__top > .what-if__controls {
+         order: 1;
+         margin-bottom: 16px;
+      }
+
+      > .scenario-track {
+         order: 2;
+      }
+
+      > .what-if__inspector {
+         order: 3;
+      }
+
+      > h2 {
+         order: 4;
+      }
+
+      > .penalty-chart {
+         order: 5;
+      }
+
+      > .what-if__top > .strength-table__card--merged {
+         order: 6;
+         margin-top: 16px;
+      }
+
+      > .what-if__top > .penalty-clocks {
+         order: 7;
+         grid-column: auto;
+         margin-top: 16px;
+      }
+
+      > .goal-effect-table {
+         order: 8;
+      }
+   }
 }

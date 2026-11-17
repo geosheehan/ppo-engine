@@ -4,12 +4,15 @@ import { periodLabel } from '@domain/labels';
 import { isGoal, isPenalty, playTime } from '@domain/plays';
 import {
    DEFAULT_SETUP,
+   eventsInOrder,
    isDiscarded,
    lastEventTime,
    nearestPenaltyType,
    overtimeWinner,
+   periodTime,
    scenarioClock,
    scenarioEnd,
+   scenarioEventName,
    scenarioGame,
    scenarioPeriod,
    scenarioSeconds,
@@ -75,6 +78,51 @@ describe('scenarioPeriod and scenarioClock', () => {
       expect(periodLabel(4, REG_WITH_OT.regulation)).toBe('OT');
       expect(periodLabel(5, PLAYOFF_2OT.regulation)).toBe('2OT');
       expect(periodLabel(1, 0)).toBe('OT');
+   });
+});
+
+describe('periodTime', () => {
+   it('places a clock inside the chosen period', () => {
+      expect(periodTime(THREE_REG, 2, 95)).toBe(1295);
+      expect(periodTime(THREE_REG, 1, 37)).toBe(37);
+   });
+
+   it('keeps the event before the period ends', () => {
+      expect(periodTime(THREE_REG, 1, 1200)).toBe(1195);
+      expect(periodTime(REG_WITH_OT, 4, 750)).toBe(3895);
+      expect(periodTime(PLAYOFF_2OT, 4, 750)).toBe(4350);
+      expect(periodTime(THREE_REG, 2, -10)).toBe(1200);
+   });
+});
+
+describe('scenarioEventName', () => {
+   const teams = { away: 'AWY', home: 'HOM' };
+
+   it('names penalties by team, id and type', () => {
+      expect(
+         scenarioEventName(
+            { id: 3, kind: 'penalty', side: 'home', time: 0, penaltyType: 'double-minor' },
+            teams,
+         ),
+      ).toBe('HOM #3 double minor');
+   });
+
+   it('names goals by team and stoppages alone', () => {
+      expect(scenarioEventName({ id: 1, kind: 'goal', side: 'away', time: 0 }, teams)).toBe(
+         'AWY goal',
+      );
+      expect(scenarioEventName({ id: 2, kind: 'stoppage', time: 0 }, teams)).toBe('Stoppage');
+   });
+});
+
+describe('eventsInOrder', () => {
+   it('sorts by time and keeps the added order at the same second', () => {
+      const events: ScenarioEvent[] = [
+         { id: 1, kind: 'stoppage', time: 300 },
+         { id: 2, kind: 'goal', side: 'home', time: 60 },
+         { id: 3, kind: 'goal', side: 'away', time: 300 },
+      ];
+      expect(eventsInOrder(events).map(({ id }) => id)).toEqual([2, 1, 3]);
    });
 });
 

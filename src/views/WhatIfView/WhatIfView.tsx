@@ -1,6 +1,7 @@
 import '@views/WhatIfView/WhatIfView.css';
 import { useMemo, useState } from 'react';
 import { clsx } from 'clsx';
+import EventInspector from '@components/EventInspector';
 import GoalEffectTable from '@components/GoalEffectTable';
 import PenaltyChart from '@components/PenaltyChart';
 import PenaltyClocks from '@components/PenaltyClocks';
@@ -10,18 +11,21 @@ import StrengthTable from '@components/StrengthTable';
 import StrengthTableMerged from '@components/StrengthTable/StrengthTableMerged';
 import { GameContext } from '@context/GameContext';
 import type { GameContextValue } from '@context/types';
-import { SEPARATOR } from '@layout/constants';
+import { EVEN_STRENGTH_LABEL, GOAL_SITUATION_LABELS, SEPARATOR } from '@layout/constants';
 import { gameAxis } from '@layout/gameAxis';
 import { OVERTIME_FORMATS } from '@layout/scenarioTrack';
 import { homeDefendingSides } from '@engine/defendingSide';
 import { runPenaltyEngine } from '@engine/penaltyEngine';
-import { countPowerPlays, totalsAt } from '@engine/powerPlayCounter';
+import { countPowerPlays, goalSituation, totalsAt } from '@engine/powerPlayCounter';
 import { snapshotAt } from '@engine/snapshot';
+import { strengthLabel } from '@engine/strength';
+import type { GoalEffect } from '@engine/types';
 import { SIDES } from '@domain/constants';
 import { indexGame } from '@domain/game';
 import { periodLabel } from '@domain/labels';
 import {
    DEFAULT_SETUP,
+   eventsInOrder,
    isDiscarded,
    isOvertimePeriod,
    lastEventTime,
@@ -74,6 +78,12 @@ type NewEvent =
    | Omit<ScenarioGoal, 'id' | 'time'>
    | Omit<ScenarioStoppage, 'id' | 'time'>;
 
+function goalStrengthTag(goal: GoalEffect): string {
+   const situation = goalSituation(goal);
+   const name = situation ? GOAL_SITUATION_LABELS[situation] : EVEN_STRENGTH_LABEL;
+   return `${name} ${strengthLabel(goal.strength, goal.side)}`;
+}
+
 function scenarioContext(events: ScenarioEvent[], setup: ScenarioSetup): GameContextValue {
    const game = scenarioGame(events, setup);
    const index = indexGame(game);
@@ -112,13 +122,18 @@ function WhatIfView() {
       home: scenario.game.homeTeam.abbrev,
    };
    const selected = events.find((event) => event.id === selectedId);
+   const ordered = eventsInOrder(events);
+   const selectedAt = ordered.findIndex((event) => event.id === selectedId);
+   const goalEffect = scenario.penaltyResult.goals.find((goal) => goal.goalEventId === selectedId);
+   const goalTag = goalEffect && goalStrengthTag(goalEffect);
    const label = (period: number): string => periodLabel(period, setup.regulation);
 
-   const add = (event: NewEvent) => {
+   const add = (event: NewEvent, time: GameElapsed = cursor) => {
       const id = Math.max(0, ...events.map((existing) => existing.id)) + 1;
-      setEvents([...events, { ...event, id, time: cursor }]);
+      setEvents([...events, { ...event, id, time }]);
       setSelectedId(id);
    };
+   const duplicate = ({ id: _id, time, ...event }: ScenarioEvent) => add(event, time);
    const change = (changed: ScenarioEvent) =>
       setEvents(events.map((event) => (event.id === changed.id ? changed : event)));
    const remove = (id: number) => {
@@ -247,13 +262,6 @@ function WhatIfView() {
                      <button type="button" onClick={() => add({ kind: 'stoppage' })}>
                         + Stoppage
                      </button>
-                     <button
-                        type="button"
-                        disabled={selected === undefined}
-                        onClick={() => selected && remove(selected.id)}
-                     >
-                        Remove selected
-                     </button>
                      <button type="button" disabled={events.length === 0} onClick={clear}>
                         Clear
                      </button>
@@ -274,6 +282,25 @@ function WhatIfView() {
                onCursor={setCursor}
                periodControls={periodControls}
             />
+            <div className="what-if__inspector">
+               {selected && (
+                  <EventInspector
+                     event={selected}
+                     setup={setup}
+                     teams={teams}
+                     colors={scenario.colors}
+                     tag={goalTag}
+                     cursor={cursor}
+                     previousId={ordered[selectedAt - 1]?.id}
+                     nextId={ordered[selectedAt + 1]?.id}
+                     onChange={change}
+                     onRemove={remove}
+                     onDuplicate={duplicate}
+                     onSelect={setSelectedId}
+                     onCursor={setCursor}
+                  />
+               )}
+            </div>
 
             <h2>What the engine sees</h2>
             <PenaltyChart axis={axis} stoppages={stoppages} />
