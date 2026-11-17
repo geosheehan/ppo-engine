@@ -5,6 +5,21 @@
    --border: #e5e4e7;
    --goal-gold: #d9a400;
 
+   --control-bg: #efefef;
+   --control-bg-hover: #e5e5e5;
+   --control-bg-active: #f5f5f5;
+   --control-line: #767676;
+   --control-line-hover: #4f4f4f;
+   --control-line-active: #8d8d8d;
+   --control-text: #000000;
+   --control-disabled-bg: #eeeeee;
+   --control-disabled-line: #d0d0d0;
+   --control-disabled-text: #ababab;
+   --control-radius: 2.5px;
+   --field-bg: #ffffff;
+   --field-line: #767676;
+   --field-text: #000000;
+
    --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
    --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
 
@@ -42,6 +57,65 @@
       --bg: #16171d;
       --border: #2e303a;
       --goal-gold: #f5c518;
+
+      --control-bg: #6b6b6b;
+      --control-bg-hover: #7b7b7b;
+      --control-bg-active: #616161;
+      --control-line: #6b6b6b;
+      --control-line-hover: #7b7b7b;
+      --control-line-active: #616161;
+      --control-text: #ffffff;
+      --control-disabled-bg: #363636;
+      --control-disabled-line: #363636;
+      --control-disabled-text: #737373;
+      --field-bg: #3b3b3b;
+      --field-line: #858585;
+      --field-text: #ffffff;
+   }
+}
+
+@layer base {
+   button,
+   input:where(:not([type]), [type='text'], [type='search'], [type='number']) {
+      --control-fill: var(--control-bg);
+      --control-edge: var(--control-line);
+      appearance: none;
+      border: 2px solid transparent;
+      border-radius: var(--control-radius);
+      background:
+         linear-gradient(var(--control-fill) 0 0) center / calc(100% - 2px) calc(100% - 2px)
+            no-repeat border-box,
+         var(--control-edge) border-box;
+      color: var(--control-text);
+   }
+
+   input:where(:not([type]), [type='text'], [type='search'], [type='number']) {
+      --control-fill: var(--field-bg);
+      --control-edge: var(--field-line);
+      color: var(--field-text);
+   }
+
+   button:hover {
+      --control-fill: var(--control-bg-hover);
+      --control-edge: var(--control-line-hover);
+   }
+
+   button:active {
+      --control-fill: var(--control-bg-active);
+      --control-edge: var(--control-line-active);
+   }
+
+   button:disabled {
+      --control-fill: var(--control-disabled-bg);
+      --control-edge: var(--control-disabled-line);
+      color: var(--control-disabled-text);
+   }
+
+   select {
+      border: 1px solid var(--field-line);
+      border-radius: var(--control-radius);
+      background-color: var(--field-bg);
+      color: var(--field-text);
    }
 }
 
