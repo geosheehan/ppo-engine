@@ -5,6 +5,7 @@ import type {
    PenaltyStartReason,
    Sentence,
    ServedPenalty,
+   TimedPenalty,
    TimelineEntry,
 } from '@engine/types';
 import type { GameElapsed, Side } from '@domain/types';
@@ -49,9 +50,22 @@ export class PenaltyBox {
       return times.length > 0 ? Math.min(...times) : undefined;
    }
 
-   add(sentence: Sentence, time: GameElapsed): void {
-      this.queue.push(sentence);
+   // Rules 39.2(vi), 70.4 and 75.2: a minor to a player already in the box (or waiting for a clock) is added to his
+   // unexpired time and served after it, on his own clock. The rules give such a player nothing bigger than a minor
+   // (or an ejection), so a major, match or double minor to him is discarded. Returns the discarded event ids.
+   add(sentence: Sentence, time: GameElapsed): number[] {
+      const own = [
+         ...this.penaltyClocks.flatMap((serving) => (serving ? [serving.sentence] : [])),
+         ...this.queue,
+      ].find((waiting) => waiting.playerKey === sentence.playerKey);
+      if (own) {
+         own.penalties.push(...sentence.penalties.filter(isSingleMinor));
+         const discarded = sentence.penalties.filter((penalty) => !isSingleMinor(penalty));
+         return [...new Set(discarded.map((penalty) => penalty.eventId))];
+      }
+      this.queue.push({ ...sentence, penalties: [...sentence.penalties] });
       this.fillFreePenaltyClocks(time, 'called');
+      return [];
    }
 
    expireAt(time: GameElapsed, reason: PenaltyEndReason = 'expired'): ServedPenalty[] {
@@ -68,8 +82,9 @@ export class PenaltyBox {
       let chosen: PenaltyClock | undefined;
       for (const penaltyClock of [0, 1] as const) {
          const serving = this.penaltyClocks[penaltyClock];
-         if (!serving || serving.sentence.coincidental || currentPenalty(serving).kind !== 'minor')
-            continue;
+         if (!serving) continue;
+         const { kind, coincidental } = currentPenalty(serving);
+         if (coincidental || kind !== 'minor') continue;
          if (
             chosen === undefined
             || timeOnClock(serving, time) < timeOnClock(this.penaltyClocks[chosen]!, time)
@@ -139,6 +154,9 @@ export class PenaltyBox {
    }
 }
 
+const isSingleMinor = (penalty: TimedPenalty) =>
+   penalty.kind === 'minor' && penalty.doubleMinorHalf === undefined;
+
 const currentPenalty = (serving: Serving) => serving.sentence.penalties[serving.penaltyIndex];
 
 function timeOnClock(serving: Serving, time: GameElapsed): number {
@@ -160,7 +178,7 @@ function toPenaltyOnClock(
       penaltyClock,
       kind: penalty.kind,
       ...(penalty.doubleMinorHalf ? { doubleMinorHalf: penalty.doubleMinorHalf } : {}),
-      coincidental: serving.sentence.coincidental,
+      coincidental: penalty.coincidental,
    };
 }
 

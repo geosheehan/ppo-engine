@@ -25,7 +25,9 @@ describe('assessPenalties (Rule 19)', () => {
          false,
       );
       expect(sentences).toHaveLength(2);
-      expect(sentences.every((sentence) => sentence.coincidental)).toBe(true);
+      expect(
+         sentences.every((sentence) => sentence.penalties.every((penalty) => penalty.coincidental)),
+      ).toBe(true);
    });
 
    it('cancels one minor each when another penalty is already in effect', () => {
@@ -46,7 +48,7 @@ describe('assessPenalties (Rule 19)', () => {
          false,
       );
       expect(sentences).toHaveLength(1);
-      expect(sentences[0]).toMatchObject({ side: 'away', coincidental: false });
+      expect(sentences[0]).toMatchObject({ side: 'away', penalties: [{ coincidental: false }] });
       expect(sentences[0].penalties).toHaveLength(1);
    });
 
@@ -99,7 +101,13 @@ describe('assessPenalties (Rule 19)', () => {
       const penalty = { ...called('home', 'MIN', 4), doubleMinorFirstHalfWashed: true };
       const [sentence] = assessPenalties([penalty], false);
       expect(sentence.penalties).toEqual([
-         { eventId: penalty.eventId, kind: 'minor', seconds: 120, doubleMinorHalf: 2 },
+         {
+            eventId: penalty.eventId,
+            kind: 'minor',
+            seconds: 120,
+            doubleMinorHalf: 2,
+            coincidental: false,
+         },
       ]);
    });
 });

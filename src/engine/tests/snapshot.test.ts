@@ -39,6 +39,7 @@ const releasedMinor: PenaltyEngineResult = {
    timeline: [change(970, 5, 4), change(1065, 5, 5)],
    servedPenalties: [served({})],
    goals: [],
+   discardedPenalties: [],
 };
 
 describe('snapshotAt', () => {
@@ -65,6 +66,7 @@ describe('snapshotAt', () => {
          timeline: [change(60, 5, 4), change(120, 5, 3), change(150, 5, 4), change(240, 5, 5)],
          servedPenalties: [],
          goals: [],
+         discardedPenalties: [],
       };
       const strength = (time: number) => snapshotAt(result, plays(), time).strength;
       expect(
@@ -80,6 +82,7 @@ describe('snapshotAt', () => {
          timeline: [],
          servedPenalties: [served({ start: 1090, end: 1210, endReason: 'expired' })],
          goals: [],
+         discardedPenalties: [],
       };
       const penaltyPlays = plays(penaltyPlay(1, '16:10', 2));
       expect(snapshotAt(result, penaltyPlays, 960).queued).toEqual([]);
@@ -100,6 +103,7 @@ describe('snapshotAt', () => {
             served({ doubleMinorHalf: 2, start: 1090, end: 1210, endReason: 'expired' }),
          ],
          goals: [],
+         discardedPenalties: [],
       };
       const penaltyPlays = plays(penaltyPlay(1, '16:10', 4));
       expect(snapshotAt(result, penaltyPlays, 1000)).toMatchObject({

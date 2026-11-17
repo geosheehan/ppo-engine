@@ -1,17 +1,28 @@
 import { describe, expect, it } from 'vitest';
 import { PenaltyBox } from '@engine/penaltyBox';
-import type { Sentence, TimedPenalty } from '@engine/types';
+import type { Sentence, TimedPenalty, TimelineEntry } from '@engine/types';
 
-const minor = (eventId: number): TimedPenalty => ({ eventId, kind: 'minor', seconds: 120 });
-const major = (eventId: number): TimedPenalty => ({ eventId, kind: 'major', seconds: 300 });
-const doubleMinor = (eventId: number): TimedPenalty[] => [
-   { eventId, kind: 'minor', seconds: 120, doubleMinorHalf: 1 },
-   { eventId, kind: 'minor', seconds: 120, doubleMinorHalf: 2 },
-];
-const sentence = (penalties: TimedPenalty[], coincidental = false): Sentence => ({
-   side: 'home',
-   penalties,
+const minor = (eventId: number, coincidental = false): TimedPenalty => ({
+   eventId,
+   kind: 'minor',
+   seconds: 120,
    coincidental,
+});
+const major = (eventId: number): TimedPenalty => ({
+   eventId,
+   kind: 'major',
+   seconds: 300,
+   coincidental: false,
+});
+const doubleMinor = (eventId: number): TimedPenalty[] => [
+   { eventId, kind: 'minor', seconds: 120, doubleMinorHalf: 1, coincidental: false },
+   { eventId, kind: 'minor', seconds: 120, doubleMinorHalf: 2, coincidental: false },
+];
+// Each sentence goes to its own player unless one is given.
+const sentence = (penalties: TimedPenalty[], playerKey = penalties[0].eventId): Sentence => ({
+   side: 'home',
+   playerKey,
+   penalties,
 });
 
 describe('PenaltyBox penalty clocks and queue', () => {
@@ -77,7 +88,7 @@ describe('PenaltyBox release on a goal (Rule 16.2, Table 12)', () => {
 
    it('never releases a coincidental 4-on-4 minor', () => {
       const box = new PenaltyBox('home');
-      box.add(sentence([minor(1)], true), 0);
+      box.add(sentence([minor(1, true)]), 0);
       expect(box.releaseOnGoal(60, 99)).toBeUndefined();
    });
 
@@ -124,5 +135,94 @@ describe('PenaltyBox release on a goal (Rule 16.2, Table 12)', () => {
       expect(box.releaseOnGoal(270, 99)).toMatchObject({ penaltyEventId: 15 });
       expect(box.releaseOnGoal(300, 98)).toMatchObject({ penaltyEventId: 23 });
       expect(box.releaseOnGoal(330, 97)).toMatchObject({ penaltyEventId: 6, start: 270, end: 330 });
+   });
+});
+
+describe('PenaltyBox penalties to a player already in the box (Rules 39.2, 70.4, 75.2)', () => {
+   const PLAYER = 7;
+
+   it('adds a later minor to the end of his time, on the clock he is using', () => {
+      const box = new PenaltyBox('home');
+      box.add(sentence([minor(1)], PLAYER), 0);
+      box.add(sentence([minor(2)], PLAYER), 20);
+      expect(box.runningClockCount).toBe(1);
+      expect(box.expireAt(120)).toMatchObject([{ penaltyEventId: 1, penaltyClock: 0, end: 120 }]);
+      expect(box.expireAt(240)).toMatchObject([
+         { penaltyEventId: 2, penaltyClock: 0, start: 120, end: 240 },
+      ]);
+      expect(box.isEmpty).toBe(true);
+   });
+
+   it('adds a later minor to his queued time, behind his first penalty', () => {
+      const box = new PenaltyBox('home');
+      box.add(sentence([minor(1)]), 0);
+      box.add(sentence([minor(2)]), 30);
+      box.add(sentence([minor(3)], PLAYER), 60);
+      box.add(sentence([minor(4)], PLAYER), 90);
+      expect(box.expireAt(120)).toMatchObject([{ penaltyEventId: 1 }]);
+      expect(box.expireAt(150)).toMatchObject([{ penaltyEventId: 2 }]);
+      expect(box.runningClockCount).toBe(1);
+      expect(box.expireAt(240)).toMatchObject([{ penaltyEventId: 3, start: 120 }]);
+      expect(box.expireAt(360)).toMatchObject([
+         { penaltyEventId: 4, penaltyClock: 0, start: 240, end: 360 },
+      ]);
+   });
+
+   it('keeps a minor added after his coincidental minor releasable', () => {
+      const records: TimelineEntry[] = [];
+      const box = new PenaltyBox('home', (entry) => records.push(entry));
+      box.add(sentence([minor(1, true)], PLAYER), 0);
+      box.add(sentence([minor(2)], PLAYER), 30);
+      expect(box.releaseOnGoal(60, 99)).toBeUndefined();
+      box.expireAt(120);
+      expect(records.at(-1)).toMatchObject({
+         kind: 'penaltyStart',
+         penalty: { penaltyEventId: 2, coincidental: false },
+      });
+      expect(box.releaseOnGoal(150, 98)).toMatchObject({ penaltyEventId: 2, endReason: 'goal' });
+   });
+
+   it('starts the added time right away when a goal releases his minor', () => {
+      const records: TimelineEntry[] = [];
+      const box = new PenaltyBox('home', (entry) => records.push(entry));
+      box.add(sentence([minor(1)], PLAYER), 0);
+      box.add(sentence([minor(2)], PLAYER), 30);
+      expect(box.releaseOnGoal(50, 99)).toMatchObject({ penaltyEventId: 1, end: 50 });
+      expect(records.at(-1)).toMatchObject({
+         kind: 'penaltyStart',
+         time: 50,
+         reason: 'nextInSentence',
+         penalty: { penaltyEventId: 2, penaltyClock: 0 },
+      });
+      expect(box.expireAt(170)).toMatchObject([{ penaltyEventId: 2, start: 50, end: 170 }]);
+   });
+
+   it('discards a major to a player serving a minor and keeps his time', () => {
+      const box = new PenaltyBox('home');
+      box.add(sentence([minor(1)], PLAYER), 0);
+      expect(box.add(sentence([major(2)], PLAYER), 20)).toEqual([2]);
+      expect(box.runningClockCount).toBe(1);
+      expect(box.expireAt(120)).toMatchObject([{ penaltyEventId: 1 }]);
+      expect(box.isEmpty).toBe(true);
+   });
+
+   it('discards both halves of a double minor to a queued player as one penalty', () => {
+      const box = new PenaltyBox('home');
+      box.add(sentence([minor(1)]), 0);
+      box.add(sentence([minor(2)]), 10);
+      box.add(sentence([minor(3)], PLAYER), 20);
+      expect(box.add(sentence(doubleMinor(4), PLAYER), 30)).toEqual([4]);
+      box.expireAt(120);
+      box.expireAt(130);
+      expect(box.expireAt(240)).toMatchObject([{ penaltyEventId: 3 }]);
+      expect(box.isEmpty).toBe(true);
+   });
+
+   it('adds the minor and discards the major when both come in one later call', () => {
+      const box = new PenaltyBox('home');
+      box.add(sentence([minor(1)], PLAYER), 0);
+      expect(box.add(sentence([major(2), minor(3)], PLAYER), 20)).toEqual([2]);
+      box.expireAt(120);
+      expect(box.expireAt(240)).toMatchObject([{ penaltyEventId: 3, start: 120 }]);
    });
 });

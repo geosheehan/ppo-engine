@@ -119,6 +119,13 @@ function WhatIfView() {
       () => new Map(scenario.penalties.map((play) => [play.eventId, play])),
       [scenario],
    );
+   const engineDiscardedIds = useMemo(
+      () =>
+         new Set(
+            scenario.penaltyResult.discardedPenalties.map(({ penaltyEventId }) => penaltyEventId),
+         ),
+      [scenario],
+   );
    const snapshot = snapshotAt(scenario.penaltyResult, penaltyPlays, cursor);
    const totals = totalsAt(scenario.powerPlays, fullGame ? scenarioEnd(events, setup) : cursor);
    const strength = fullGame ? undefined : snapshot.strength;
@@ -293,6 +300,7 @@ function WhatIfView() {
                selectedId={selectedId}
                selectedIds={selectedIds}
                hoveredIds={hoveredIds}
+               engineDiscardedIds={engineDiscardedIds}
                cursor={cursor}
                teams={teams}
                colors={scenario.colors}

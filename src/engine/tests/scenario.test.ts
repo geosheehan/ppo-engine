@@ -1,15 +1,21 @@
 import { describe, expect, it } from 'vitest';
 import { runPenaltyEngine } from '@engine/penaltyEngine';
 import { countPowerPlays, totalsAt } from '@engine/powerPlayCounter';
+import { snapshotAt } from '@engine/snapshot';
 import { strengthAt } from '@engine/strength';
+import { expectOneClockPerPlayer } from '@engine/tests/oneClock';
 import { indexGame } from '@domain/game';
 import { scenarioGame } from '@domain/scenario';
 import type { ScenarioEvent, ScenarioSetup } from '@domain/scenario';
 
 const THREE_REG: ScenarioSetup = { gameType: 'regular', regulation: 3, overtime: 0 };
 
-const engineFor = (events: ScenarioEvent[], setup: ScenarioSetup = THREE_REG) =>
-   runPenaltyEngine(indexGame(scenarioGame(events, setup)));
+function engineFor(events: ScenarioEvent[], setup: ScenarioSetup = THREE_REG) {
+   const index = indexGame(scenarioGame(events, setup));
+   const result = runPenaltyEngine(index);
+   expectOneClockPerPlayer(index, result);
+   return result;
+}
 
 describe('the engine on a scenario game', () => {
    it('serves a lone minor as a 5-on-4 that runs out after two minutes', () => {
@@ -173,5 +179,120 @@ describe('the engine on scenario players', () => {
          { penaltyEventId: 3, start: 420, end: 540 },
       ]);
       expect(strengthAt(result.timeline, 500)).toEqual({ away: 4, home: 5 });
+   });
+});
+
+describe('the engine on penalties to a player already in the box', () => {
+   type Called = readonly [time: number, penaltyType: 'minor' | 'double-minor' | 'major'];
+   const toPlayerOne = (...called: Called[]): ScenarioEvent[] =>
+      called.map(([time, penaltyType], i) => ({
+         id: i + 1,
+         kind: 'penalty',
+         side: 'away',
+         time,
+         penaltyType,
+         player: 1,
+      }));
+   const homeGoal = (id: number, time: number): ScenarioEvent => ({
+      id,
+      kind: 'goal',
+      side: 'home',
+      time,
+   });
+   const homeTotals = (events: ScenarioEvent[]) =>
+      totalsAt(countPowerPlays(engineFor(events).timeline), 3600).home;
+   const clocksAt = (events: ScenarioEvent[], time: number) => {
+      const index = indexGame(scenarioGame(events, THREE_REG));
+      const plays = new Map(index.penalties.map((play) => [play.eventId, play]));
+      return snapshotAt(runPenaltyEngine(index), plays, time);
+   };
+
+   it('keeps #1 on one clock for minors at P1 3:10 and 3:30, 5v4 until 7:10', () => {
+      const result = engineFor(toPlayerOne([190, 'minor'], [210, 'minor']));
+      expect(strengthAt(result.timeline, 220)).toEqual({ away: 4, home: 5 });
+      expect(strengthAt(result.timeline, 429)).toEqual({ away: 4, home: 5 });
+      expect(strengthAt(result.timeline, 430)).toEqual({ away: 5, home: 5 });
+      expect(result.servedPenalties).toMatchObject([
+         { penaltyEventId: 1, penaltyClock: 0, start: 190, end: 310 },
+         { penaltyEventId: 2, penaltyClock: 0, start: 310, end: 430 },
+      ]);
+   });
+
+   it('starts the added minor at the goal that releases his first one', () => {
+      const result = engineFor([...toPlayerOne([300, 'minor'], [330, 'minor']), homeGoal(3, 360)]);
+      expect(result.servedPenalties).toMatchObject([
+         { penaltyEventId: 1, start: 300, end: 360, endReason: 'goal' },
+         { penaltyEventId: 2, start: 360, end: 480, endReason: 'expired' },
+      ]);
+      expect(strengthAt(result.timeline, 470)).toEqual({ away: 4, home: 5 });
+   });
+
+   it('discards a major to #1 while he serves a minor, and reports it', () => {
+      const result = engineFor(toPlayerOne([190, 'minor'], [210, 'major']));
+      expect(result.servedPenalties).toMatchObject([{ penaltyEventId: 1, start: 190, end: 310 }]);
+      expect(result.discardedPenalties).toEqual([
+         { penaltyEventId: 2, side: 'away', time: 210, reason: 'notMinorToPlayerInBox' },
+      ]);
+      expect(strengthAt(result.timeline, 310)).toEqual({ away: 5, home: 5 });
+      expect(homeTotals(toPlayerOne([190, 'minor'], [210, 'major']))).toEqual([
+         { label: '5v4', opportunities: 1, goals: 0, seconds: 120 },
+      ]);
+   });
+
+   it('discards a double minor to #1 while he serves a minor', () => {
+      const result = engineFor(toPlayerOne([190, 'minor'], [210, 'double-minor']));
+      expect(result.servedPenalties).toHaveLength(1);
+      expect(result.discardedPenalties).toMatchObject([{ penaltyEventId: 2 }]);
+   });
+
+   it('serves a major to #1 again once his minor is over', () => {
+      const result = engineFor(toPlayerOne([190, 'minor'], [310, 'major']));
+      expect(result.discardedPenalties).toEqual([]);
+      expect(result.servedPenalties).toMatchObject([
+         { penaltyEventId: 1, end: 310 },
+         { penaltyEventId: 2, start: 310 },
+      ]);
+   });
+
+   it('shows his whole remaining time on his clock, with nothing queued', () => {
+      const snapshot = clocksAt(toPlayerOne([190, 'minor'], [210, 'minor']), 250);
+      expect(snapshot.onClock.map(({ remaining }) => remaining)).toEqual([180]);
+      expect(snapshot.queued).toEqual([]);
+   });
+
+   // Decision 3: a penalty added while he is in the box counts like its same-second twin.
+   it.each([
+      ['a major then a minor', [300, 'major'], [400, 'minor']],
+      ['a minor then a minor', [300, 'minor'], [330, 'minor']],
+      ['a double minor then a minor', [300, 'double-minor'], [400, 'minor']],
+   ] as const)('counts %s added later like the same-second call', (_, first, later) => {
+      const sameSecond = homeTotals(toPlayerOne(first, [first[0], later[1]]));
+      expect(homeTotals(toPlayerOne(first, later))).toEqual(sameSecond);
+      expect(sameSecond.reduce((sum, total) => sum + total.opportunities, 0)).toBeGreaterThan(1);
+   });
+
+   it('counts a goal releasing the first of two minors like the same-second call', () => {
+      const goal = homeGoal(3, 360);
+      expect(homeTotals([...toPlayerOne([300, 'minor'], [330, 'minor']), goal])).toEqual(
+         homeTotals([...toPlayerOne([300, 'minor'], [300, 'minor']), goal]),
+      );
+   });
+
+   it('shows only the served half of a double minor whose other half was canceled', () => {
+      const snapshot = clocksAt(
+         [
+            { id: 1, kind: 'penalty', side: 'home', time: 0, penaltyType: 'minor', player: 1 },
+            {
+               id: 2,
+               kind: 'penalty',
+               side: 'away',
+               time: 0,
+               penaltyType: 'double-minor',
+               player: 1,
+            },
+         ],
+         60,
+      );
+      expect(snapshot.onClock.map(({ remaining }) => remaining)).toEqual([60]);
    });
 });

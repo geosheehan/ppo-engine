@@ -5,6 +5,7 @@ import { PlayGroup } from '@engine/playGroup';
 import { isSameStrength, isThreeOnThreeOvertime, OnIceStrength, periodAt } from '@engine/strength';
 import type {
    CalledPenalty,
+   DiscardedPenalty,
    GoalEffect,
    PenaltyEndReason,
    PenaltyEngineResult,
@@ -42,6 +43,7 @@ class PenaltyEngine {
    private readonly onIce = new OnIceStrength();
    private readonly servedPenalties: ServedPenalty[] = [];
    private readonly goals: GoalEffect[] = [];
+   private readonly discardedPenalties: DiscardedPenalty[] = [];
    private gameEnd: GameElapsed | undefined;
 
    constructor({ game, plays, sideOf }: GameIndex) {
@@ -73,6 +75,7 @@ class PenaltyEngine {
          timeline: this.timeline,
          servedPenalties: this.servedPenalties,
          goals: this.goals,
+         discardedPenalties: this.discardedPenalties,
       };
    }
 
@@ -152,10 +155,7 @@ class PenaltyEngine {
          penalties.push({
             eventId: penalty.eventId,
             side: this.sideOf(penalty.details.eventOwnerTeamId),
-            playerKey:
-               penalty.details.committedByPlayerId
-               ?? penalty.details.servedByPlayerId
-               ?? -penalty.eventId,
+            playerKey: playerKeyOf(penalty),
             severity: penalty.details.typeCode,
             minutes: penalty.details.duration,
             doubleMinorFirstHalfWashed: isWashed,
@@ -164,7 +164,14 @@ class PenaltyEngine {
 
       const inEffect = !this.penaltyBoxes.away.isEmpty || !this.penaltyBoxes.home.isEmpty;
       for (const sentence of assessPenalties(penalties, inEffect)) {
-         this.penaltyBoxes[sentence.side].add(sentence, group.time);
+         for (const penaltyEventId of this.penaltyBoxes[sentence.side].add(sentence, group.time)) {
+            this.discardedPenalties.push({
+               penaltyEventId,
+               side: sentence.side,
+               time: group.time,
+               reason: 'notMinorToPlayerInBox',
+            });
+         }
       }
       this.updateStrength(group.time, true);
    }
@@ -204,6 +211,13 @@ class PenaltyEngine {
          this.record({ kind: 'strength', time, strength: nextStrength });
       }
    }
+}
+
+export function playerKeyOf(penalty: PenaltyPlay): number {
+   const playerId = penalty.details.committedByPlayerId ?? penalty.details.servedByPlayerId;
+   if (playerId !== undefined) return playerId;
+   console.error(new Error(`Penalty ${penalty.eventId} has no player ID`), { penalty });
+   return -penalty.eventId;
 }
 
 const earliest = (...times: (GameElapsed | undefined)[]) => {

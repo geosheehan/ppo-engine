@@ -39,6 +39,8 @@ const TEAM_ROWS: Side[] = [SIDES.HOME, SIDES.AWAY];
 const KEY_STEP_SECONDS = 5;
 const SHIFT_KEY_STEP_SECONDS = 60;
 const DISCARDED_NOTE = 'Discarded: after the OT winner';
+const IN_BOX_NOTE =
+   'Discarded: a player in the box can only take a minor, or be ejected and have their penalty served by a teammate';
 const CHIP_INSET_PX = 2;
 const REASON_MS = 4000;
 const MENU_ROOM_PX = 200;
@@ -82,6 +84,7 @@ type ScenarioTrackProps = {
    selectedId: number | undefined;
    selectedIds: ReadonlySet<number>;
    hoveredIds: ReadonlySet<number>;
+   engineDiscardedIds: ReadonlySet<number>;
    cursor: GameElapsed;
    teams: Record<Side, string>;
    colors: Record<Side, string>;
@@ -101,6 +104,7 @@ function ScenarioTrack({
    selectedId,
    selectedIds,
    hoveredIds,
+   engineDiscardedIds,
    cursor,
    teams,
    colors,
@@ -155,9 +159,15 @@ function ScenarioTrack({
    const moment = (time: GameElapsed): string =>
       `${periodLabel(scenarioPeriod(time, setup), setup.regulation)} ${scenarioClock(time, setup)}`;
 
+   const discardedNote = (event: ScenarioEvent): string | undefined => {
+      if (isDiscarded(event, winner)) return DISCARDED_NOTE;
+      return engineDiscardedIds.has(event.id) ? IN_BOX_NOTE : undefined;
+   };
+
    const eventTitle = (event: ScenarioEvent): string => {
       const title = `${scenarioEventName(event, teams)} ${SEPARATOR} ${moment(event.time)}`;
-      return isDiscarded(event, winner) ? `${title} ${SEPARATOR} ${DISCARDED_NOTE}` : title;
+      const note = discardedNote(event);
+      return note !== undefined ? `${title} ${SEPARATOR} ${note}` : title;
    };
 
    const startDrag = (event: ScenarioEvent, mode: Drag['mode']) => (e: PointerEvent) => {
@@ -218,7 +228,7 @@ function ScenarioTrack({
          hoveredIds.has(event.id)
             && !selectedIds.has(event.id)
             && 'scenario-track__marker--hovered',
-         isDiscarded(event, winner) && 'scenario-track__marker--discarded',
+         discardedNote(event) !== undefined && 'scenario-track__marker--discarded',
       );
 
    const markerProps = (event: ScenarioEvent) => ({
