@@ -173,8 +173,19 @@
          order: 4;
       }
 
-      > .penalty-chart,
-      > .why-table {
+      > .penalty-chart {
+         order: 5;
+      }
+
+      > .what-if__tables {
+         display: contents;
+      }
+
+      > .what-if__tables > * {
+         grid-area: auto / 1 / auto / -1;
+      }
+
+      > .what-if__tables > .goal-effect-table {
          order: 5;
       }
 
@@ -189,8 +200,9 @@
          margin-top: 16px;
       }
 
-      > .goal-effect-table {
+      > .what-if__tables > .why-table {
          order: 8;
+         margin-top: 16px;
       }
    }
 }
@@ -212,4 +224,16 @@
    display: inline-flex;
    align-items: center;
    gap: 8px;
+}
+
+.what-if__tables {
+   display: flex;
+   flex-wrap: wrap;
+   align-items: flex-start;
+   justify-content: center;
+   gap: 24px 48px;
+
+   > table {
+      margin: 0;
+   }
 }

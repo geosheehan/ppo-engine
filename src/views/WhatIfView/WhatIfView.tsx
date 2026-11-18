@@ -387,21 +387,23 @@ function WhatIfView() {
                onSelect={setSelectedId}
                onHover={setHoveredId}
             />
-            {whyView === WHY_VIEWS.ON && (
-               <WhyTable
-                  rows={notes.rows}
+            <div className="what-if__tables">
+               <GoalEffectTable
                   selectedIds={selectedIds}
                   hoveredIds={hoveredIds}
                   onSelect={setSelectedId}
                   onHover={setHoveredId}
                />
-            )}
-            <GoalEffectTable
-               selectedIds={selectedIds}
-               hoveredIds={hoveredIds}
-               onSelect={setSelectedId}
-               onHover={setHoveredId}
-            />
+               {whyView === WHY_VIEWS.ON && (
+                  <WhyTable
+                     rows={notes.rows}
+                     selectedIds={selectedIds}
+                     hoveredIds={hoveredIds}
+                     onSelect={setSelectedId}
+                     onHover={setHoveredId}
+                  />
+               )}
+            </div>
          </GameContext>
       </main>
    );
